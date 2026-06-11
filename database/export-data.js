@@ -62,23 +62,28 @@ if (dupes.length) console.warn(`WARN: ${dupes.length} duplicate synonym rows ski
 // Standard 2-sentence pattern with DB-substituted facts (founder decision: one
 // template, not hand-written unique copy). Purely descriptive — no advice, no
 // verdicts. Replaced later by validated content-library text per information_cards.
+// Wording notes (founder feedback 2026-06-11): don't headline "Big 9" — not every
+// allergen we track is one, and the badge reads as ranking. No "trigger" — clinical
+// and alarming. Tone: warm, factual, validating; never advice, never a verdict.
+// Phrasings are chosen to stay grammatical for singular AND plural names
+// ("Peanuts", "Milk and Dairy", "Sulfites").
 function infoFor(p, hiddenNames) {
   const names = hiddenNames.slice(0, 3);
   const nameClause = names.length >= 2
-    ? `On labels it may also appear under names like ${names.slice(0, -1).join(', ')} or ${names[names.length - 1]}.`
+    ? `On labels it can also show up as ${names.slice(0, -1).join(', ')} or ${names[names.length - 1]}.`
     : (names.length === 1
-      ? `On labels it may also appear as ${names[0]}.`
-      : 'We track the hidden label names for it as our database grows.');
+      ? `On labels it can also show up as ${names[0]}.`
+      : `We're still mapping the other names it can hide behind.`);
   if (p.domain === 'ALLERGEN') {
     const status = p.major
-      ? 'is one of the nine major food allergens recognized by the FDA'
-      : 'is a recognized food allergen (treated as major in some regions outside the US)';
-    return `${p.common} ${status}. ${nameClause}`;
+      ? `U.S. food labels are required to declare ${p.common.toLowerCase()} whenever it's an ingredient.`
+      : `U.S. labels aren't required to call out ${p.common.toLowerCase()}, so it can be easy to miss in an ingredient list.`;
+    return `${status} ${nameClause}`;
   }
   if (p.domain === 'INTOLERANCE') {
-    return `${p.common} is a common intolerance trigger — different from a food allergy. ${nameClause}`;
+    return `Many people find ${p.common.toLowerCase()} hard on their body. It isn't an allergy, but the discomfort is real — so we watch for it just as carefully. ${nameClause}`;
   }
-  return `${p.common} is tracked against your preferences. ${nameClause}`;
+  return `We check every label against this preference for you. ${nameClause}`;
 }
 
 const parents = {};

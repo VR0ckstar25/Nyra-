@@ -3567,132 +3567,132 @@
     "almond": {
       "common": "Almond",
       "cat": "allergen",
-      "info": "Almond is one of the nine major food allergens recognized by the FDA. On labels it may also appear under names like Almond butter, Almond flour or Almond paste."
+      "info": "U.S. food labels are required to declare almond whenever it's an ingredient. On labels it can also show up as Almond butter, Almond flour or Almond paste."
     },
     "brazil_nut": {
       "common": "Brazil Nut",
       "cat": "allergen",
-      "info": "Brazil Nut is one of the nine major food allergens recognized by the FDA. On labels it may also appear as Brazil nuts."
+      "info": "U.S. food labels are required to declare brazil nut whenever it's an ingredient. On labels it can also show up as Brazil nuts."
     },
     "cashew": {
       "common": "Cashew",
       "cat": "allergen",
-      "info": "Cashew is one of the nine major food allergens recognized by the FDA. On labels it may also appear under names like Anacardium, Cashew butter or Cashews."
+      "info": "U.S. food labels are required to declare cashew whenever it's an ingredient. On labels it can also show up as Anacardium, Cashew butter or Cashews."
     },
     "crustacean": {
       "common": "Crustacean Shellfish",
       "cat": "allergen",
-      "info": "Crustacean Shellfish is one of the nine major food allergens recognized by the FDA. On labels it may also appear under names like Crab, Crawfish or Crayfish."
+      "info": "U.S. food labels are required to declare crustacean shellfish whenever it's an ingredient. On labels it can also show up as Crab, Crawfish or Crayfish."
     },
     "egg": {
       "common": "Eggs",
       "cat": "allergen",
-      "info": "Eggs is one of the nine major food allergens recognized by the FDA. On labels it may also appear under names like Albumen, Albumin or Apovitellin."
+      "info": "U.S. food labels are required to declare eggs whenever it's an ingredient. On labels it can also show up as Albumen, Albumin or Apovitellin."
     },
     "fish": {
       "common": "Fish",
       "cat": "allergen",
-      "info": "Fish is one of the nine major food allergens recognized by the FDA. On labels it may also appear under names like Anchovy, Bass or Bottarga."
+      "info": "U.S. food labels are required to declare fish whenever it's an ingredient. On labels it can also show up as Anchovy, Bass or Bottarga."
     },
     "hazelnut": {
       "common": "Hazelnut",
       "cat": "allergen",
-      "info": "Hazelnut is one of the nine major food allergens recognized by the FDA. On labels it may also appear under names like Filbert, Gianduja or Hazelnuts."
+      "info": "U.S. food labels are required to declare hazelnut whenever it's an ingredient. On labels it can also show up as Filbert, Gianduja or Hazelnuts."
     },
     "macadamia": {
       "common": "Macadamia",
       "cat": "allergen",
-      "info": "Macadamia is one of the nine major food allergens recognized by the FDA. On labels it may also appear under names like Bush nut, Macadamia nut or Queensland nut."
+      "info": "U.S. food labels are required to declare macadamia whenever it's an ingredient. On labels it can also show up as Bush nut, Macadamia nut or Queensland nut."
     },
     "milk": {
       "common": "Milk and Dairy",
       "cat": "allergen",
-      "info": "Milk and Dairy is one of the nine major food allergens recognized by the FDA. On labels it may also appear under names like Buffalo milk, Butter or Butterfat."
+      "info": "U.S. food labels are required to declare milk and dairy whenever it's an ingredient. On labels it can also show up as Buffalo milk, Butter or Butterfat."
     },
     "mollusc": {
       "common": "Mollusc Shellfish",
       "cat": "allergen",
-      "info": "Mollusc Shellfish is a recognized food allergen (treated as major in some regions outside the US). On labels it may also appear under names like Abalone, Calamari or Clam."
+      "info": "U.S. labels aren't required to call out mollusc shellfish, so it can be easy to miss in an ingredient list. On labels it can also show up as Abalone, Calamari or Clam."
     },
     "peanut": {
       "common": "Peanuts",
       "cat": "allergen",
-      "info": "Peanuts is one of the nine major food allergens recognized by the FDA. On labels it may also appear under names like Arachis hypogaea, Beer nuts or Cold-pressed peanut oil."
+      "info": "U.S. food labels are required to declare peanuts whenever it's an ingredient. On labels it can also show up as Arachis hypogaea, Beer nuts or Cold-pressed peanut oil."
     },
     "pecan": {
       "common": "Pecan",
       "cat": "allergen",
-      "info": "Pecan is one of the nine major food allergens recognized by the FDA. On labels it may also appear as Pecans."
+      "info": "U.S. food labels are required to declare pecan whenever it's an ingredient. On labels it can also show up as Pecans."
     },
     "pine_nut": {
       "common": "Pine Nut",
       "cat": "allergen",
-      "info": "Pine Nut is one of the nine major food allergens recognized by the FDA. On labels it may also appear under names like Pignoli, Pine nuts or Pinon."
+      "info": "U.S. food labels are required to declare pine nut whenever it's an ingredient. On labels it can also show up as Pignoli, Pine nuts or Pinon."
     },
     "pistachio": {
       "common": "Pistachio",
       "cat": "allergen",
-      "info": "Pistachio is one of the nine major food allergens recognized by the FDA. On labels it may also appear as Pistachios."
+      "info": "U.S. food labels are required to declare pistachio whenever it's an ingredient. On labels it can also show up as Pistachios."
     },
     "sesame": {
       "common": "Sesame",
       "cat": "allergen",
-      "info": "Sesame is one of the nine major food allergens recognized by the FDA. On labels it may also appear under names like Ajonjoli, Benne or Benniseed."
+      "info": "U.S. food labels are required to declare sesame whenever it's an ingredient. On labels it can also show up as Ajonjoli, Benne or Benniseed."
     },
     "soy": {
       "common": "Soybeans",
       "cat": "allergen",
-      "info": "Soybeans is one of the nine major food allergens recognized by the FDA. On labels it may also appear under names like Edamame, Hydrolyzed soy protein or Kinako."
+      "info": "U.S. food labels are required to declare soybeans whenever it's an ingredient. On labels it can also show up as Edamame, Hydrolyzed soy protein or Kinako."
     },
     "walnut": {
       "common": "Walnut",
       "cat": "allergen",
-      "info": "Walnut is one of the nine major food allergens recognized by the FDA. On labels it may also appear under names like Black walnut, California walnut or English walnut."
+      "info": "U.S. food labels are required to declare walnut whenever it's an ingredient. On labels it can also show up as Black walnut, California walnut or English walnut."
     },
     "wheat": {
       "common": "Wheat",
       "cat": "allergen",
-      "info": "Wheat is one of the nine major food allergens recognized by the FDA. On labels it may also appear under names like Atta, Atta flour or Bulgur."
+      "info": "U.S. food labels are required to declare wheat whenever it's an ingredient. On labels it can also show up as Atta, Atta flour or Bulgur."
     },
     "caffeine": {
       "common": "Caffeine",
       "cat": "intolerance",
-      "info": "Caffeine is a common intolerance trigger — different from a food allergy. On labels it may also appear under names like Black tea, Coffee or Green tea."
+      "info": "Many people find caffeine hard on their body. It isn't an allergy, but the discomfort is real — so we watch for it just as carefully. On labels it can also show up as Black tea, Coffee or Green tea."
     },
     "fodmaps": {
       "common": "FODMAPs",
       "cat": "intolerance",
-      "info": "FODMAPs is a common intolerance trigger — different from a food allergy. On labels it may also appear under names like Chicory root, Fructans or GOS."
+      "info": "Many people find fodmaps hard on their body. It isn't an allergy, but the discomfort is real — so we watch for it just as carefully. On labels it can also show up as Chicory root, Fructans or GOS."
     },
     "fructose": {
       "common": "Fructose",
       "cat": "intolerance",
-      "info": "Fructose is a common intolerance trigger — different from a food allergy. On labels it may also appear under names like Agave, Agave nectar or Crystalline fructose."
+      "info": "Many people find fructose hard on their body. It isn't an allergy, but the discomfort is real — so we watch for it just as carefully. On labels it can also show up as Agave, Agave nectar or Crystalline fructose."
     },
     "gluten": {
       "common": "Gluten",
       "cat": "intolerance",
-      "info": "Gluten is a common intolerance trigger — different from a food allergy. On labels it may also appear under names like Barley, Bulgur or Durum."
+      "info": "Many people find gluten hard on their body. It isn't an allergy, but the discomfort is real — so we watch for it just as carefully. On labels it can also show up as Barley, Bulgur or Durum."
     },
     "histamine": {
       "common": "Histamine",
       "cat": "intolerance",
-      "info": "Histamine is a common intolerance trigger — different from a food allergy. On labels it may also appear under names like Aged cheese, Cured meats or Fermented foods."
+      "info": "Many people find histamine hard on their body. It isn't an allergy, but the discomfort is real — so we watch for it just as carefully. On labels it can also show up as Aged cheese, Cured meats or Fermented foods."
     },
     "lactose": {
       "common": "Lactose",
       "cat": "intolerance",
-      "info": "Lactose is a common intolerance trigger — different from a food allergy. On labels it may also appear under names like Buttermilk, Condensed milk or Cream."
+      "info": "Many people find lactose hard on their body. It isn't an allergy, but the discomfort is real — so we watch for it just as carefully. On labels it can also show up as Buttermilk, Condensed milk or Cream."
     },
     "sulfites": {
       "common": "Sulfites",
       "cat": "intolerance",
-      "info": "Sulfites is a common intolerance trigger — different from a food allergy. On labels it may also appear under names like E220, E223 or E224."
+      "info": "Many people find sulfites hard on their body. It isn't an allergy, but the discomfort is real — so we watch for it just as carefully. On labels it can also show up as E220, E223 or E224."
     },
     "sweeteners": {
       "common": "Artificial Sweeteners",
       "cat": "intolerance",
-      "info": "Artificial Sweeteners is a common intolerance trigger — different from a food allergy. On labels it may also appear under names like Acesulfame K, Acesulfame potassium or Advantame."
+      "info": "Many people find artificial sweeteners hard on their body. It isn't an allergy, but the discomfort is real — so we watch for it just as carefully. On labels it can also show up as Acesulfame K, Acesulfame potassium or Advantame."
     }
   }
 }

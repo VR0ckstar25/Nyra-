@@ -1,27 +1,16 @@
-# ── OS / editor junk ──
+# OS junk
 .DS_Store
-*.swp
-.idea/
-*.iml
-.vscode/
+**/.DS_Store
 
-# ── Node ──
+# Node
 node_modules/
-npm-debug.log*
-yarn-error.log*
 
-# ── Android (sfis-android) build outputs & local config ──
+# Android build outputs / machine-specific
 sfis-android/.gradle/
 sfis-android/build/
 sfis-android/app/build/
 sfis-android/local.properties
-sfis-android/captures/
 *.apk
-*.keystore
 
-# ── Expo / RN (sfis-app) ──
-sfis-app/.expo/
-sfis-app/dist/
-sfis-app/web-build/
-
-# Keep: spec docs (.docx/.pdf/.mhtml), database/, replica/, design_handoff/, source.
+# Android wrapper assets are synced from /replica by sync-and-build.sh (generated)
+sfis-android/app/src/main/assets/

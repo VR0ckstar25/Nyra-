@@ -12,9 +12,11 @@ import {
   SEVERITY,
 } from '../profile/profileModel';
 
-// Founder decision (2026-06-11): hard cap of five watched items, all chosen on one
-// screen — the constraint is the point: it makes the user prioritize what matters most.
-const MAX_SELECTIONS = 5;
+// Founder decision (2026-06-11, revised same day): hard cap of EIGHT watched items,
+// all chosen on one screen. The cap exists because each watched item ships its own
+// offline database sub-group to the device — storage-heavy apps get deleted first,
+// however life-saving. Eight keeps the install small while covering most real profiles.
+const MAX_SELECTIONS = 8;
 
 export function OnboardingScreen({ onDone, initialProfile = null, initialSelections = [] }) {
   const { theme: t } = useTheme();
@@ -72,7 +74,7 @@ export function OnboardingScreen({ onDone, initialProfile = null, initialSelecti
     <ScrollView style={{ flex: 1, backgroundColor: t.bg }} contentContainerStyle={{ padding: 18, paddingBottom: 34 }}>
       <ScreenIntro
         title="What should Anvara watch for?"
-        sub="Pick up to five things — the ones that matter most. Allergies stay first; intolerances, diet, and goals can sit beside them."
+        sub="Pick up to eight things — the ones that matter most. Allergies stay first; intolerances, diet, and goals can sit beside them."
         t={t}
         right={
           <View style={{ minHeight: 30, paddingHorizontal: 11, borderRadius: 999, backgroundColor: atCap ? t.accent : t.surface,
@@ -203,11 +205,11 @@ export function OnboardingScreen({ onDone, initialProfile = null, initialSelecti
         <View style={{ borderRadius: 14, backgroundColor: t.surfaceWarm, borderWidth: 1, borderColor: t.line,
           padding: 13, marginBottom: 12 }}>
           <Text style={{ fontFamily: t.sans, fontSize: 13.5, fontWeight: '800', color: t.ink }}>
-            That's your five.
+            That's your eight.
           </Text>
           <Text style={{ fontFamily: t.sans, fontSize: 12.5, color: t.ink2, lineHeight: 18, marginTop: 3 }}>
-            Anvara watches up to five things so results stay focused. Remove one above to add another —
-            keep the five that matter most to you.
+            Anvara watches up to eight things — each one stores its ingredient data on your phone,
+            so the cap keeps the app small. Remove one above to add another.
           </Text>
         </View>
       ) : null}

@@ -1,15 +1,15 @@
 {
   "expo": {
-    "name": "Smart Food Scanner",
+    "name": "Anvara",
     "slug": "sfis-app",
     "version": "1.0.0",
     "orientation": "portrait",
     "userInterfaceStyle": "light",
     "platforms": ["ios", "android", "web"],
     "newArchEnabled": false,
-    "splash": { "backgroundColor": "#E9F3FB" },
+    "splash": { "backgroundColor": "#FCEDF3" },
     "ios": { "supportsTablet": true },
-    "android": { "adaptiveIcon": { "backgroundColor": "#E9F3FB" }, "permissions": ["CAMERA"] },
-    "plugins": [["expo-camera", { "cameraPermission": "Allow Smart Food Scanner to use the camera to read ingredient labels." }]]
+    "android": { "adaptiveIcon": { "backgroundColor": "#FCEDF3" }, "permissions": ["CAMERA"] },
+    "plugins": [["expo-camera", { "cameraPermission": "Allow Anvara to use the camera to read ingredient labels." }]]
   }
 }

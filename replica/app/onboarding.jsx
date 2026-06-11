@@ -37,6 +37,7 @@ function WelcomeScreen({ onNext, onSignIn, onSample = () => {} }) {
           <div style={{ width: 56, height: 56, borderRadius: 17, background: T.accent, display: 'grid', placeItems: 'center', marginBottom: 28, boxShadow: '0 6px 18px rgba(35,74,71,.25)' }}>
             <svg width="28" height="28" viewBox="0 0 28 28" fill="none" stroke="#FBF7EF" strokeWidth="2.1" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="7"/><path d="M17.5 17.5L23 23"/></svg>
           </div>
+          <div style={{ fontFamily: T.serif, fontWeight: 600, fontSize: 21, letterSpacing: .5, color: T.accentDeep, margin: '0 0 20px' }}>Anvara</div>
           <h1 style={{ fontFamily: T.serif, fontWeight: 600, fontSize: 38, lineHeight: 1.08, letterSpacing: -.8, color: T.ink, margin: 0 }}>
             Shop with a<br />little less worry.
           </h1>

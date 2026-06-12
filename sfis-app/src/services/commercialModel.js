@@ -177,3 +177,88 @@ export function billingStatus(commercial) {
     ? 'Store billing connected'
     : 'Preview mode - no real purchase or charge is made.';
 }
+
+// ── Family token ledger (founder spec 2026-06-12) ───────────────────────────
+// Family plans give EACH member their own monthly scan credits, and members can
+// transfer unused credits to each other ("if there were a missing member their
+// credits can be distributed"). When a member leaves mid-cycle, their remaining
+// credits move to a shared 'pool' the owner can hand out. Calendar-month cycles.
+//
+// ledger shape: { cycle:'YYYY-MM', members:{ [id]:{ allowance, used, received, given } } }
+export const FAMILY_POOL_ID = 'pool';
+
+function emptyEntry(allowance = 0) {
+  return { allowance, used: 0, received: 0, given: 0 };
+}
+
+export function memberRemaining(entry) {
+  if (!entry) return 0;
+  return Math.max(0, (entry.allowance + entry.received) - (entry.given + entry.used));
+}
+
+// members: [{ id, name?, child? }] — must include self (id 'self').
+export function normalizeFamilyLedger(ledger, commercial, members = [], now = new Date()) {
+  const plan = planFor(normalizeCommercial(commercial).planId);
+  const per = plan.perMemberMonthlyScans || 0;
+  const key = cycleKey(now);
+  const fresh = !ledger || ledger.cycle !== key;
+  const prev = (!fresh && ledger.members) || {};
+  const next = { cycle: key, members: {} };
+  const liveIds = new Set(members.map((m) => m.id));
+
+  members.forEach((m) => {
+    const entry = prev[m.id];
+    next.members[m.id] = entry && !fresh
+      ? { allowance: per, used: entry.used, received: entry.received, given: entry.given }
+      : emptyEntry(per);
+  });
+
+  // departed members: remaining credits flow into the transferable pool
+  const pool = prev[FAMILY_POOL_ID] && !fresh ? { ...prev[FAMILY_POOL_ID] } : emptyEntry(0);
+  if (!fresh) {
+    Object.entries(prev).forEach(([id, entry]) => {
+      if (id === FAMILY_POOL_ID || liveIds.has(id)) return;
+      pool.received += memberRemaining(entry);
+    });
+  }
+  next.members[FAMILY_POOL_ID] = pool;
+  return next;
+}
+
+// Move n unused credits from one member (or the pool) to another.
+export function transferScans(ledger, fromId, toId, n) {
+  const amount = Math.floor(Number(n) || 0);
+  if (amount <= 0) return { ok: false, reason: 'Transfer amount must be a positive number.', ledger };
+  if (fromId === toId) return { ok: false, reason: 'Pick two different members.', ledger };
+  const from = ledger?.members?.[fromId];
+  const to = ledger?.members?.[toId];
+  if (!from || !to) return { ok: false, reason: 'Both members must be on the family plan.', ledger };
+  if (memberRemaining(from) < amount) {
+    return { ok: false, reason: `Only ${memberRemaining(from)} scans left to transfer.`, ledger };
+  }
+  const next = { ...ledger, members: { ...ledger.members,
+    [fromId]: { ...from, given: from.given + amount },
+    [toId]: { ...to, received: to.received + amount } } };
+  return { ok: true, ledger: next };
+}
+
+export function canScanForMember(ledger, memberId) {
+  const remaining = memberRemaining(ledger?.members?.[memberId]);
+  return { allowed: remaining > 0, remaining };
+}
+
+export function recordFamilyScan(ledger, memberId) {
+  const entry = ledger?.members?.[memberId];
+  if (!entry || memberRemaining(entry) <= 0) return ledger;
+  return { ...ledger, members: { ...ledger.members, [memberId]: { ...entry, used: entry.used + 1 } } };
+}
+
+export function familyTotals(ledger) {
+  const entries = Object.entries(ledger?.members || {});
+  return entries.reduce((acc, [id, e]) => {
+    acc.allowance += e.allowance + (id === FAMILY_POOL_ID ? e.received : 0);
+    acc.used += e.used;
+    acc.remaining += memberRemaining(e);
+    return acc;
+  }, { allowance: 0, used: 0, remaining: 0 });
+}

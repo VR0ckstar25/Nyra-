@@ -14,7 +14,7 @@ import {
 // Founder decision (2026-06-11, revised same day): bounded watched list,
 // all chosen on one screen. Each watched item can add offline matcher data,
 // so the cap keeps the app small while covering broader real-world profiles.
-const MAX_SELECTIONS = 12;
+const MAX_SELECTIONS = 8; // founder-confirmed 2026-06-12: 8, not 12 (storage rationale)
 
 export function OnboardingScreen({ onDone, initialProfile = null, initialSelections = [] }) {
   const { theme: t } = useTheme();
@@ -76,7 +76,7 @@ export function OnboardingScreen({ onDone, initialProfile = null, initialSelecti
     <ScrollView style={{ flex: 1, backgroundColor: t.bg }} contentContainerStyle={{ padding: 18, paddingBottom: 34 }}>
       <ScreenIntro
         title="What should Anvara watch for?"
-        sub="Pick up to twelve things — the ones that matter most. Allergies stay first; intolerances, diet, and goals can sit beside them."
+        sub="Pick up to eight things — the ones that matter most. Allergies stay first; intolerances, diet, and goals can sit beside them."
         t={t}
         right={
           <View style={{ minHeight: 30, paddingHorizontal: 11, borderRadius: 999, backgroundColor: atCap ? t.accent : t.surface,
@@ -210,10 +210,10 @@ export function OnboardingScreen({ onDone, initialProfile = null, initialSelecti
         <View style={{ borderRadius: 14, backgroundColor: t.surfaceWarm, borderWidth: 1, borderColor: t.line,
           padding: 13, marginBottom: 12 }}>
           <Text style={{ fontFamily: t.sans, fontSize: 13.5, fontWeight: '800', color: t.ink }}>
-            That's your twelve.
+            That's your eight.
           </Text>
           <Text style={{ fontFamily: t.sans, fontSize: 12.5, color: t.ink2, lineHeight: 18, marginTop: 3 }}>
-            Anvara watches up to twelve things — each one stores its ingredient data on your phone,
+            Anvara watches up to eight things — each one stores its ingredient data on your phone,
             so the cap keeps the app small. Remove one above to add another.
           </Text>
         </View>

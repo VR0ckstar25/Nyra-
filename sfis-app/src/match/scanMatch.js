@@ -396,7 +396,10 @@ function buildItem(entry, index) {
     // template-generated "what it is" text from the DB export (pending content library)
     info: index.parentInfo[first.parent] || undefined,
   };
-  if (profiles.length) item.profiles = profiles;
+  // Attribution tags only make sense in a FAMILY session: a solo user tagging
+  // every finding with their own name is noise (design: tags = family sessions).
+  const onlySelf = profiles.length === 1 && profiles[0].id === 'self';
+  if (profiles.length && !onlySelf) item.profiles = profiles;
   return item;
 }
 

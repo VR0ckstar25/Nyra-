@@ -1,9 +1,8 @@
-# SFIS Scanner — Android (WebView wrapper)
+# Anvara Scanner — Android WebView Archive
 
 An installable Android app that wraps the `../replica` HTML/React prototype in a
-full-screen WebView. The prototype stays the **single source of truth** — this
-project just bundles it into `app/src/main/assets/` and displays it, so editing
-is still "edit the web files, rebuild."
+full-screen WebView. This is a prototype/archive path only. The production build
+source is the React Native + Expo app, not this WebView wrapper.
 
 - **No third-party dependencies** — pure framework `WebView`.
 - **Fully offline** — React/Babel are vendored into the assets (no network at runtime).
@@ -13,7 +12,7 @@ is still "edit the web files, rebuild."
 ## Open in Android Studio
 
 `File → Open…` → choose this `sfis-android` folder. Let it sync, pick the
-**SFIS_Pixel** emulator (or any device), press **▶ Run**.
+**Anvara_Pixel** emulator (or any device), press **▶ Run**.
 
 ## Build / install from the terminal
 
@@ -33,7 +32,8 @@ Or do it all in one step (sync from ../replica, build, install, launch):
 
 ## After I edit the prototype
 
-The web files live in `../replica`. To pull edits into the app and rebuild:
+The web files live in `../replica`. To pull prototype edits into this archived
+wrapper and rebuild:
 
 ```sh
 ./sync-and-build.sh install

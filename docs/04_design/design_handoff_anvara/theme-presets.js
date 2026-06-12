@@ -1,5 +1,5 @@
 // theme-presets.js
-// Smart Food Ingredients Scanner — selectable color themes.
+// Anvara — selectable color themes.
 //
 // HOW THIS WORKS
 // The user picks ONE background option + ONE accent option. Everything else

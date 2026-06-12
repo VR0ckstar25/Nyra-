@@ -357,7 +357,7 @@ function ProfileHomeScreen({ onNav = () => {} }) {
           <SRow icon="power" label="Sign out" danger last />
         </SGroup>
 
-        <div style={{ fontFamily: T.mono, fontSize: 10.5, color: T.ink3, textAlign: 'center', marginTop: 4 }}>Smart Food Ingredients Scanner · v1.0</div>
+        <div style={{ fontFamily: T.mono, fontSize: 10.5, color: T.ink3, textAlign: 'center', marginTop: 4 }}>Anvara · v1.0</div>
       </div>
       <TabBar active="profile" onChange={onNav} />
     </PhoneScreen>

@@ -1,9 +1,13 @@
-# SFIS — App Replica (design + flow)
+# Anvara — App Replica (design + flow)
 
-A faithful, **fully clickable** replica of the Smart Food Ingredients Scanner —
+A faithful, **fully clickable** Anvara replica:
 the exact screens from `Design.pdf`, wired into the real navigation flow. Built as
-an HTML/React prototype (the same approach as the `design_handoff_smart_scanner`
-reference), reusing those reference screens verbatim for pixel fidelity.
+an HTML/React prototype (the same approach as the
+`docs/04_design/design_handoff_anvara` reference), reusing those reference
+screens verbatim for pixel fidelity.
+
+This is a prototype/reference path. Production implementation decisions live in
+the React Native + Expo app and the reconciled source-of-truth documents.
 
 ## Run it
 

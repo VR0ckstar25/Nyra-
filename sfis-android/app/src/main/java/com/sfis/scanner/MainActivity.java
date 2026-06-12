@@ -10,7 +10,7 @@ import android.webkit.WebViewClient;
 
 /**
  * Thin WebView wrapper around the bundled HTML/React prototype in assets/.
- * The prototype is the single source of truth; this just displays it as an app.
+ * Prototype/archive path only; production source is the React Native + Expo app.
  */
 public class MainActivity extends Activity {
 

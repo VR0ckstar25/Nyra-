@@ -1,65 +1,127 @@
-// CameraScreen.jsx — REAL device camera via expo-camera (requests permission,
-// shows the live feed, captures). Real OCR is ML Kit (device-native, not in Expo
-// Go), so the captured frame stands in for the read and we run the controlled
-// tutorial label through the SAME real matching engine. On a dev build, OCR text
-// simply replaces TUTORIAL.text here — a clean seam.
-
-import React from 'react';
+import React, { useRef, useState } from 'react';
 import { View, Text, Pressable } from 'react-native';
 import { CameraView, useCameraPermissions } from 'expo-camera';
 import { useTheme } from '../theme/ThemeProvider';
 import { matchScan } from '../match/scanMatch';
 import data from '../data/allergens.json';
-import { TUTORIAL } from '../data/tutorial';
+import { Card, PrimaryButton, ScreenIntro, SecondaryButton } from '../components/DesignPrimitives';
+import { ocrAvailable, recognizeIngredientText } from '../services/ocrService';
 
-function Centered({ t, children }) {
-  return <View style={{ flex: 1, backgroundColor: t.bg, alignItems: 'center', justifyContent: 'center', padding: 30 }}>{children}</View>;
-}
-
-export function CameraScreen({ profile, onResult, onBack }) {
+export function CameraScreen({ profile, matcherData, onResult, onBack, onManual, onProcessingStart, onProcessingEnd }) {
   const { theme: t } = useTheme();
+  const cameraRef = useRef(null);
   const [permission, requestPermission] = useCameraPermissions();
+  const [busy, setBusy] = useState(false);
+  const [status, setStatus] = useState('');
+  const activeData = matcherData || data;
+  const canUseOcr = ocrAvailable();
 
-  const capture = () => {
-    const { findings, unverified } = matchScan(TUTORIAL.text, profile, data);
-    onResult({ findings, unverified, product: { name: TUTORIAL.name, date: TUTORIAL.date } });
+  const capture = async () => {
+    if (!cameraRef.current || busy) return;
+    const taskId = onProcessingStart ? onProcessingStart('camera-ocr', 'Camera OCR') : null;
+    setBusy(true);
+    setStatus('Reading label on this device…');
+    try {
+      const photo = await cameraRef.current.takePictureAsync({ quality: 0.85, skipProcessing: false });
+      const ocr = await recognizeIngredientText(photo.uri);
+      const { findings, unverified } = matchScan(ocr.text, profile, activeData);
+      onResult({
+        findings,
+        unverified,
+        product: {
+          name: 'Scanned label',
+          brand: 'Camera OCR',
+          date: new Date().toISOString().slice(0, 10),
+        },
+        ocr,
+        image: {
+          uri: photo.uri,
+          capturedAt: new Date().toISOString(),
+        },
+      });
+    } catch (error) {
+      setStatus(error.message || 'OCR failed. You can still type the ingredients manually.');
+    } finally {
+      if (taskId && onProcessingEnd) onProcessingEnd(taskId);
+      setBusy(false);
+    }
   };
 
   if (!permission) {
-    return <Centered t={t}><Text style={{ fontFamily: t.sans, color: t.ink2 }}>Preparing camera…</Text></Centered>;
+    return (
+      <View style={{ flex: 1, backgroundColor: t.bg, padding: 18 }}>
+        <ScreenIntro title="Camera scan" sub="Checking camera permission…" t={t} />
+      </View>
+    );
   }
 
   if (!permission.granted) {
     return (
-      <Centered t={t}>
-        <Text style={{ fontFamily: t.serif, fontSize: 22, color: t.ink, textAlign: 'center' }}>Use your camera to scan a label</Text>
-        <Text style={{ fontFamily: t.sans, fontSize: 14, color: t.ink2, textAlign: 'center', marginTop: 8, lineHeight: 20 }}>
-          We only use the camera while you’re scanning. Photos stay on your device.
-        </Text>
-        <Pressable onPress={requestPermission}
-          style={{ marginTop: 22, height: 50, paddingHorizontal: 26, borderRadius: 14, backgroundColor: t.accent, alignItems: 'center', justifyContent: 'center' }}>
-          <Text style={{ fontFamily: t.sans, fontSize: 16, fontWeight: '700', color: t.onAccent }}>Allow camera</Text>
-        </Pressable>
-        <Pressable onPress={onBack} style={{ marginTop: 14 }}>
-          <Text style={{ fontFamily: t.sans, fontSize: 14, color: t.ink3 }}>Not now</Text>
-        </Pressable>
-      </Centered>
+      <View style={{ flex: 1, backgroundColor: t.bg, padding: 18 }}>
+        <ScreenIntro title="Camera scan" sub="Camera access is needed only when you choose to scan a real label." t={t} />
+        <Card t={t} style={{ marginBottom: 14 }}>
+          <Text style={{ fontFamily: t.sans, fontSize: 13.5, color: t.ink2, lineHeight: 20 }}>
+            Manual entry still works without camera access.
+          </Text>
+        </Card>
+        <PrimaryButton onPress={requestPermission} t={t}>
+          Allow camera
+        </PrimaryButton>
+        <SecondaryButton onPress={onManual || onBack} t={t} style={{ marginTop: 10 }}>
+          Type ingredients
+        </SecondaryButton>
+      </View>
     );
   }
 
   return (
-    <View style={{ flex: 1, backgroundColor: '#111' }}>
-      <CameraView style={{ flex: 1 }} facing="back" />
-      <View style={{ position: 'absolute', top: 0, left: 0, right: 0, padding: 16, flexDirection: 'row', justifyContent: 'space-between' }}>
-        <Pressable onPress={onBack}><Text style={{ color: '#fff', fontFamily: t.sans, fontSize: 15 }}>‹ Back</Text></Pressable>
-        <Text style={{ color: '#EDE7DD', fontFamily: t.mono, fontSize: 11 }}>Front label · Ingredients · 1 of 2</Text>
+    <View style={{ flex: 1, backgroundColor: t.bg }}>
+      <View style={{ padding: 18, paddingBottom: 12 }}>
+        <ScreenIntro
+          title="Camera scan"
+          sub="OCR runs on this device when using a development build. Photos are not uploaded."
+          t={t}
+        />
       </View>
-      <View style={{ position: 'absolute', left: 24, right: 24, top: '24%', height: 280, borderRadius: 20, borderWidth: 2, borderColor: 'rgba(255,255,255,.7)' }} />
-      <View style={{ position: 'absolute', left: 0, right: 0, bottom: 0, padding: 24, alignItems: 'center', backgroundColor: 'rgba(20,17,14,.55)' }}>
-        <Text style={{ color: '#fff', fontFamily: t.sans, fontSize: 14, marginBottom: 14 }}>Fill the frame with the ingredient list</Text>
-        <Pressable onPress={capture}
-          style={{ width: 70, height: 70, borderRadius: 35, backgroundColor: '#fff', borderWidth: 4, borderColor: 'rgba(255,255,255,.45)' }} />
-        <Text style={{ color: '#B8B0A4', fontFamily: t.mono, fontSize: 10, marginTop: 12 }}>Reading is simulated in this build (ML Kit OCR is device-native)</Text>
+
+      <View style={{ flex: 1, marginHorizontal: 18, borderRadius: 18, overflow: 'hidden',
+        borderWidth: 1, borderColor: t.line, backgroundColor: t.ink }}>
+        <CameraView ref={cameraRef} facing="back" style={{ flex: 1 }}>
+          <View style={{ flex: 1, justifyContent: 'center', padding: 24 }}>
+            <View style={{ height: 180, borderRadius: 16, borderWidth: 2, borderColor: '#FFFFFF',
+              backgroundColor: 'rgba(255,255,255,0.06)' }} />
+          </View>
+        </CameraView>
+      </View>
+
+      <View style={{ padding: 18, paddingTop: 14 }}>
+        {status ? (
+          <Text style={{ fontFamily: t.sans, fontSize: 13, color: t.ink2, lineHeight: 19, textAlign: 'center',
+            marginBottom: 10 }}>
+            {status}
+          </Text>
+        ) : null}
+
+        {!canUseOcr ? (
+          <Card t={t} style={{ padding: 13, marginBottom: 10 }}>
+            <Text style={{ fontFamily: t.sans, fontSize: 13.5, color: t.ink2, lineHeight: 19 }}>
+              OCR is installed for iOS/Android development builds. Expo Go and web cannot load the native OCR bridge.
+            </Text>
+          </Card>
+        ) : null}
+
+        <PrimaryButton onPress={capture} disabled={busy || !canUseOcr} t={t}>
+          {busy ? 'Reading label…' : 'Scan ingredient label'}
+        </PrimaryButton>
+        <SecondaryButton onPress={onManual || onBack} t={t} style={{ marginTop: 10 }}>
+          Type ingredients instead
+        </SecondaryButton>
+        <Pressable onPress={onBack} accessibilityRole="button"
+          style={{ minHeight: 38, alignItems: 'center', justifyContent: 'center', marginTop: 4 }}>
+          <Text style={{ fontFamily: t.sans, fontSize: 13, fontWeight: '700', color: t.ink3 }}>
+            Back to scan
+          </Text>
+        </Pressable>
       </View>
     </View>
   );

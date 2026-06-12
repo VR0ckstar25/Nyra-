@@ -19,7 +19,7 @@ import { MatchBar } from '../components/MatchBar';
 
 // Content Library 5.7 — verbatim. The final sentence is a PENDING addition
 // (founder, 2026-06-05) covering precautionary allergen labelling — ATTORNEY MUST
-// REVIEW before this ships. Tracked in SFIS_Decisions_Log.md.
+// REVIEW before this ships. Tracked in Anvara_Decisions_Log.md.
 const FOOTER =
   'Based on the label as we read it. Always check the original packaging. ' +
   'Ingredient data current as of {DATE}. Scan may not capture all ingredients — ' +

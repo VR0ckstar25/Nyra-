@@ -1,11 +1,28 @@
 import React, { useMemo, useState } from 'react';
 import { View, Text, Pressable, ScrollView } from 'react-native';
 import { useTheme } from '../theme/ThemeProvider';
-import { Card, Overline, Pill, ProgressBar, ScreenIntro } from '../components/DesignPrimitives';
+import { Card, Overline, Pill, ProgressBar, ScreenIntro, SwitchPill } from '../components/DesignPrimitives';
 import { MemberSearchSheet } from '../components/MemberSearchSheet';
 import { profileIds, profileItems } from '../profile/profileModel';
 
-export function ProfileScreen({ profile = null, scans = [], feedbackCount = 0, onAppearance, onEditProfile, onClearLocalData }) {
+export function ProfileScreen({
+  profile = null,
+  scans = [],
+  feedbackCount = 0,
+  settings = {},
+  authUser = null,
+  authReady = false,
+  syncStatus = '',
+  onAppearance,
+  onEditProfile,
+  onClearLocalData,
+  onToggleSaveLabelImages,
+  onSignIn,
+  onSignOut,
+  onAddMember,
+  onDesignPreview,
+  onSecurityBackup,
+}) {
   const { theme: t } = useTheme();
   const selected = useMemo(() => profileItems(profile), [profile]);
   const watchedIds = profileIds(profile);
@@ -50,6 +67,30 @@ export function ProfileScreen({ profile = null, scans = [], feedbackCount = 0, o
       </Card>
 
       <Card t={t} style={{ marginBottom: 18 }}>
+        <View style={{ flexDirection: 'row', justifyContent: 'space-between', gap: 12, alignItems: 'flex-start' }}>
+          <View style={{ flex: 1, minWidth: 0 }}>
+            <Text style={{ fontFamily: t.sans, fontSize: 15, fontWeight: '800', color: t.ink }}>
+              Account sync
+            </Text>
+            <Text style={{ fontFamily: t.sans, fontSize: 13, color: t.ink2, lineHeight: 19, marginTop: 4 }}>
+              {authUser?.email ? authUser.email : (authReady ? 'Not signed in' : 'Firebase keys not set')}
+            </Text>
+            <Text style={{ fontFamily: t.mono, fontSize: 11.5, color: t.ink3, lineHeight: 17, marginTop: 7 }}>
+              {syncStatus || 'Local mode'}
+            </Text>
+          </View>
+          <Pressable onPress={authUser ? onSignOut : onSignIn} accessibilityRole="button"
+            style={{ minHeight: 38, borderRadius: 12, paddingHorizontal: 13,
+              backgroundColor: t.surfaceWarm, borderWidth: 1, borderColor: t.line,
+              alignItems: 'center', justifyContent: 'center' }}>
+            <Text style={{ fontFamily: t.sans, fontSize: 13.5, fontWeight: '800', color: t.accentDeep }}>
+              {authUser ? 'Sign out' : 'Sign in'}
+            </Text>
+          </Pressable>
+        </View>
+      </Card>
+
+      <Card t={t} style={{ marginBottom: 18 }}>
         <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: 12 }}>
           <Text style={{ fontFamily: t.sans, fontSize: 15, fontWeight: '800', color: t.ink }}>
             Family profiles
@@ -69,6 +110,21 @@ export function ProfileScreen({ profile = null, scans = [], feedbackCount = 0, o
               {profile?.name || 'You'}
             </Text>
           </View>
+          {(profile?.familyMembers || []).map((m) => (
+            <View key={m.id} style={{ alignItems: 'center', gap: 6 }}>
+              <View style={{ width: 58, height: 58, borderRadius: m.child ? 18 : 29, alignItems: 'center',
+                justifyContent: 'center', backgroundColor: m.child ? '#E7D9C4' : t.accentSoft,
+                borderWidth: 1, borderColor: t.line }}>
+                <Text style={{ fontFamily: t.serif, fontSize: 23, fontWeight: '700',
+                  color: m.child ? '#8A6B3D' : t.accentDeep }}>
+                  {m.name[0]}
+                </Text>
+              </View>
+              <Text style={{ fontFamily: t.sans, fontSize: 12.5, fontWeight: '700', color: t.ink2 }}>
+                {m.name.split(' ')[0]}
+              </Text>
+            </View>
+          ))}
           <Pressable onPress={() => setMemberSearch(true)} accessibilityRole="button"
             accessibilityLabel="Add family members" style={{ alignItems: 'center', gap: 6 }}>
             <View style={{ width: 58, height: 58, borderRadius: 29, alignItems: 'center', justifyContent: 'center',
@@ -82,7 +138,9 @@ export function ProfileScreen({ profile = null, scans = [], feedbackCount = 0, o
         </View>
       </Card>
 
-      <MemberSearchSheet visible={memberSearch} onClose={() => setMemberSearch(false)} t={t} />
+      <MemberSearchSheet visible={memberSearch} onClose={() => setMemberSearch(false)}
+        members={profile?.familyMembers || []} onAdd={(m) => onAddMember?.(m)}
+        capReached={memberCount >= 5} t={t} />
 
       <Card t={t} style={{ marginBottom: 18 }}>
         <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: 12 }}>
@@ -98,9 +156,17 @@ export function ProfileScreen({ profile = null, scans = [], feedbackCount = 0, o
       </Card>
 
       <SettingsGroup title="App" t={t}>
+        <SettingRow label="Security, backup, offline" sub="App lock, cloud backup, local checkpoint, offline pack" value="Open" onPress={onSecurityBackup} t={t} />
+        <SettingRow label="New UI preview" sub="A richer Anvara home concept to test in-app" value="View" onPress={onDesignPreview} t={t} />
         <SettingRow label="Appearance" sub="Background and accent colors" value="Theme" onPress={onAppearance} t={t} />
+        <SettingRow
+          label="Save label photos"
+          sub="Off by default. If off, captured label images are removed from this phone after 7 days."
+          onPress={onToggleSaveLabelImages}
+          right={<SwitchPill on={!!settings.saveLabelImages} onPress={onToggleSaveLabelImages} t={t} />}
+          t={t}
+        />
         <SettingRow label="Result child mode" sub="Available from each result screen" value="Result" t={t} />
-        <SettingRow label="Export diary" sub="Download saved scan history" value="Soon" t={t} />
         <SettingRow label="Clear local data" sub="Remove profile, scans, and feedback from this device" value="Clear" onPress={onClearLocalData} danger t={t} />
         <SettingRow label="Report a product issue" sub="Flag wrong or missing ingredient data" value="Soon" t={t} last />
       </SettingsGroup>
@@ -119,7 +185,7 @@ function SettingsGroup({ title, children, t }) {
   );
 }
 
-function SettingRow({ label, sub, value, onPress, danger, t, last }) {
+function SettingRow({ label, sub, value, right, onPress, danger, t, last }) {
   const Container = onPress ? Pressable : View;
   const pressProps = onPress ? { onPress, accessibilityRole: 'button' } : {};
 
@@ -141,10 +207,12 @@ function SettingRow({ label, sub, value, onPress, danger, t, last }) {
           </Text>
         ) : null}
       </View>
-      <Text style={{ fontFamily: t.sans, fontSize: 13.5, fontWeight: '700',
-        color: danger ? t.amber : (value === 'Soon' ? t.ink3 : t.accentDeep) }}>
-        {value || ''}
-      </Text>
+      {right || (
+        <Text style={{ fontFamily: t.sans, fontSize: 13.5, fontWeight: '700',
+          color: danger ? t.amber : (value === 'Soon' ? t.ink3 : t.accentDeep) }}>
+          {value || ''}
+        </Text>
+      )}
     </Container>
   );
 }

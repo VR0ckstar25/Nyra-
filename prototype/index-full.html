@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>Smart Food Ingredients Scanner — Full Prototype</title>
+<title>Anvara — Full Prototype</title>
 <link rel="preconnect" href="https://fonts.googleapis.com" />
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
 <link href="https://fonts.googleapis.com/css2?family=Source+Serif+4:opsz,wght@8..60,400;8..60,600;8..60,700&family=Hanken+Grotesk:wght@400;500;600;700;800&family=Spline+Sans+Mono:wght@400;500;600&display=swap" rel="stylesheet" />
@@ -248,10 +248,9 @@ function Profiles({t,profile,go}){
   const me=profile.map(id=>subLabel(id));
   return(<div style={{background:t.bg,padding:22,minHeight:'100%'}}>
     <div style={{fontFamily:t.serif,fontSize:24,color:t.ink,marginTop:8}}>Profiles</div>
-    <div style={{fontFamily:t.sans,fontSize:13.5,color:t.ink2,marginTop:4,marginBottom:18}}>Switch profiles or add family. Each person’s list stays private to them.</div>
+    <div style={{fontFamily:t.sans,fontSize:13.5,color:t.ink2,marginTop:4,marginBottom:18}}>Your profile stays local in this prototype. Family profiles are deferred.</div>
     <ProfileCard t={t} name="You" tag="Primary" items={me.length?me:['No items yet']} active/>
-    <ProfileCard t={t} name="Mia" tag="Child · age 8" items={['Peanuts','Eggs']} child/>
-    <button style={{width:'100%',marginTop:2,padding:16,borderRadius:t.radius,border:`1px dashed ${t.line}`,background:t.surface,fontFamily:t.sans,fontSize:14.5,fontWeight:600,color:t.accent}}>+ Add a family member</button>
+    <button style={{width:'100%',marginTop:2,padding:16,borderRadius:t.radius,border:`1px dashed ${t.line}`,background:t.surface,fontFamily:t.sans,fontSize:14.5,fontWeight:600,color:t.accent}}>+ Add members</button>
     <button onClick={()=>go('onboarding')} style={{fontFamily:t.sans,fontSize:13,fontWeight:600,color:t.accent,marginTop:16}}>Edit my profile</button>
     <div style={{height:90}}/>
   </div>);
@@ -316,10 +315,10 @@ function NavBar({t,screen,go}){
 
 /* ── APP ── */
 function App(){
-  const [keys,setKeys]=useStored('sfis.proto2.theme',{background:'sky',accent:'cobalt'});
-  const [profile,setProfile]=useStored('sfis.proto2.profile',['allergen.peanut','allergen.treenut','allergen.sesame']);
-  const [screen,setScreen]=useStored('sfis.proto2.screen','home');
-  const [log,setLog]=useStored('sfis.proto2.log',[]);
+  const [keys,setKeys]=useStored('anvara.proto2.theme',{background:'blossom',accent:'fuchsia'});
+  const [profile,setProfile]=useStored('anvara.proto2.profile',['allergen.peanut','allergen.treenut','allergen.sesame']);
+  const [screen,setScreen]=useStored('anvara.proto2.screen','home');
+  const [log,setLog]=useStored('anvara.proto2.log',[]);
   const [result,setResult]=useState(null);
   const t=useMemo(()=>buildTheme(keys.background,keys.accent),[keys]);
   const go=s=>setScreen(s);

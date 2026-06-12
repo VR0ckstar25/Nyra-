@@ -1,8 +1,8 @@
-# Handoff: Smart Food Ingredients Scanner — Selectable Color Themes
+# Handoff: Anvara — Selectable Color Themes
 
 ## Overview
-This package delivers a **user-selectable theme system** for the Smart Food Ingredients
-Scanner app. The end user picks **one Background** and **one Accent** from a curated set
+This package delivers a **user-selectable theme system** for Anvara. The end user picks
+**one Background** and **one Accent** from a curated set
 of options; everything else in the palette is fixed because it carries product/legal meaning.
 
 The headline deliverable is **`theme-presets.js`** — the exact, curated color options,
@@ -82,7 +82,7 @@ These must never appear in the theme picker. They encode meaning, not taste.
 
 ## Files in this bundle
 - `theme-presets.js` — **the color options + `applyTheme()` helper** (the deliverable)
-- `Smart Scanner - Flow.html` — interactive flow reference (Diary, Scan, Processing, Result, Profiles)
+- `Anvara - Flow.html` — interactive flow reference (Diary, Scan, Processing, Result, Profiles)
 - `app/theme.jsx` — prototype tokens + shared atoms
 - `app/result.jsx`, `app/screens-result.jsx` — the Result screen (core surface)
 - `app/onboarding.jsx`, `app/screens-app.jsx` — onboarding, Diary, Patterns, Profiles

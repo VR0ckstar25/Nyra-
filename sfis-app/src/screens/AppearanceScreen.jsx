@@ -63,7 +63,7 @@ function SwatchGrid({ children }) {
 }
 
 function SectionLabel({ children, t }) {
-  return <Text style={{ fontFamily: t.mono, fontSize: 11, letterSpacing: 1.4, textTransform: 'uppercase',
+  return <Text style={{ fontFamily: t.mono, fontSize: 11, letterSpacing: 0, textTransform: 'uppercase',
     color: t.ink3, marginTop: 20, marginBottom: 12 }}>{children}</Text>;
 }
 
@@ -71,7 +71,7 @@ function Preview({ t }) {
   return (
     <View style={{ backgroundColor: t.surface, borderRadius: t.radius, padding: 16,
       borderWidth: 1, borderColor: t.line, marginBottom: 8 }}>
-      <Text style={{ fontFamily: t.mono, fontSize: 10.5, letterSpacing: 1, textTransform: 'uppercase',
+      <Text style={{ fontFamily: t.mono, fontSize: 10.5, letterSpacing: 0, textTransform: 'uppercase',
         color: t.ink3, marginBottom: 12 }}>Preview</Text>
       <View style={{ flexDirection: 'row', borderRadius: 14, overflow: 'hidden', borderWidth: 1,
         borderColor: t.line, marginBottom: 14 }}>
@@ -80,7 +80,7 @@ function Preview({ t }) {
           <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8, marginBottom: 4 }}>
             <View style={{ width: 12, height: 12, borderRadius: 6, backgroundColor: t.amber }} />
             <Text style={{ fontFamily: t.sans, fontSize: 12, fontWeight: '800', textTransform: 'uppercase',
-              letterSpacing: 0.4, color: t.allergen.label }}>Allergen Match</Text>
+              letterSpacing: 0, color: t.allergen.label }}>Allergen Match</Text>
           </View>
           <Text style={{ fontFamily: t.sans, fontSize: 16, fontWeight: '700', color: t.ink }}>Peanuts</Text>
         </View>

@@ -1,15 +1,42 @@
 {
   "expo": {
     "name": "Anvara",
-    "slug": "sfis-app",
+    "slug": "anvara",
+    "scheme": "anvara",
     "version": "1.0.0",
     "orientation": "portrait",
     "userInterfaceStyle": "light",
-    "platforms": ["ios", "android", "web"],
+    "platforms": [
+      "ios",
+      "android"
+    ],
     "newArchEnabled": false,
-    "splash": { "backgroundColor": "#FCEDF3" },
-    "ios": { "supportsTablet": true },
-    "android": { "adaptiveIcon": { "backgroundColor": "#FCEDF3" }, "permissions": ["CAMERA"] },
-    "plugins": [["expo-camera", { "cameraPermission": "Allow Anvara to use the camera to read ingredient labels." }]]
+    "splash": {
+      "backgroundColor": "#FCEDF3"
+    },
+    "ios": {
+      "supportsTablet": true,
+      "bundleIdentifier": "com.anvara.app",
+      "usesAppleSignIn": true
+    },
+    "android": {
+      "package": "com.anvara.app",
+      "adaptiveIcon": {
+        "backgroundColor": "#FCEDF3"
+      },
+      "permissions": [
+        "CAMERA"
+      ]
+    },
+    "plugins": [
+      [
+        "expo-camera",
+        {
+          "cameraPermission": "Allow Anvara to use the camera to read ingredient labels."
+        }
+      ],
+      "expo-secure-store",
+      "expo-apple-authentication"
+    ]
   }
 }

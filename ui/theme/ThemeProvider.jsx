@@ -12,7 +12,8 @@ import React, { createContext, useContext, useState, useEffect, useMemo, useCall
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { buildTheme, DEFAULT_THEME } from './tokens';
 
-const STORAGE_KEY = 'sfis.theme.v1';
+const STORAGE_KEY = 'anvara.theme.v1';
+const LEGACY_STORAGE_KEY = 'sfis.theme.v1';
 const ThemeContext = createContext(null);
 
 export function ThemeProvider({ children, fallback = null }) {
@@ -24,7 +25,8 @@ export function ThemeProvider({ children, fallback = null }) {
     (async () => {
       try {
         const saved = await AsyncStorage.getItem(STORAGE_KEY);
-        if (saved) setKeys({ ...DEFAULT_THEME, ...JSON.parse(saved) });
+        const legacySaved = saved ? null : await AsyncStorage.getItem(LEGACY_STORAGE_KEY);
+        if (saved || legacySaved) setKeys({ ...DEFAULT_THEME, ...JSON.parse(saved || legacySaved) });
       } catch (_) { /* fall back to default theme */ }
       finally { setHydrated(true); }
     })();

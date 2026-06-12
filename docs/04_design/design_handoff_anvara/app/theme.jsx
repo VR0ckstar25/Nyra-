@@ -1,4 +1,4 @@
-// theme.jsx — Smart Food Ingredients Scanner — shared design tokens + atoms.
+// theme.jsx — Anvara — shared design tokens + atoms.
 // Exports to window so sibling babel scripts can use them.
 // CONSTRAINTS ENCODED HERE (from Transfer Note v1.0):
 //  • amber filled circle = "finding present" on EVERY match bar (universal indicator)

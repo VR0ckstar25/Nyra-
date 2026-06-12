@@ -1,23 +1,27 @@
-# SFIS — Decisions Log & Reconciliation (single source of truth)
+# Anvara — Decisions Log & Reconciliation (single source of truth)
 
-Read this **alongside** Transfer Note v3.0, Amendments v3.1, the Design Note, and
-Content Library v1.1. Where this log conflicts with an older document, **this log
-wins** — it exists because decisions were drifting across separate notes.
+Read this **alongside** the developer execution sequence, Transfer Note v3.0,
+Amendments v3.1, the Design Note, and Content Library v1.1. Where this log
+conflicts with an older document, **this log wins** — it exists because decisions
+were drifting across separate notes.
 
-Last updated: **2026-06-05.**
+Last updated: **2026-06-11.**
 
 ---
 
-## A. Stale statements in v3.0 — superseded (do not build from these)
+## A. Superseded topics — do not build from older drafts
 
-| v3.0 says | Actually | Source of truth |
+| Superseded topic | Current decision | Source of truth |
 |---|---|---|
-| 12-day trial | **14-day** trial | Amendments §8.1 |
-| Open Food Facts = product-name API at launch | **USDA**; OFF deferred to **Phase 2** | Amendments Dec. 2,3,4 |
-| "Content Library v1.0" | **v1.1** (supersedes v1.0) | Content Library v1.1 |
-| "Session X of 4" (in SFIS_3) | **of 5** | doc set |
-| Sync/data "WiFi only — never mobile data" (§3.1) | **relaxed** — see Decision 2 below | this log |
-| Result bars are warm-amber/orange/blue-gray tint (Design Note §4/§6.1) | **minimal white card + rail** | this log, Decision 4 |
+| Old trial length | **14-day** trial | Amendments §8.1 |
+| Old launch product-name API assumption | **USDA/local launch database**; OFF deferred to **Phase 2** | Amendments Dec. 2,3,4 |
+| Old Content Library version | **v1.1** supersedes v1.0 | Content Library v1.1 |
+| Old session count in Anvara_3 | **of 5** | doc set |
+| Old connectivity rule | **relaxed** — see Decision 2 below | this log |
+| Old result-bar color treatment | **minimal white card + rail** | this log, Decision 4 |
+| Old paid-tier scan model | **V1 = 40 scans/month; V2 = 60 scans/month** | founder decision, 2026-06-11 |
+| Old email identity model | **HMAC lookup + optional encrypted email delivery silo + KMS-managed keys** | security reconciliation, 2026-06-11 |
+| Old child billing model | **Child profiles count as members inside the family plan's 5-profile cap** | founder decision, 2026-06-11 |
 
 ---
 
@@ -51,7 +55,7 @@ Last updated: **2026-06-05.**
 
 6. **PAL footer sentence added** (ATTORNEY REVIEW PENDING). Content Library §5.7
    footer gains: *"Precautionary allergen statements such as 'may contain' may not
-   always be captured."* Implemented in `ui/screens/ResultScreen.jsx`.
+   always be captured."* Implemented in `sfis-app/src/screens/ResultScreen.jsx` (the `ui/` tree is archived/non-authoritative).
 
 7. **Efficacy claim = directional/internal only.** "Saves 2–3 minutes" is a future
    marketing/positioning claim. **Not user-facing** until substantiated (Legal §8).
@@ -74,6 +78,28 @@ Last updated: **2026-06-05.**
     UT Dallas + attorney outreach **now**; build everything that doesn't need their
     sign-off in parallel. The app can be **built** completely; it cannot be
     **launched** until they deliver.
+
+12. **Email identity architecture reconciled.** Email uses a separate encrypted
+    identity silo: `email_lookup_hmac = HMAC-SHA-256(normalized_email, KMS-held
+    pepper)` for account lookup / family linking, plus optional
+    `encrypted_email = AES-256-GCM(normalized_email, KMS-held email-silo key)` for
+    recovery or breach-notice delivery. The health-data partition stores only the
+    pseudonymous account reference. Plaintext email is never stored.
+
+13. **Paid scan caps confirmed.** Free remains 10 scans/month. V1 is 40 scans/month.
+
+14. **Watched-items cap = 8 (revised from 5, 2026-06-11).** Hard cap of eight watched
+    items across all domains, chosen on one screen. Rationale is STORAGE, not UX
+    minimalism: each watched item downloads its offline DB sub-group, and
+    storage-heavy apps are deleted first. All Big-9 tiles stay visible for easy
+    choosing; the cap limits only how many are kept. (Distinct from the 5-profile
+    FAMILY cap above.) Implemented in `sfis-app/src/screens/OnboardingScreen.jsx`.
+    V2 is 60 scans/month. Tutorial scan, database search, reporting errors, and data
+    export do not consume scan tokens.
+
+14. **Family child coverage confirmed.** A family plan covers up to 5 linked profiles
+    total, including child profiles. A child profile counts against the cap and does
+    not require extra billing.
 
 ---
 
@@ -106,4 +132,5 @@ until formalised).
 - FARE alias-list licence treatment.
 - Efficacy claim substantiation before any user-facing use (Decision 7).
 - ODbL share-alike — before the Phase 2 OFF layer.
-- FDA SaMD review — before any Phase 3 predictive feature (`intended_use_guardrails.md`).
+- FDA SaMD review — before any Phase 3 predictive feature
+  (`../02_security_privacy_legal/intended_use_guardrails.md`).

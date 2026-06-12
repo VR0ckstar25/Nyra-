@@ -1,16 +1,16 @@
 # Intended-Use Guardrails — Staying a Non-Device
 
-**Purpose.** Keep SFIS on the **non-device** side of FDA jurisdiction. Under
+**Purpose.** Keep Anvara on the **non-device** side of FDA jurisdiction. Under
 **21 CFR 801.4**, device status turns on *objective intent* — your claims, the
 design, and the circumstances of use, **not** your self-label. The likely basis
-SFIS is not a device is the **21st Century Cures Act software carve-out
+that Anvara is not a device is the **21st Century Cures Act software carve-out
 (FD&C §520(o))**: software that displays/stores/reflects a user's own data and
 does **not** diagnose, cure, mitigate, treat, or prevent disease.
 
 > ⚠️ Not legal advice. The classification call is the **regulatory attorney's**
 > (Legal Policies note, Attorney deliverable #9 — FDA SaMD review). This checklist
 > is the engineering/product discipline that supports the non-device position.
-> Ties to [match_semantics.md](database/match_semantics.md), Transfer Note §1
+> Ties to [match_semantics.md](../../database/match_semantics.md), Transfer Note §1
 > (Mirror Principle) and §10/§16, and Legal note §3/§8.
 
 ---
@@ -46,7 +46,7 @@ does **not** diagnose, cure, mitigate, treat, or prevent disease.
 - ✅ State **presence against the user's own declared profile**:
   *"Contains peanuts — peanuts are on your list."*
 - ✅ Use the four result states only: **Detected / Possible / Unknown / Not
-  detected** ([match_semantics.md](database/match_semantics.md)).
+  detected** ([match_semantics.md](../../database/match_semantics.md)).
 - ✅ "Not detected" is reading-limited and per-scan — never "does not contain it."
 - ✅ Echo **manufacturer-certified** claims only, attributed:
   *"The label states: 'Certified gluten-free.'"*
@@ -86,7 +86,7 @@ does **not** diagnose, cure, mitigate, treat, or prevent disease.
 
 ---
 
-## Contingency only — IF an attorney ever classifies SFIS as a device
+## Contingency only — IF an attorney ever classifies Anvara as a device
 
 These do **not** apply at launch under the non-device posture; hold them ready:
 - **21 CFR 801.50** — stand-alone software must display its **UDI** on startup or

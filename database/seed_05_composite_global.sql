@@ -33,8 +33,8 @@ INSERT INTO synonyms (parent_id, term, confidence_level, match_class, source, cl
   ('fish','Kimchi','LOW','POSSIBLE','EXPERT_REVIEW','cross_contaminant','Often made with fish sauce.'),
   ('crustacean','Kimchi','LOW','POSSIBLE','EXPERT_REVIEW','cross_contaminant','Often made with salted shrimp.'),
   ('soy','Doenjang','MEDIUM','POSSIBLE','EXPERT_REVIEW','derivative','Korean soybean paste.'),
-  ('soy','Hoisin','MEDIUM','POSSIBLE','EXPERT_REVIEW','derivative','Usually fermented soybean.'),
-  ('wheat','Seitan','HIGH','DERIVED','EXPERT_REVIEW','derivative','Wheat gluten (also in seed_02).');
+  ('soy','Hoisin','MEDIUM','POSSIBLE','EXPERT_REVIEW','derivative','Usually fermented soybean.');
+-- ('wheat','Seitan',...) removed — canonical row lives in seed_02 (was a duplicate).
 
 -- 3. OPAQUE TERMS — composite/unspecified; a scan hitting one yields UNKNOWN,
 --    never "not found / safe" (Issue 1,7,10).

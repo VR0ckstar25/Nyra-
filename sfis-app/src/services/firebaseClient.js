@@ -29,11 +29,20 @@ if (missingKeys.length === 0) {
         auth = getAuth(app);
       } else {
         const { getReactNativePersistence } = require('firebase/auth');
+        // Hardening (review finding): persist auth/refresh tokens in SecureStore
+        // (chunked, sanitized keys) instead of plaintext AsyncStorage. Falls back
+        // to AsyncStorage only where SecureStore is unavailable — LOUDLY.
+        const { createSecureAuthStorage } = require('./secureAuthStorage');
+        const secureStorage = createSecureAuthStorage();
+        if (!secureStorage) console.warn('Anvara: SecureStore unavailable — auth tokens falling back to AsyncStorage.');
         auth = initializeAuth(app, {
-          persistence: getReactNativePersistence(AsyncStorage),
+          persistence: getReactNativePersistence(secureStorage || AsyncStorage),
         });
       }
     } catch (error) {
+      // No more silent downgrade (review finding): in-memory persistence signs
+      // users out on every restart — say so where developers will see it.
+      console.warn('Anvara: native auth persistence failed — sessions will NOT survive restarts:', error?.message);
       auth = getAuth(app);
     }
     db = getFirestore(app);

@@ -1,6 +1,9 @@
 # UI Architecture & Theming Baseline
 
-The replication baseline for the whole app. Build every screen against this so the
+> **NON-AUTHORITATIVE (archived).** The production app is `sfis-app/` (React Native + Expo).
+> This document described an early HTML prototype tree and is kept for reference only.
+
+~~The replication baseline for the whole app.~~ (superseded) Build every screen against this so the
 look stays consistent and the user's color choice flows everywhere automatically.
 
 ## The CSS decision (plain English)

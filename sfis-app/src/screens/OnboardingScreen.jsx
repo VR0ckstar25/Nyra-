@@ -5,26 +5,28 @@ import { Card, Chip, Overline, PrimaryButton, ScreenIntro } from '../components/
 import {
   buildSelfProfile,
   defaultSeverityFor,
-  profileIds,
   profileItems,
   PROFILE_ITEMS as ALL_ITEMS,
   PROFILE_SECTIONS as SECTIONS,
   SEVERITY,
 } from '../profile/profileModel';
 
-// Founder decision (2026-06-11, revised same day): hard cap of EIGHT watched items,
-// all chosen on one screen. The cap exists because each watched item ships its own
-// offline database sub-group to the device — storage-heavy apps get deleted first,
-// however life-saving. Eight keeps the install small while covering most real profiles.
-const MAX_SELECTIONS = 8;
+// Founder decision (2026-06-11, revised same day): bounded watched list,
+// all chosen on one screen. Each watched item can add offline matcher data,
+// so the cap keeps the app small while covering broader real-world profiles.
+const MAX_SELECTIONS = 12;
 
 export function OnboardingScreen({ onDone, initialProfile = null, initialSelections = [] }) {
   const { theme: t } = useTheme();
-  const initialIds = useMemo(() => profileIds(initialProfile).length ? profileIds(initialProfile) : initialSelections, [initialProfile, initialSelections]);
+  const savedSelfItems = useMemo(() => profileItems(initialProfile), [initialProfile]);
+  const initialIds = useMemo(() => {
+    const selfIds = savedSelfItems.map((item) => item.id).filter(Boolean);
+    return selfIds.length ? selfIds : initialSelections;
+  }, [savedSelfItems, initialSelections]);
   const initialSeverity = useMemo(() => {
-    const saved = Object.fromEntries(profileItems(initialProfile).map((item) => [item.id, item.severity]));
+    const saved = Object.fromEntries(savedSelfItems.map((item) => [item.id, item.severity]));
     return Object.fromEntries(initialIds.map((id) => [id, saved[id] || defaultSeverityFor(id)]));
-  }, [initialProfile, initialIds]);
+  }, [savedSelfItems, initialIds]);
   const [selected, setSelected] = useState(() => new Set(initialIds));
   const [severity, setSeverity] = useState(() => initialSeverity);
   const [capNotice, setCapNotice] = useState(false);
@@ -74,7 +76,7 @@ export function OnboardingScreen({ onDone, initialProfile = null, initialSelecti
     <ScrollView style={{ flex: 1, backgroundColor: t.bg }} contentContainerStyle={{ padding: 18, paddingBottom: 34 }}>
       <ScreenIntro
         title="What should Anvara watch for?"
-        sub="Pick up to eight things — the ones that matter most. Allergies stay first; intolerances, diet, and goals can sit beside them."
+        sub="Pick up to twelve things — the ones that matter most. Allergies stay first; intolerances, diet, and goals can sit beside them."
         t={t}
         right={
           <View style={{ minHeight: 30, paddingHorizontal: 11, borderRadius: 999, backgroundColor: atCap ? t.accent : t.surface,
@@ -88,7 +90,7 @@ export function OnboardingScreen({ onDone, initialProfile = null, initialSelecti
 
       <View style={{ backgroundColor: t.surface, borderRadius: 14, borderWidth: 1, borderColor: t.line,
         minHeight: 50, paddingHorizontal: 14, justifyContent: 'center', marginBottom: 10 }}>
-        <TextInput value={query} onChangeText={setQuery} placeholder="Search ingredients, like whey or almonds"
+        <TextInput value={query} onChangeText={setQuery} placeholder="Search ingredients, like whey, almonds, or dates"
           placeholderTextColor={t.ink3}
           autoCapitalize="none"
           style={{ fontFamily: t.sans, fontSize: 15, color: t.ink, minHeight: 48 }} />
@@ -98,6 +100,9 @@ export function OnboardingScreen({ onDone, initialProfile = null, initialSelecti
         <Card t={t} style={{ paddingVertical: 4, marginBottom: 16 }}>
           {results.length ? results.map((item, i) => (
             <Pressable key={item.id} onPress={() => toggle(item)}
+              accessibilityRole="checkbox"
+              accessibilityState={{ checked: selected.has(item.id) }}
+              accessibilityLabel={`${item.label}, ${item.section}`}
               style={{ flexDirection: 'row', alignItems: 'center', gap: 10, paddingVertical: 12,
                 borderBottomWidth: i < results.length - 1 ? 1 : 0, borderBottomColor: t.lineSoft }}>
               <Text style={{ width: 22, fontFamily: t.sans, fontSize: 19, color: selected.has(item.id) ? t.accent : t.ink3 }}>
@@ -205,10 +210,10 @@ export function OnboardingScreen({ onDone, initialProfile = null, initialSelecti
         <View style={{ borderRadius: 14, backgroundColor: t.surfaceWarm, borderWidth: 1, borderColor: t.line,
           padding: 13, marginBottom: 12 }}>
           <Text style={{ fontFamily: t.sans, fontSize: 13.5, fontWeight: '800', color: t.ink }}>
-            That's your eight.
+            That's your twelve.
           </Text>
           <Text style={{ fontFamily: t.sans, fontSize: 12.5, color: t.ink2, lineHeight: 18, marginTop: 3 }}>
-            Anvara watches up to eight things — each one stores its ingredient data on your phone,
+            Anvara watches up to twelve things — each one stores its ingredient data on your phone,
             so the cap keeps the app small. Remove one above to add another.
           </Text>
         </View>

@@ -1,5 +1,6 @@
 #!/usr/bin/env bash
-# Re-copies the web prototype (the source of truth in ../replica) into the
+# ARCHIVE PATH ONLY — the production app is sfis-app/ (React Native + Expo).
+# Re-copies the STALE web prototype (../replica, non-authoritative) into the
 # Android assets, builds the debug APK, and installs it on any attached
 # device/emulator. Run this after editing anything under ../replica.
 #

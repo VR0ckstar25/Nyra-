@@ -1,22 +1,33 @@
 {
-  "name": "sfis-app",
+  "name": "anvara-app",
   "version": "1.0.0",
-  "description": "Smart Food Ingredients Scanner — working prototype (vertical slice)",
+  "description": "Anvara — working prototype (vertical slice)",
   "main": "node_modules/expo/AppEntry.js",
   "scripts": {
     "start": "expo start",
     "web": "expo start --web",
     "android": "expo start --android",
     "ios": "expo start --ios",
+    "test": "node src/match/scanMatch.test.js",
     "test:match": "node src/match/scanMatch.test.js"
   },
   "dependencies": {
     "@react-native-async-storage/async-storage": "1.23.1",
+    "anvara-ocr": "file:./modules/anvara-ocr",
     "expo": "~51.0.28",
+    "expo-apple-authentication": "~6.4.2",
+    "expo-auth-session": "~5.5.2",
     "expo-camera": "~15.0.16",
+    "expo-crypto": "~13.0.2",
+    "expo-file-system": "~17.0.1",
+    "expo-secure-store": "~13.0.2",
     "expo-status-bar": "~1.12.1",
+    "expo-web-browser": "~13.0.3",
+    "firebase": "^12.14.0",
+    "lucide-react-native": "^1.17.0",
     "react": "18.2.0",
-    "react-native": "0.74.5"
+    "react-native": "0.74.5",
+    "react-native-svg": "15.2.0"
   },
   "devDependencies": {
     "@babel/core": "^7.24.0"

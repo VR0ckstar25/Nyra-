@@ -14,3 +14,8 @@ sfis-android/local.properties
 
 # Android wrapper assets are synced from /replica by sync-and-build.sh (generated)
 sfis-android/app/src/main/assets/
+
+# Secrets — OAuth client ids / Firebase keys (app UI instructs creating .env)
+.env
+.env.*
+sfis-app/.env

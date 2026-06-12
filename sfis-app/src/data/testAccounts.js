@@ -11,8 +11,8 @@ export const TEST_ACCOUNTS = [
     email: 'maya.test@anvara.dev',
     child: false,
     watched: [
-      { id: 'peanut', severity: 'Any amount' },
-      { id: 'allergen.treenut', severity: 'Any amount' },
+      { id: 'peanut', severity: 'Strict avoid' },
+      { id: 'allergen.treenut', severity: 'Strict avoid' },
     ],
   },
   {
@@ -21,7 +21,7 @@ export const TEST_ACCOUNTS = [
     email: 'theo.test@anvara.dev',
     child: true,
     watched: [
-      { id: 'milk', severity: 'Some' },
+      { id: 'milk', severity: 'Important' },
       { id: 'goal.less_sugar', severity: 'Prefer less' },
     ],
   },
@@ -31,7 +31,7 @@ export const TEST_ACCOUNTS = [
     email: 'ava.test@anvara.dev',
     child: true,
     watched: [
-      { id: 'egg', severity: 'Trace' },
+      { id: 'egg', severity: 'Flag it' },
     ],
   },
   {
@@ -41,12 +41,16 @@ export const TEST_ACCOUNTS = [
     child: false,
     watched: [
       { id: 'gluten', severity: 'Strict' },
-      { id: 'sesame', severity: 'Some' },
+      { id: 'sesame', severity: 'Important' },
     ],
   },
 ];
 
 export function searchTestAccounts(query, excludeIds = []) {
+  // Hard guard (review finding): the test directory must never resolve in a
+  // production bundle — the comment alone wasn't a guard. __DEV__ is set by
+  // Metro; the typeof check keeps plain-node tests working.
+  if (typeof __DEV__ !== 'undefined' && !__DEV__) return [];
   const q = String(query || '').trim().toLowerCase();
   if (!q) return [];
   return TEST_ACCOUNTS.filter((a) =>

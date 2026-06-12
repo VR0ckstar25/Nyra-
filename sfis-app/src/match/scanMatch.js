@@ -172,8 +172,15 @@ function parentGroup(parent) {
   return GROUPS[parent] || { id: parent, label: parent, cat: 'allergen' };
 }
 
-function watchFromProfile(profile, data) {
-  const selected = new Set(profile || []);
+function selectedIdsFrom(input) {
+  if (!input) return [];
+  if (typeof input === 'string') return [input];
+  if (!Array.isArray(input)) return [];
+  return input.map((item) => (typeof item === 'string' ? item : item?.id)).filter(Boolean);
+}
+
+function makeWatchSet(ids, data) {
+  const selected = new Set(ids || []);
   const groups = new Set();
   const parents = new Set();
   selected.forEach((id) => {
@@ -186,6 +193,47 @@ function watchFromProfile(profile, data) {
   if (groups.has('allergen.treenut')) TREE_NUT_PARENTS.forEach((p) => parents.add(p));
   if (groups.has('allergen.shellfish')) SHELLFISH_PARENTS.forEach((p) => parents.add(p));
   return { selected, groups, parents };
+}
+
+function profileWatchEntries(profile) {
+  if (!profile || typeof profile !== 'object' || Array.isArray(profile)) return [];
+  const entries = [{
+    id: profile.id || 'self',
+    name: profile.name || 'You',
+    child: profile.type === 'child' || !!profile.child,
+    ids: selectedIdsFrom(profile.items || profile.watched),
+  }];
+  (profile.familyMembers || []).forEach((member, index) => {
+    entries.push({
+      id: member.id || `member-${index}`,
+      name: member.name || 'Family member',
+      child: member.type === 'child' || !!member.child,
+      ids: selectedIdsFrom(member.watched || member.items),
+    });
+  });
+  return entries;
+}
+
+function watchFromProfile(profile, data) {
+  if (Array.isArray(profile) || typeof profile === 'string') {
+    return { ...makeWatchSet(selectedIdsFrom(profile), data), profiles: [] };
+  }
+
+  const union = makeWatchSet([], data);
+  const profiles = profileWatchEntries(profile).map((entry) => ({
+    id: entry.id,
+    name: entry.name,
+    child: entry.child,
+    watch: makeWatchSet(entry.ids, data),
+  }));
+
+  profiles.forEach((entry) => {
+    entry.watch.selected.forEach((id) => union.selected.add(id));
+    entry.watch.groups.forEach((id) => union.groups.add(id));
+    entry.watch.parents.forEach((id) => union.parents.add(id));
+  });
+
+  return { ...union, profiles };
 }
 
 function buildIndex(data) {
@@ -252,9 +300,14 @@ function buildIndex(data) {
 }
 
 function plantDairyFalsePositive(token, term, parent) {
-  if (parent !== 'milk') return false;
   const n = norm(token);
   const t = norm(term);
+  // "Sunflower/canola/rapeseed lecithin" names a non-soy, non-egg source — the
+  // generic AMBIGUOUS 'lecithin' terms must not fire on it (review finding).
+  if ((parent === 'soy' || parent === 'egg')
+    && /\b(?:sunflower|canola|rapeseed|rice)\s+lecithin\b/.test(n)
+    && /lecithin/.test(t)) return true;
+  if (parent !== 'milk') return false;
   const plantPrefix = /\b(?:coconut|almond|cashew|oat|soy|soya|rice|hemp|pea|macadamia|hazelnut|walnut|pistachio|peanut|cocoa|cacao|shea|sunflower|sesame)\s+(?:milk|butter|cream|cheese)\b/.test(n);
   const nonDairy = /\b(?:vegan|plant based|non dairy|dairy free)\b.*\b(?:milk|butter|cream|cheese)\b/.test(n);
   if ((plantPrefix || nonDairy) && ['milk', 'butter', 'cream', 'cheese', 'dairy'].includes(t)) return true;
@@ -323,11 +376,12 @@ function buildItem(entry, index) {
   const multi = specifics.length > 1;
   const first = matches.find((m) => !m.may) || matches[0];
   const common = multi ? displayName(entry.groupLabel) : specifics[0];
+  const profiles = entry.profiles ? Array.from(entry.profiles.values()) : [];
   const aka = (index.byParentTerms[first.parent] || [])
     .filter((x) => !specifics.some((s) => norm(s) === norm(x)))
     .slice(0, 4);
 
-  return {
+  const item = {
     common,
     technical: multi ? specifics.join(', ') : (pal ? undefined : first.token),
     kind: may ? 'may' : 'contains',
@@ -342,10 +396,25 @@ function buildItem(entry, index) {
     // template-generated "what it is" text from the DB export (pending content library)
     info: index.parentInfo[first.parent] || undefined,
   };
+  if (profiles.length) item.profiles = profiles;
+  return item;
 }
 
 function watched(match, watch) {
   return watch.groups.has(match.groupId) || watch.parents.has(match.parent) || watch.selected.has(match.groupId);
+}
+
+function matchingProfiles(match, watch) {
+  const out = [];
+  const seen = new Set();
+  (watch.profiles || []).forEach((profile) => {
+    if (!profile.name || !watched(match, profile.watch)) return;
+    const key = profile.id || `${profile.name}-${profile.child ? 'child' : 'adult'}`;
+    if (seen.has(key)) return;
+    seen.add(key);
+    out.push({ id: key, name: profile.name, child: !!profile.child });
+  });
+  return out;
 }
 
 function kwHit(tokenWords, kws) {
@@ -365,10 +434,19 @@ function matchScan(rawText, profile, data) {
   const recs = [];
   const unverified = new Set();
 
+  // does this token literally NAME the group (a DIRECT identity term appears in it)?
+  // "soy lecithin" names soy; "cheese" does not name milk/dairy. A free-from claim
+  // may suppress derived forms ("dairy-free cheese") but never an explicit naming —
+  // "soy-free (soy lecithin)" must still surface the contradiction.
+  const namesGroup = (tok, groupId) => {
+    const tw = norm(tok).split(' ');
+    return index.terms.some((t) => t.groupId === groupId && t.matchClass === 'DIRECT' && containsWords(tw, t.w));
+  };
+
   const record = (tok, contextMay, segFree) => {
     let identified = false;
     graphMatches(tok, index).forEach((m) => {
-      if (segFree && segFree.has(m.groupId)) { identified = true; return; } // freed by a claim in THIS segment ("dairy-free cheese")
+      if (segFree && segFree.has(m.groupId) && !namesGroup(tok, m.groupId)) { identified = true; return; } // freed by a claim in THIS segment ("dairy-free cheese")
       identified = true;
       const may = contextMay || m.matchClass === 'POSSIBLE' || m.matchClass === 'AMBIGUOUS';
       recs.push({
@@ -464,7 +542,16 @@ function matchScan(rawText, profile, data) {
   const byGroup = {};
   recs.forEach((r) => {
     if (!watched(r, watch)) return;
-    (byGroup[r.groupId] = byGroup[r.groupId] || { groupId: r.groupId, groupLabel: r.groupLabel, cat: r.cat, matches: [] }).matches.push(r);
+    const entry = byGroup[r.groupId] || {
+      groupId: r.groupId,
+      groupLabel: r.groupLabel,
+      cat: r.cat,
+      matches: [],
+      profiles: new Map(),
+    };
+    matchingProfiles(r, watch).forEach((profile) => entry.profiles.set(profile.id, profile));
+    entry.matches.push(r);
+    byGroup[r.groupId] = entry;
   });
 
   const byCat = {};

@@ -30,6 +30,17 @@ check('baseline sesame via tahini -> Contains', hasKind(r, 'Sesame', 'contains')
 check('baseline wheat hidden if not on profile', !item(r, 'Wheat'));
 check('baseline opaque natural flavors -> Could not verify', hasUnverified(r, 'natural flavors'));
 
+r = matchScan('Ingredients: peanut flour.', {
+  id: 'self',
+  name: 'You',
+  items: [],
+  familyMembers: [
+    { id: 'child-theo', name: 'Theo', child: true, watched: [{ id: 'peanut', severity: 'Strict avoid' }] },
+  ],
+}, data);
+check('family member watched item flags peanut', hasKind(r, 'Peanuts', 'contains'), JSON.stringify(r));
+check('family member profile tag is attached', item(r, 'Peanuts')?.profiles?.some((p) => p.name === 'Theo' && p.child), JSON.stringify(r));
+
 r = matchScan('Ingredients: oats, sugar. May contain almonds.', ['almond'], data);
 check('PAL almond -> May contain', hasKind(r, 'Almond', 'may'), JSON.stringify(r));
 check('PAL note present', /may contain|cross-contact/i.test(item(r, 'Almond')?.note || ''));
@@ -172,6 +183,16 @@ r = matchScan('no sugar added, oats', ['goal.less_sugar'], data);
 check('W6 "no sugar added" claim does not fire the sugar goal', !item(r, 'Added sugars'), JSON.stringify(r));
 r = matchScan('low sodium soy sauce', ['goal.less_sodium'], data);
 check('W6 "low sodium" claim does not fire the sodium goal', !item(r, 'Sodium'), JSON.stringify(r));
+
+// Wave 6 — named-source lecithin + free-claim naming (adversarial review v2)
+r = matchScan('sunflower lecithin, oats', ['soy', 'egg'], data);
+check('named plant lecithin does not fire soy/egg', !item(r, 'Soy') && !item(r, 'Eggs'), JSON.stringify(r));
+r = matchScan('soy lecithin', ['soy'], data);
+check('soy lecithin still fires Soy may', hasKind(r, 'Soy', 'may'), JSON.stringify(r));
+r = matchScan('lecithin', ['soy', 'egg'], data);
+check('unsourced lecithin keeps both may (honest unknown)', hasKind(r, 'Soy', 'may') && hasKind(r, 'Eggs', 'may'), JSON.stringify(r));
+r = matchScan('soy-free (soy lecithin)', ['soy'], data);
+check('free claim never suppresses a token naming the allergen', hasKind(r, 'Soy', 'may'), JSON.stringify(r));
 
 // DB hostile challenge corpus: production matcher should resolve MATCH rows and
 // surface OPAQUE rows under Could not verify.

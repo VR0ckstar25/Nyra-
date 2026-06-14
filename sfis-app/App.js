@@ -67,9 +67,8 @@ import {
   recordSuccessfulUnlock,
   verifyPin,
 } from './src/services/securityService';
+import { buildOutboxItem, mergeOutboxItems, outboxDedupeKey, retryTime, RETRY_DELAYS_MS } from './src/services/outboxQueue';
 
-const OUTBOX_RETENTION_MS = 7 * 24 * 60 * 60 * 1000;
-const RETRY_DELAYS_MS = [5 * 60 * 1000, 15 * 60 * 1000, 60 * 60 * 1000, 6 * 60 * 60 * 1000];
 const HEADER_ROW_HEIGHT = 48;
 const RESTORABLE_SCREENS = new Set([
   'diary', 'scan', 'patterns', 'profile', 'history',
@@ -123,41 +122,10 @@ function sameJson(left, right) {
   return JSON.stringify(left) === JSON.stringify(right);
 }
 
-function outboxDedupeKey(item) {
-  if (item.kind === 'profile') return 'profile:self';
-  return `${item.kind}:${item.payload?.id || item.id}`;
-}
-
+// Queue semantics (dedupe/merge/expiry/backoff) live in src/services/outboxQueue.js
+// (pure + unit-tested). This wrapper just supplies App's id + error-message helpers.
 function makeOutboxItem(kind, payload, error) {
-  const createdAt = new Date().toISOString();
-  return {
-    id: makeId('outbox'),
-    kind,
-    payload,
-    createdAt,
-    expiresAt: new Date(Date.now() + OUTBOX_RETENTION_MS).toISOString(),
-    attempts: 0,
-    lastError: messageFrom(error, 'Cloud sync failed'),
-    nextRetryAt: createdAt,
-  };
-}
-
-function mergeOutboxItems(existing = [], additions = []) {
-  const byKey = new Map();
-  [...existing, ...additions].forEach((item) => {
-    if (!item?.kind || !item?.payload) return;
-    byKey.set(outboxDedupeKey(item), item);
-  });
-  const now = Date.now();
-  return Array.from(byKey.values())
-    .filter((item) => !item.expiresAt || new Date(item.expiresAt).getTime() > now)
-    .sort((a, b) => String(a.createdAt).localeCompare(String(b.createdAt)))
-    .slice(0, 200);
-}
-
-function retryTime(attempts = 0) {
-  const delay = RETRY_DELAYS_MS[Math.min(attempts, RETRY_DELAYS_MS.length - 1)];
-  return new Date(Date.now() + delay).toISOString();
+  return buildOutboxItem({ kind, payload, id: makeId('outbox'), message: messageFrom(error, 'Cloud sync failed') });
 }
 
 async function saveOutboxCloudItem(uid, item) {

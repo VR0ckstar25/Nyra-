@@ -1,5 +1,5 @@
 import React, { useEffect, useRef, useState } from 'react';
-import { ActivityIndicator, Alert, AppState, SafeAreaView, View, Text, Pressable } from 'react-native';
+import { ActivityIndicator, Alert, AppState, SafeAreaView, Share, View, Text, Pressable } from 'react-native';
 import { StatusBar } from 'expo-status-bar';
 import { ThemeProvider, useTheme } from './src/theme/ThemeProvider';
 import { WelcomeScreen } from './src/screens/WelcomeScreen';
@@ -69,6 +69,7 @@ import {
 } from './src/services/securityService';
 import { buildOutboxItem, mergeOutboxItems, outboxDedupeKey, retryTime, RETRY_DELAYS_MS } from './src/services/outboxQueue';
 import { backFromSaveProfile, onboardingNextScreen, ownershipConflict, postAuthScreen, shouldStampOwner } from './src/services/flowRouting';
+import { buildExportPayload, writeExportFile } from './src/services/dataExport';
 
 const HEADER_ROW_HEIGHT = 48;
 const RESTORABLE_SCREENS = new Set([
@@ -1132,6 +1133,23 @@ function Shell() {
     );
   };
 
+  // Export the user's own data (profile + diary + feedback) to a shareable JSON.
+  // Photos stay on device (dataExport strips uris). Uses the OS share sheet.
+  const exportMyData = async () => {
+    try {
+      const payload = buildExportPayload({ profile, scans: savedScans, feedback: feedbackLog, settings });
+      const uri = await writeExportFile(payload);
+      if (uri) {
+        await Share.share({ url: uri, title: 'Anvara data export', message: 'My Anvara data export.' });
+      } else {
+        // No file system (shouldn't happen on device) — share the JSON inline.
+        await Share.share({ title: 'Anvara data export', message: JSON.stringify(payload) });
+      }
+    } catch (error) {
+      setStorageNotice(messageFrom(error, 'Could not export your data.'));
+    }
+  };
+
   const createLocalBackup = async () => {
     const taskId = beginProcessingTask('local-backup', 'Local checkpoint');
     try {
@@ -1465,6 +1483,7 @@ function Shell() {
       onDeleteCloudBackup={deleteCloudBackupNow}
       onCreateLocalBackup={createLocalBackup}
       onRestoreLocalBackup={restoreLocalBackup}
+      onExportData={exportMyData}
       onToggleAutoOfflinePack={toggleAutoOfflinePack}
       onManageOfflinePack={() => setScreen('getting-ready')}
       onToggleSaveLabelImages={() => updateSettings({ saveLabelImages: !settings.saveLabelImages })}

@@ -76,6 +76,7 @@ export function SecurityBackupScreen({
   onDeleteCloudBackup,
   onCreateLocalBackup,
   onRestoreLocalBackup,
+  onExportData,
   onToggleAutoOfflinePack,
   onManageOfflinePack,
   onToggleSaveLabelImages,
@@ -217,6 +218,12 @@ export function SecurityBackupScreen({
         <SecondaryButton onPress={onRestoreLocalBackup} disabled={!localBackup} t={t} style={{ marginTop: 10 }}>
           Restore checkpoint
         </SecondaryButton>
+        <SecondaryButton onPress={onExportData} t={t} style={{ marginTop: 10 }}>
+          Export my data
+        </SecondaryButton>
+        <Text style={{ fontFamily: t.sans, fontSize: 12, color: t.ink3, lineHeight: 17, marginTop: 8 }}>
+          Saves a JSON copy of your profile, severity levels, and scan diary to share or keep. Label photos stay on this phone — only their dates are included.
+        </Text>
       </Card>
 
       <Card t={t} style={{ marginBottom: 16 }}>

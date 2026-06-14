@@ -156,24 +156,33 @@ export function shouldShowHouseAds(commercial, context = 'home') {
   return normalized.planId === PLAN_IDS.free && normalized.houseAdsEnabled;
 }
 
+const HOUSE_ADS = {
+  home: {
+    id: 'house-home',
+    eyebrow: 'Anvara Free',
+    title: 'Keep the result screen quiet.',
+    body: 'Free may show occasional house messages on Home, Diary, and Patterns. Allergy results stay ad-free by design.',
+    action: 'View plans',
+  },
+  diary: {
+    id: 'house-diary',
+    eyebrow: 'Anvara Free',
+    title: 'More room to look back.',
+    body: 'Plus and Family keep a longer scan history and add family profiles. Result screens stay ad-free on every plan.',
+    action: 'View plans',
+  },
+  patterns: {
+    id: 'house-patterns',
+    eyebrow: 'Anvara Free',
+    title: 'Richer patterns on Family.',
+    body: 'Family plans enrich what Patterns can show across everyone you watch for. These house messages never touch a result.',
+    action: 'View plans',
+  },
+};
+
 export function houseAdForContext(commercial, context = 'home') {
   if (!shouldShowHouseAds(commercial, context)) return null;
-  if (context === 'home') {
-    return {
-      id: 'free-plus-house-message',
-      eyebrow: 'Anvara Free',
-      title: 'Keep the result screen quiet.',
-      body: 'Free may show occasional house messages here on Home. Allergy results stay ad-free by design.',
-      action: 'View plans',
-    };
-  }
-  return {
-    id: 'free-house-message',
-    eyebrow: 'Anvara Free',
-    title: 'House message',
-    body: 'Free messages never appear on result details.',
-    action: 'View plans',
-  };
+  return HOUSE_ADS[context] || HOUSE_ADS.home;
 }
 
 export function billingStatus(commercial) {

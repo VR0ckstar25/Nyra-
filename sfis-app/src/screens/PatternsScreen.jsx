@@ -3,9 +3,10 @@ import { View, Text, Pressable, ScrollView } from 'react-native';
 import { AlertTriangle, BrainCircuit, CheckCircle2, ShieldCheck } from 'lucide-react-native';
 import { useTheme } from '../theme/ThemeProvider';
 import { Card, Overline, ProgressBar, ScreenIntro } from '../components/DesignPrimitives';
+import { HouseAdCard } from '../components/HouseAdCard';
 import { analyzeScanPatterns, PATTERN_MIN_SCANS } from '../services/patternEngine';
 
-export function PatternsScreen({ scans = [], onScan }) {
+export function PatternsScreen({ scans = [], houseAd = null, onAd, onScan }) {
   const { theme: t } = useTheme();
   const model = useMemo(() => analyzeScanPatterns(scans), [scans]);
   const max = Math.max(1, ...model.topFindings.map((row) => row.score));
@@ -18,6 +19,8 @@ export function PatternsScreen({ scans = [], onScan }) {
         sub="On-device summaries from real saved scans. No medical claims, no cloud training."
         t={t}
       />
+
+      <HouseAdCard ad={houseAd} onPress={onAd} t={t} />
 
       <Card t={t} style={{ marginBottom: 16 }}>
         <View style={{ flexDirection: 'row', alignItems: 'flex-start', gap: 13 }}>

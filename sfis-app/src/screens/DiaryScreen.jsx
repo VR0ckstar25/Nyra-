@@ -3,6 +3,7 @@ import { View, Text, Pressable, ScrollView, TextInput } from 'react-native';
 import { Search } from 'lucide-react-native';
 import { useTheme } from '../theme/ThemeProvider';
 import { Card, Overline, PrimaryButton, ProgressBar, ScreenIntro } from '../components/DesignPrimitives';
+import { HouseAdCard } from '../components/HouseAdCard';
 
 const MONTHS = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
 
@@ -58,7 +59,7 @@ const FILTERS = [
   { id: 'matches', label: 'Matches' },
 ];
 
-export function DiaryScreen({ scans = [], onSample, onScan, onOpenScan }) {
+export function DiaryScreen({ scans = [], houseAd = null, onAd, onSample, onScan, onOpenScan }) {
   const { theme: t } = useTheme();
   const [query, setQuery] = useState('');
   const [filter, setFilter] = useState('all');
@@ -105,6 +106,8 @@ export function DiaryScreen({ scans = [], onSample, onScan, onOpenScan }) {
           </Pressable>
         }
       />
+
+      <HouseAdCard ad={houseAd} onPress={onAd} t={t} />
 
       <View style={{ borderRadius: 16, backgroundColor: t.accentTint, padding: 15, marginBottom: 16,
         borderWidth: 1, borderColor: t.accentSoft }}>

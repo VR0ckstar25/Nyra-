@@ -1416,7 +1416,8 @@ function Shell() {
   } else if (screen === 'history') {
     title = 'Diary';
     left = { label: '‹ Home', onPress: () => setScreen('diary') };
-    body = <DiaryScreen scans={savedScans} onSample={runTutorial} onScan={() => setScreen('scan')} onOpenScan={openSavedScan} />;
+    body = <DiaryScreen scans={savedScans} houseAd={houseAdForContext(commercial, 'diary')} onAd={() => setScreen('plans')}
+              onSample={runTutorial} onScan={() => setScreen('scan')} onOpenScan={openSavedScan} />;
   } else if (screen === 'scan') {
     title = 'Scan';
     right = { label: 'Theme', onPress: openAppearance };
@@ -1427,7 +1428,8 @@ function Shell() {
   } else if (screen === 'patterns') {
     title = 'Patterns';
     right = { label: 'Theme', onPress: openAppearance };
-    body = <PatternsScreen scans={savedScans} onScan={() => setScreen('scan')} />;
+    body = <PatternsScreen scans={savedScans} houseAd={houseAdForContext(commercial, 'patterns')} onAd={() => setScreen('plans')}
+              onScan={() => setScreen('scan')} />;
   } else if (screen === 'profile') {
     title = 'Profile';
     body = <ProfileScreen profile={profile} scans={savedScans} feedbackCount={feedbackLog.length}

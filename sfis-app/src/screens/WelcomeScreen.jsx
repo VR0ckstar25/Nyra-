@@ -2,6 +2,7 @@ import React from 'react';
 import { ScrollView, Text, View } from 'react-native';
 import { useTheme } from '../theme/ThemeProvider';
 import { PrimaryButton, SecondaryButton } from '../components/DesignPrimitives';
+import { Wordmark } from '../components/Wordmark';
 
 export function WelcomeScreen({ onStart, onSignIn }) {
   const { theme: t } = useTheme();
@@ -9,10 +10,9 @@ export function WelcomeScreen({ onStart, onSignIn }) {
   return (
     <ScrollView style={{ flex: 1, backgroundColor: t.bg }} contentContainerStyle={{ flexGrow: 1, padding: 22 }}>
       <View style={{ flex: 1, justifyContent: 'center' }}>
-        <Text style={{ fontFamily: t.sans, fontSize: 15, fontWeight: '900', color: t.accentDeep,
-          textTransform: 'uppercase', letterSpacing: 0, marginBottom: 12 }}>
-          Anvara
-        </Text>
+        <View style={{ marginBottom: 12 }}>
+          <Wordmark t={t} size={26} />
+        </View>
         <Text style={{ fontFamily: t.serif, fontSize: 34, fontWeight: '600', color: t.ink,
           lineHeight: 40, marginBottom: 10 }}>
           Shop with a little less worry.

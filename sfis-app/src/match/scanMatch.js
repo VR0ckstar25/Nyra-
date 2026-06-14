@@ -197,15 +197,25 @@ function makeWatchSet(ids, data) {
 
 function profileWatchEntries(profile) {
   if (!profile || typeof profile !== 'object' || Array.isArray(profile)) return [];
+  // Attribution keys MUST be unique: downstream collects profiles into a Map by id,
+  // so a duplicate/colliding id silently drops a member from the result (review #10).
+  const used = new Set();
+  const uniqueId = (raw) => {
+    let id = raw;
+    let n = 1;
+    while (used.has(id)) { id = `${raw}#${n++}`; }
+    used.add(id);
+    return id;
+  };
   const entries = [{
-    id: profile.id || 'self',
+    id: uniqueId(profile.id || 'self'),
     name: profile.name || 'You',
     child: profile.type === 'child' || !!profile.child,
     ids: selectedIdsFrom(profile.items || profile.watched),
   }];
   (profile.familyMembers || []).forEach((member, index) => {
     entries.push({
-      id: member.id || `member-${index}`,
+      id: uniqueId(member.id || `member-${index}`),
       name: member.name || 'Family member',
       child: member.type === 'child' || !!member.child,
       ids: selectedIdsFrom(member.watched || member.items),

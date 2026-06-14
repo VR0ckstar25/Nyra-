@@ -114,17 +114,7 @@ export function ResultScreen({ findings = [], unverified = [], product = {}, onF
         {findings.map((f, i) => (
           <MatchBar key={`${f.label}-${i}`} data={f} child={childMode} onOpen={(finding, item) => setDetail({ finding, item })} />
         ))}
-
-        {nothing ? (
-          <Card t={t} style={{ marginBottom: 14 }}>
-            <Text style={{ fontFamily: t.sans, fontSize: childMode ? 17 : 15, color: t.ink, lineHeight: childMode ? 24 : 21 }}>
-              Nothing from your profile in what we could read.
-            </Text>
-            <Text style={{ fontFamily: t.sans, fontSize: 13, color: t.ink2, marginTop: 4, lineHeight: 19 }}>
-              Always check the original packaging.
-            </Text>
-          </Card>
-        ) : null}
+        {/* empty-state message lives once in the headline above (review #25: no doubled block) */}
 
         {unverified.length > 0 ? (
           <View style={{ marginTop: 8, marginBottom: 16 }}>

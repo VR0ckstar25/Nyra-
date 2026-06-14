@@ -8,7 +8,7 @@ import data from '../data/allergens.json';
 import { Card, PrimaryButton, ScreenIntro, SecondaryButton } from '../components/DesignPrimitives';
 import { ocrAvailable, recognizeIngredientText } from '../services/ocrService';
 
-export function CameraScreen({ profile, matcherData, onResult, onBack, onManual, onProcessingStart, onProcessingEnd }) {
+export function CameraScreen({ profile, matcherData, scanGate = null, onUpgrade, onResult, onBack, onManual, onProcessingStart, onProcessingEnd }) {
   const { theme: t } = useTheme();
   const cameraRef = useRef(null);
   const [permission, requestPermission] = useCameraPermissions();
@@ -17,8 +17,12 @@ export function CameraScreen({ profile, matcherData, onResult, onBack, onManual,
   const [pendingScan, setPendingScan] = useState(null);
   const activeData = matcherData || data;
   const canUseOcr = ocrAvailable();
+  const blocked = !!scanGate && scanGate.allowed === false;
 
   const capture = async () => {
+    // Defense in depth: the camera tile is disabled at the cap, but never start a
+    // capture if the monthly quota is exhausted.
+    if (blocked) { setStatus('You have used all your scans this month. See plans for more.'); return; }
     if (!cameraRef.current || busy) return;
     const taskId = onProcessingStart ? onProcessingStart('camera-ocr', 'Reading label') : null;
     setBusy(true);

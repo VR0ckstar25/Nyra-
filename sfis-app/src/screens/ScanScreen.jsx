@@ -8,7 +8,14 @@ import { TUTORIAL } from '../data/tutorial';
 import { Card, PrimaryButton, ScreenIntro, SecondaryButton } from '../components/DesignPrimitives';
 import { profileIds } from '../profile/profileModel';
 
-export function ScanScreen({ profile, matcherData, onResult, onCamera }) {
+function resetLabel(iso) {
+  if (!iso) return 'next month';
+  const d = new Date(iso);
+  if (Number.isNaN(d.getTime())) return 'next month';
+  return d.toLocaleDateString([], { month: 'long', day: 'numeric' });
+}
+
+export function ScanScreen({ profile, matcherData, scanGate = null, onUpgrade, onResult, onCamera }) {
   const { theme: t } = useTheme();
   const [text, setText] = useState('');
   const [name, setName] = useState('');
@@ -16,6 +23,9 @@ export function ScanScreen({ profile, matcherData, onResult, onCamera }) {
   const [review, setReview] = useState(null);
   const watchedIds = profileIds(profile);
   const activeData = matcherData || data;
+  // Real scans are gated by the monthly quota; samples stay free so people can
+  // always see how Anvara works even at the cap.
+  const blocked = !!scanGate && scanGate.allowed === false;
 
   const prepareReview = () => {
     if (!text.trim()) return;
@@ -72,9 +82,33 @@ export function ScanScreen({ profile, matcherData, onResult, onCamera }) {
         </Text>
       </View>
 
-      <Pressable onPress={onCamera} accessibilityRole="button"
+      {scanGate ? (
+        blocked ? (
+          <View style={{ borderRadius: 14, backgroundColor: t.accentTint, borderWidth: 1,
+            borderColor: t.accentSoft, padding: 14, marginBottom: 14 }}>
+            <Text style={{ fontFamily: t.sans, fontSize: 14, fontWeight: '900', color: t.ink }}>
+              You've used all {scanGate.allowance} scans this month
+            </Text>
+            <Text style={{ fontFamily: t.sans, fontSize: 12.5, color: t.ink2, lineHeight: 18, marginTop: 3 }}>
+              Your free scans refresh on {resetLabel(scanGate.nextResetAt)}. You can still run the sample anytime, or move to a plan with more scans.
+            </Text>
+            {onUpgrade ? (
+              <PrimaryButton onPress={onUpgrade} t={t} style={{ marginTop: 12 }}>
+                See plans
+              </PrimaryButton>
+            ) : null}
+          </View>
+        ) : (
+          <Text style={{ fontFamily: t.mono, fontSize: 11.5, color: t.ink3, marginBottom: 14 }}>
+            {scanGate.remaining} of {scanGate.allowance} scans left this month · resets {resetLabel(scanGate.nextResetAt)}
+          </Text>
+        )
+      ) : null}
+
+      <Pressable onPress={onCamera} disabled={blocked} accessibilityRole="button"
+        accessibilityState={{ disabled: blocked }}
         accessibilityLabel="Scan ingredient label with camera"
-        style={{ minHeight: 142, borderRadius: 18, marginBottom: 16, padding: 18,
+        style={{ minHeight: 142, borderRadius: 18, marginBottom: 16, padding: 18, opacity: blocked ? 0.5 : 1,
           backgroundColor: t.accent, borderWidth: 1, borderColor: t.accentDeep,
           flexDirection: 'row', alignItems: 'center', gap: 16,
           shadowColor: t.accentDeep, shadowOpacity: 0.18, shadowRadius: 16,
@@ -132,7 +166,7 @@ export function ScanScreen({ profile, matcherData, onResult, onCamera }) {
           </View>
         ) : null}
 
-        <PrimaryButton onPress={review ? run : prepareReview} disabled={!text.trim()} t={t} style={{ marginTop: 14 }}>
+        <PrimaryButton onPress={review ? run : prepareReview} disabled={!text.trim() || blocked} t={t} style={{ marginTop: 14 }}>
           {review ? 'Save and check ingredients' : 'Review typed ingredients'}
         </PrimaryButton>
       </Card>

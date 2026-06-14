@@ -48,7 +48,7 @@ import {
   saveCloudScan,
 } from './src/services/syncService';
 import { cleanupExpiredLabelImages, enrichCapturedImage } from './src/services/localRetention';
-import { houseAdForContext, normalizeCommercial, updateCommercialPlan } from './src/services/commercialModel';
+import { houseAdForContext, normalizeCommercial, recordScanUsage, scanQuota, updateCommercialPlan } from './src/services/commercialModel';
 import {
   DEFAULT_SETTINGS,
   LOCAL_KEYS,
@@ -290,6 +290,10 @@ function Shell() {
   const canCloudBackup = !!authUser?.uid && cloudBackupEnabled;
   const commercial = normalizeCommercial(settings.commercial);
   const homeAd = houseAdForContext(commercial, 'home');
+  // Scan quota: family plans scale the monthly pool by member count. Gate counts
+  // real scans only (samples are free). At the cap, scanning blocks until the 1st.
+  const quotaMemberCount = 1 + (profile?.familyMembers?.length || 0);
+  const scanGate = scanQuota(commercial, settings.scanUsage, quotaMemberCount);
   const productReviewQueue = feedbackLog.filter((entry) => {
     const label = String(entry?.label || '').toLowerCase();
     return entry?.category === 'product_issue' || label === 'wrong' || label === 'unsure';
@@ -793,6 +797,10 @@ function Shell() {
         persistLocalValue(LOCAL_KEYS.scans, saved, 'Scan diary');
         return saved;
       });
+      // Count toward the monthly quota — real scans only, never samples.
+      if (source !== 'sample') {
+        updateSettings({ scanUsage: recordScanUsage(settings.scanUsage) });
+      }
       recordProcessEvent('scan.result_saved', {
         scanId: entry.id,
         source,
@@ -1396,6 +1404,7 @@ function Shell() {
     title = 'Scan';
     right = { label: 'Theme', onPress: openAppearance };
     body = <ScanScreen profile={profile} matcherData={matcherData}
+              scanGate={scanGate} onUpgrade={() => setScreen('plans')}
               onResult={(r, options = {}) => showResult(r, { source: 'manual', persist: true, ...options })}
               onCamera={() => setScreen('camera')} />;
   } else if (screen === 'patterns') {
@@ -1422,6 +1431,7 @@ function Shell() {
     title = 'Camera';
     left = { label: '‹ Scan', onPress: () => setScreen('scan') };
     body = <CameraScreen profile={profile} matcherData={matcherData} onBack={() => setScreen('scan')}
+              scanGate={scanGate} onUpgrade={() => setScreen('plans')}
               onManual={() => setScreen('scan')}
               onResult={(r) => showResult(r, { source: 'camera', persist: true })}
               onProcessingStart={beginProcessingTask}

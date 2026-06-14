@@ -194,6 +194,33 @@ check('unsourced lecithin keeps both may (honest unknown)', hasKind(r, 'Soy', 'm
 r = matchScan('soy-free (soy lecithin)', ['soy'], data);
 check('free claim never suppresses a token naming the allergen', hasKind(r, 'Soy', 'may'), JSON.stringify(r));
 
+// Wave 7 — phrase-style free-from must not swallow a DIFFERENT present allergen
+// in the same comma list (final review CRITICAL: silent allergen false-negative).
+r = matchScan('Free from soy, casein', ['milk'], data);
+check('free-list surfaces casein (milk) when claim names soy', hasKind(r, 'Milk', 'contains'), JSON.stringify(r));
+r = matchScan('Free from: dairy, peanut butter', ['peanut'], data);
+check('free-list surfaces peanut butter when claim names dairy', hasKind(r, 'Peanuts', 'contains'), JSON.stringify(r));
+r = matchScan('Free from gluten, wheat flour', ['wheat'], data);
+check('free-list surfaces wheat flour when claim names gluten', hasKind(r, 'Wheat', 'contains'), JSON.stringify(r));
+// …but a free claim still suppresses the very allergen it names (no false positive)
+r = matchScan('Free from dairy, casein', ['milk'], data);
+check('free claim still suppresses its own named allergen (casein=dairy)', !item(r, 'Milk'), JSON.stringify(r));
+r = matchScan('Free from milk, eggs, soy', ['milk', 'egg', 'soy'], data);
+check('standard free-from list suppresses all named allergens', !item(r, 'Milk') && !item(r, 'Eggs') && !item(r, 'Soy'), JSON.stringify(r));
+
+// Wave 7 — diet/goal marketing guard must be ADJACENT, not co-occurrence (review):
+// real compound ingredients flag; genuine slogans stay suppressed.
+r = matchScan('free-range eggs', ['diet.vegan'], data);
+check('free-range eggs flags vegan (qualifier not adjacent to egg)', !!bar(r, 'diet'), JSON.stringify(r));
+r = matchScan('low-sodium ham', ['diet.no_pork'], data);
+check('low-sodium ham flags no-pork', hasKind(r, 'Pork', 'contains'), JSON.stringify(r));
+r = matchScan('light brown sugar', ['goal.less_sugar'], data);
+check('light brown sugar flags less-sugar', hasKind(r, 'Added sugars', 'contains'), JSON.stringify(r));
+r = matchScan('no sugar added', ['goal.less_sugar'], data);
+check('no sugar added stays suppressed (adjacent slogan)', !bar(r, 'goal'), JSON.stringify(r));
+r = matchScan('low sodium soup', ['goal.less_sodium'], data);
+check('low sodium soup stays suppressed', !bar(r, 'goal'), JSON.stringify(r));
+
 // DB hostile challenge corpus: production matcher should resolve MATCH rows and
 // surface OPAQUE rows under Could not verify.
 // STRICT (adversarial review): a MATCH row must surface the EXPECTED allergen by

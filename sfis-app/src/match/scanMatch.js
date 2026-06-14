@@ -382,6 +382,25 @@ function provenanceFor(basisKey) {
   return `${basis} Anvara draft database — not independently validated yet.`;
 }
 
+// A diet/goal keyword is a marketing SLOGAN (not a present ingredient) only when a
+// qualifier sits immediately beside it: "no sugar", "low sodium", "reduced fat",
+// "sugar free", "fat free". Mere co-occurrence in a compound name does NOT qualify,
+// so "free-range eggs", "low-sodium ham", "light brown sugar" still flag (review).
+const GUARD_BEFORE = new Set(['no', 'low', 'less', 'reduced', 'zero', 'non']);
+const GUARD_AFTER = new Set(['free']);
+function negatedClaim(tokenWords, kwWords) {
+  for (let i = 0; i + kwWords.length <= tokenWords.length; i++) {
+    let ok = true;
+    for (let j = 0; j < kwWords.length; j++) { if (!wEq(tokenWords[i + j], kwWords[j])) { ok = false; break; } }
+    if (!ok) continue;
+    const before = tokenWords[i - 1];
+    const after = tokenWords[i + kwWords.length];
+    if (before && GUARD_BEFORE.has(before)) return true;
+    if (after && GUARD_AFTER.has(after)) return true;
+  }
+  return false;
+}
+
 function buildItem(entry, index) {
   const matches = entry.matches;
   const may = !matches.some((m) => !m.may);
@@ -486,20 +505,21 @@ function matchScan(rawText, profile, data) {
     });
 
     const tw = norm(tok).split(' ');
-    // Marketing claims aren't ingredients: "no sugar added" / "low sodium" must not
-    // fire goal/diet findings (adversarial review). Plant forms ("coconut milk",
-    // "almond butter") aren't animal-derived either — reuse the dairy guard.
-    const marketingClaim = /\b(?:no|low|less|reduced|zero|light|lite|free)\b/.test(norm(tok));
+    // A keyword only counts as a suppressible marketing slogan when a qualifier sits
+    // RIGHT NEXT TO it ("no sugar", "sugar free") — not merely co-present in a longer
+    // ingredient name (review fix). Plant forms ("coconut milk") use the dairy guard.
     GOAL_KW.forEach((g) => {
-      if (!marketingClaim && watch.selected.has(g.id) && kwHit(tw, g.kws)) {
+      if (!watch.selected.has(g.id)) return;
+      const hitKw = g.kws.find((k) => containsWords(tw, norm(k).split(' ')));
+      if (hitKw && !negatedClaim(tw, norm(hitKw).split(' '))) {
         identified = true;
         recs.push({ groupId: g.id, groupLabel: g.common, parent: g.id, cat: 'goal', common: g.common, token: tok, matchClass: 'DERIVED', confidence: 'MEDIUM', may: false, pal: false });
       }
     });
     DIET_KW.forEach((g) => {
-      if (marketingClaim || !watch.selected.has(g.id)) return;
-      const hit = g.kws.some((k) => containsWords(tw, norm(k).split(' ')) && !plantDairyFalsePositive(tok, norm(k), 'milk'));
-      if (hit) {
+      if (!watch.selected.has(g.id)) return;
+      const hitKw = g.kws.find((k) => containsWords(tw, norm(k).split(' ')) && !plantDairyFalsePositive(tok, norm(k), 'milk'));
+      if (hitKw && !negatedClaim(tw, norm(hitKw).split(' '))) {
         identified = true;
         recs.push({ groupId: g.id, groupLabel: g.common, parent: g.id, cat: 'dietary', common: g.common, token: tok, matchClass: 'DERIVED', confidence: 'MEDIUM', may: false, pal: false });
       }
@@ -515,6 +535,7 @@ function matchScan(rawText, profile, data) {
     // allergen term. "Contains no artificial flavors, milk powder" frees nothing
     // (artificial flavors isn't an identity match), so milk powder still flags.
     let freeRun = false;
+    const runFree = new Set(); // groups freed by the free-claim spanning THIS run's segments
     sentence.split(/[,;]+| but /i).map((p) => p.trim()).filter(Boolean).forEach((seg) => {
       let s = seg;
       const segFree = new Set(); // groups freed by a claim in THIS segment (e.g. "dairy-free cheese")
@@ -523,9 +544,9 @@ function matchScan(rawText, profile, data) {
 
       const advisory = ADVISORY_RE.test(s);
       const freeOpen = !advisory && FREE_OPEN_RE.test(s);
-      if (advisory) { ctx = 'MAY'; freeRun = false; }
+      if (advisory) { ctx = 'MAY'; freeRun = false; runFree.clear(); }
       else if (freeOpen) ctx = 'CONTAINS';
-      else if (CONTAINS_RE.test(s)) { ctx = 'CONTAINS'; freeRun = false; }
+      else if (CONTAINS_RE.test(s)) { ctx = 'CONTAINS'; freeRun = false; runFree.clear(); }
       let segCtx = freeOpen ? 'FREE' : ctx;
 
       const cleaned = s
@@ -546,7 +567,20 @@ function matchScan(rawText, profile, data) {
         if (segCtx === 'FREE') {
           const before = segFree.size;
           markFree(tok, segFree, index);
-          if (segFree.size > before) freedHere++;
+          segFree.forEach((g) => runFree.add(g)); // remember across the run's segments
+          if (segFree.size > before) { freedHere++; return; } // this token IS part of the free claim
+          // CRITICAL FIX (final review): markFree freed nothing for this token. If the
+          // run's free claim already covers the token's group it's redundant ("Free
+          // from dairy, casein" — casein is the freed dairy) → suppress. Otherwise it's
+          // a DIFFERENT, genuinely-present ingredient riding in the same free-list
+          // ("Free from soy, casein" — casein is milk) → surface it, never swallow.
+          const groups = graphMatches(tok, index).map((m) => m.groupId);
+          const coveredByRun = groups.length > 0 && groups.every((g) => runFree.has(g));
+          if (coveredByRun) return;
+          const surfaced = record(tok, false, segFree);
+          const fn = norm(tok);
+          if (index.opaque.has(fn)) unverified.add(fn);
+          else if (!surfaced && /[a-z]{2,}/i.test(tok)) unverified.add(fn);
           return;
         }
         const identified = record(tok, segCtx === 'MAY', segFree);

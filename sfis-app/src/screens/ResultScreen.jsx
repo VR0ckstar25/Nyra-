@@ -251,6 +251,7 @@ function DetailSheet({ detail, onClose, t }) {
               <DetailLine label="Why it matched" value={item.correlation || item.derivative || item.note} t={t} />
               {item.derivative ? <DetailLine label="Label evidence" value={item.derivative} t={t} /> : null}
               {item.note ? <DetailLine label="Note" value={item.note} t={t} /> : null}
+              {item.provenance ? <DetailLine label="Data source" value={item.provenance} t={t} /> : null}
 
               {item.aka && item.aka.length ? (
                 <View style={{ marginTop: 16 }}>

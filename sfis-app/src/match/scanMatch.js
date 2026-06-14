@@ -368,6 +368,20 @@ function isKnown(tok, index) {
   return PANTRY.has(n) || index.opaque.has(n) || graphMatches(tok, index).length > 0;
 }
 
+// Plain-language basis for a match, by how it was determined. All entries are
+// Anvara DRAFT data (pre independent validation), stated honestly per match.
+const PROVENANCE_BASIS = {
+  DIRECT: 'Matched an exact ingredient name on the label.',
+  DERIVED: 'Matched a known alternate name for this ingredient.',
+  POSSIBLE: 'This ingredient can sometimes contain it.',
+  AMBIGUOUS: 'This term can refer to more than one source.',
+  PAL: "From a precautionary 'may contain' statement.",
+};
+function provenanceFor(basisKey) {
+  const basis = PROVENANCE_BASIS[basisKey] || PROVENANCE_BASIS.DIRECT;
+  return `${basis} Anvara draft database — not independently validated yet.`;
+}
+
 function buildItem(entry, index) {
   const matches = entry.matches;
   const may = !matches.some((m) => !m.may);
@@ -395,6 +409,10 @@ function buildItem(entry, index) {
     aka,
     // template-generated "what it is" text from the DB export (pending content library)
     info: index.parentInfo[first.parent] || undefined,
+    // Per-match provenance (review finding: the DRAFT banner was global only) —
+    // names HOW this specific match was determined, plus the draft caveat. No
+    // confidence meter (that distinction is banned and carried by the verb).
+    provenance: provenanceFor(pal ? 'PAL' : first.matchClass),
   };
   // Attribution tags only make sense in a FAMILY session: a solo user tagging
   // every finding with their own name is noise (design: tags = family sessions).

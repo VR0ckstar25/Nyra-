@@ -23,6 +23,14 @@ function safeImageMeta(image) {
   };
 }
 
+// The full scanned label text is as sensitive as the photo it came from (it IS the
+// label contents). Cloud writes strip it; the export must too — keep only the OCR
+// confidence + capture time so the diary entry stays meaningful (review finding).
+function safeOcrMeta(ocr) {
+  if (!ocr) return null;
+  return { confidence: ocr.confidence ?? null, capturedAt: ocr.capturedAt || null };
+}
+
 export function buildExportPayload({ profile = null, scans = [], feedback = [], settings = {}, exportedAt }) {
   const stamp = exportedAt || new Date().toISOString();
   return {
@@ -33,7 +41,7 @@ export function buildExportPayload({ profile = null, scans = [], feedback = [], 
     profile,
     plan: settings.commercial?.planId || 'free',
     counts: { scans: scans.length, feedback: feedback.length, familyMembers: (profile?.familyMembers || []).length },
-    scans: scans.map((s) => ({ ...s, image: safeImageMeta(s.image) })),
+    scans: scans.map((s) => ({ ...s, image: safeImageMeta(s.image), ocr: safeOcrMeta(s.ocr) })),
     feedback,
   };
 }

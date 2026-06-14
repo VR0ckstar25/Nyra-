@@ -424,7 +424,6 @@ function buildItem(entry, index) {
     derivative: pal ? "Listed as a precautionary 'may contain' statement on the packaging."
       : `Found on this label${first.token ? ` as "${first.token}"` : ''}.`,
     correlation: `Matches ${entry.groupLabel} on your profile.`,
-    confidence: CONF[first.confidence] || 'Medium',
     aka,
     // template-generated "what it is" text from the DB export (pending content library)
     info: index.parentInfo[first.parent] || undefined,

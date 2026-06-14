@@ -34,6 +34,11 @@ check('no file:// uri leaks into export', !serialized.includes('file://'), seria
 check('photo metadata retained (dates, not bytes)', payload.scans[0].image.capturedAt === AT && payload.scans[0].image.deleteAfter === AT);
 check('null image stays null', payload.scans[1].image === null);
 
+// 2b. OCR full label text is as sensitive as the photo — redacted from export too
+const ocrPayload = buildExportPayload({ scans: [{ id: 's', ocr: { text: 'INGREDIENTS: peanuts, milk, soy lecithin', confidence: 0.9, capturedAt: AT } }], exportedAt: AT });
+check('full OCR label text NOT in export', !JSON.stringify(ocrPayload).includes('peanuts'), JSON.stringify(ocrPayload.scans[0].ocr));
+check('OCR confidence + capture time kept', ocrPayload.scans[0].ocr.confidence === 0.9 && ocrPayload.scans[0].ocr.capturedAt === AT);
+
 // 3. Health data IS included (it's the user's own copy)
 check('profile + severity included', payload.profile.items[0].severity === 'Strict avoid');
 check('feedback included', payload.feedback.length === 1);

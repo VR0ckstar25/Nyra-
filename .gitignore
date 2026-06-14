@@ -33,3 +33,7 @@ sfis-app/.env.*
 .env
 .env.*
 !.env.example
+
+# Native OCR module build artifacts
+sfis-app/modules/anvara-ocr/android/.gradle/
+sfis-app/modules/**/build/

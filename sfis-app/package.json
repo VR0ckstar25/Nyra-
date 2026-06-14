@@ -8,7 +8,7 @@
     "web": "expo start --web",
     "android": "expo start --android",
     "ios": "expo start --ios",
-    "test": "node src/match/scanMatch.test.js && node src/profile/profileModel.test.js && node src/services/localRetention.test.js && node src/services/commercialModel.test.js && node src/services/offlinePacksCore.test.js && node src/services/patternEngine.test.js && node src/services/appClearance.test.js && node src/services/familyLedger.test.js && node src/services/billingService.test.js && node src/services/outboxQueue.test.js && node src/services/flowRouting.test.js && node src/services/dataExport.test.js",
+    "test": "node src/match/scanMatch.test.js && node src/profile/profileModel.test.js && node src/services/localRetention.test.js && node src/services/commercialModel.test.js && node src/services/offlinePacksCore.test.js && node src/services/patternEngine.test.js && node src/services/appClearance.test.js && node src/services/familyLedger.test.js && node src/services/billingService.test.js && node src/services/outboxQueue.test.js && node src/services/flowRouting.test.js && node src/services/dataExport.test.js && node src/services/secureAuthStorage.test.js",
     "test:match": "node src/match/scanMatch.test.js"
   },
   "dependencies": {

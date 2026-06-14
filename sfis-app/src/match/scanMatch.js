@@ -75,7 +75,7 @@ const GOAL_KW = [
   { id: 'goal.avoid_dates', cat: 'goal', common: 'Dates', kws: ['date', 'dates', 'date paste', 'date syrup', 'date sugar', 'medjool', 'deglet noor'] },
 ];
 const DIET_KW = [
-  { id: 'diet.vegan', cat: 'dietary', common: 'Animal-derived', kws: ['milk', 'butter', 'whey', 'casein', 'egg', 'eggs', 'honey', 'gelatin', 'gelatine', 'lard', 'fish', 'meat', 'beef', 'chicken', 'pork'] },
+  { id: 'diet.vegan', cat: 'dietary', common: 'Animal-derived', kws: ['milk', 'butter', 'whey', 'casein', 'egg', 'eggs', 'honey', 'gelatin', 'gelatine', 'lard', 'fish', 'anchovy', 'anchovies', 'meat', 'beef', 'chicken', 'pork'] },
   { id: 'diet.vegetarian', cat: 'dietary', common: 'Meat or fish', kws: ['gelatin', 'gelatine', 'lard', 'fish', 'anchovy', 'meat', 'beef', 'chicken', 'pork', 'rennet'] },
   { id: 'diet.pescatarian', cat: 'dietary', common: 'Meat or poultry', kws: ['gelatin', 'gelatine', 'lard', 'meat', 'beef', 'chicken', 'pork', 'ham', 'bacon', 'lamb', 'mutton', 'veal', 'turkey', 'duck', 'goose'] },
   { id: 'diet.no_red_meat', cat: 'dietary', common: 'Red meat', kws: ['beef', 'lamb', 'mutton', 'veal', 'bison', 'venison'] },

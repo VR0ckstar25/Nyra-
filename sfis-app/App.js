@@ -720,7 +720,10 @@ function Shell() {
   const clearLocalData = () => {
     Alert.alert(
       'Clear local data?',
-      'This removes the saved profile, scan diary, and result feedback from this device.',
+      'This removes the saved profile, scan diary, and feedback from THIS device only. '
+      + (authUser
+        ? 'You stay signed in, and any cloud backup is kept — to remove that too, use "Delete cloud backup" and sign out.'
+        : 'Nothing is synced, so this device is the only copy.'),
       [
         { text: 'Cancel', style: 'cancel' },
         {

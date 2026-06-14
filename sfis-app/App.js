@@ -68,6 +68,7 @@ import {
   verifyPin,
 } from './src/services/securityService';
 import { buildOutboxItem, mergeOutboxItems, outboxDedupeKey, retryTime, RETRY_DELAYS_MS } from './src/services/outboxQueue';
+import { backFromSaveProfile, onboardingNextScreen, ownershipConflict, postAuthScreen, shouldStampOwner } from './src/services/flowRouting';
 
 const HEADER_ROW_HEIGHT = 48;
 const RESTORABLE_SCREENS = new Set([
@@ -460,11 +461,11 @@ function Shell() {
     const ownerResult = await readLocalValue(LOCAL_KEYS.dataOwner, null).catch(() => null);
     const owner = ownerResult?.value || null;
     const hasLocalData = !!profile || savedScans.length > 0 || feedbackLog.length > 0;
-    if (owner && owner !== uid && hasLocalData) {
+    if (ownershipConflict({ owner, uid, hasLocalData })) {
       setSyncStatus("This device holds another account's data - cloud sync is blocked. Clear local data in Profile to use this account here.");
       return false;
     }
-    if (owner !== uid) {
+    if (shouldStampOwner({ owner, uid, hasLocalData })) {
       await writeLocalValue(LOCAL_KEYS.dataOwner, uid).catch((e) => console.warn('data-owner stamp failed:', e?.message));
     }
     return true;
@@ -948,7 +949,7 @@ function Shell() {
       }
       setSyncStatus('Signed in. Cloud backup off.');
     }
-    setScreen(nextProfile ? (returnTo && returnTo !== 'scan' ? returnTo : 'getting-ready') : 'onboarding-intent');
+    setScreen(postAuthScreen({ hasProfile: !!nextProfile, returnTo }));
     return credential;
   };
 
@@ -980,12 +981,12 @@ function Shell() {
     const ownerResult = await readLocalValue(LOCAL_KEYS.dataOwner, null).catch(() => null);
     const owner = ownerResult?.value || null;
     const hasLocalData = !!profile || savedScans.length > 0 || feedbackLog.length > 0;
-    if (owner && owner !== signedInUser.uid && hasLocalData) {
+    if (ownershipConflict({ owner, uid: signedInUser.uid, hasLocalData })) {
       throw new Error("This account does not match the Anvara data protected on this phone.");
     }
 
     setAuthUser(signedInUser);
-    if (owner !== signedInUser.uid) {
+    if (shouldStampOwner({ owner, uid: signedInUser.uid, hasLocalData })) {
       await persistLocalValue(LOCAL_KEYS.dataOwner, signedInUser.uid, 'Data owner');
     }
     const nextSecurity = disablePinSecurity(security || {});
@@ -1343,19 +1344,13 @@ function Shell() {
   } else if (screen === 'onboarding') {
     title = profileSaved ? 'Edit Profile' : 'Watchlist';
     body = <OnboardingScreen initialProfile={profile} onDone={(p) => {
-      const editing = profileSaved && !!profile;
-      if (editing) {
-        saveProfile(p);
-        setScreen('profile');
-      } else {
-        saveProfile(p);
-        setScreen('credibility');
-      }
+      saveProfile(p);
+      setScreen(onboardingNextScreen({ profileSaved, hasProfile: !!profile }));
     }} guidedFocus={settings.onboardingIntent} />;
   } else if (screen === 'save-profile') {
     title = profile ? 'Save Profile' : 'Sign In';
     body = <SaveProfileScreen hasProfile={!!profile} onUseLocal={useLocally}
-      onBack={() => setScreen(profile ? (returnTo && returnTo !== 'scan' ? returnTo : 'profile') : 'policy')}
+      onBack={() => setScreen(backFromSaveProfile({ hasProfile: !!profile, returnTo }))}
       onEmailAuth={handleEmailAuth}
       onGoogleToken={handleGoogleAuth}
       onDemoGoogleAuth={handleDemoGoogleAuth}

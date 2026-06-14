@@ -401,7 +401,7 @@ function negatedClaim(tokenWords, kwWords) {
   return false;
 }
 
-function buildItem(entry, index) {
+function buildItem(entry, index, isFamilySession = false) {
   const matches = entry.matches;
   const may = !matches.some((m) => !m.may);
   const pal = matches.every((m) => m.pal);
@@ -432,10 +432,13 @@ function buildItem(entry, index) {
     // confidence meter (that distinction is banned and carried by the verb).
     provenance: provenanceFor(pal ? 'PAL' : first.matchClass),
   };
-  // Attribution tags only make sense in a FAMILY session: a solo user tagging
-  // every finding with their own name is noise (design: tags = family sessions).
-  const onlySelf = profiles.length === 1 && profiles[0].id === 'self';
-  if (profiles.length && !onlySelf) item.profiles = profiles;
+  // Attribution: in a SOLO session a self-only tag is noise, so suppress it. But in
+  // a FAMILY session every finding must name who it's for — otherwise an adult's own
+  // allergen renders untagged beside a child's tagged one and reads as "everyone's"
+  // or the child's (review finding). So tag self too when the family has members.
+  if (profiles.length && (isFamilySession || !(profiles.length === 1 && profiles[0].id === 'self'))) {
+    item.profiles = profiles;
+  }
   return item;
 }
 
@@ -608,9 +611,10 @@ function matchScan(rawText, profile, data) {
     byGroup[r.groupId] = entry;
   });
 
+  const isFamilySession = (watch.profiles || []).length > 1; // self + at least one member
   const byCat = {};
   Object.values(byGroup).forEach((entry) => {
-    (byCat[entry.cat] = byCat[entry.cat] || []).push(buildItem(entry, index));
+    (byCat[entry.cat] = byCat[entry.cat] || []).push(buildItem(entry, index, isFamilySession));
   });
 
   const findings = DOMAIN_ORDER.filter((cat) => byCat[cat] && byCat[cat].length).map((cat) => ({

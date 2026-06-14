@@ -11,6 +11,18 @@ function isLocalFile(uri) {
   return typeof uri === 'string' && uri.startsWith('file://');
 }
 
+// Delete the on-device photo files for scans that are being dropped (e.g. aged out
+// past the 200-scan cap). Without this the files orphan on disk forever, breaking
+// the "removed after 7 days" promise for capped-out scans (review finding).
+export async function deleteScanImages(droppedScans = []) {
+  for (const scan of droppedScans) {
+    const uri = scan?.image?.uri;
+    if (isLocalFile(uri)) {
+      await FileSystem.deleteAsync(uri, { idempotent: true }).catch(() => {});
+    }
+  }
+}
+
 export function enrichCapturedImage(image, saveLabelImages) {
   if (!image?.uri) return null;
   const capturedAt = image.capturedAt || new Date().toISOString();

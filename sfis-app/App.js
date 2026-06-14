@@ -47,7 +47,7 @@ import {
   saveCloudProfile,
   saveCloudScan,
 } from './src/services/syncService';
-import { cleanupExpiredLabelImages, enrichCapturedImage } from './src/services/localRetention';
+import { cleanupExpiredLabelImages, deleteScanImages, enrichCapturedImage } from './src/services/localRetention';
 import { houseAdForContext, isFamilyPlan, normalizeCommercial, normalizeFamilyLedger, recordScanUsage, scanQuota, transferScans, updateCommercialPlan } from './src/services/commercialModel';
 import {
   DEFAULT_SETTINGS,
@@ -780,7 +780,9 @@ function Shell() {
           .catch((error) => enqueueOutbox('scan', entry, error));
       }
       setSavedScans((prev) => {
-        const saved = [entry, ...prev].slice(0, 200);
+        const combined = [entry, ...prev];
+        const saved = combined.slice(0, 200);
+        deleteScanImages(combined.slice(200)); // reap photos for scans aged past the cap
         persistLocalValue(LOCAL_KEYS.scans, saved, 'Scan diary');
         return saved;
       });

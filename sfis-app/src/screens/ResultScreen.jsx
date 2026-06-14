@@ -17,15 +17,19 @@ const FOOTER =
 export function ResultScreen({ findings = [], unverified = [], product = {}, onFeedback, nextLabel, onNext }) {
   const { theme: t } = useTheme();
   const familyProfiles = profilesFromFindings(findings);
+  // Auto kid-mode only when EVERY matched profile is a child — otherwise an adult's
+  // own allergen would get reframed in child wording (review finding). Mixed scans
+  // stay in standard mode; kid view remains one tap away.
   const hasChildMatch = familyProfiles.some((profile) => profile.child);
-  const [childMode, setChildMode] = useState(() => hasChildMatch);
+  const childOnly = familyProfiles.length > 0 && familyProfiles.every((profile) => profile.child);
+  const [childMode, setChildMode] = useState(() => childOnly);
   const [detail, setDetail] = useState(null);
   const [feedback, setFeedback] = useState(null);
   const nothing = findings.length === 0;
 
   useEffect(() => {
-    setChildMode(hasChildMatch);
-  }, [hasChildMatch, product?.name, product?.date]);
+    setChildMode(childOnly);
+  }, [childOnly, product?.name, product?.date]);
 
   return (
     <>

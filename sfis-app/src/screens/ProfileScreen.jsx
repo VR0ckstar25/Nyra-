@@ -3,8 +3,9 @@ import { View, Text, Pressable, ScrollView } from 'react-native';
 import { useTheme } from '../theme/ThemeProvider';
 import { Card, Overline, Pill, ProgressBar, ScreenIntro, SwitchPill } from '../components/DesignPrimitives';
 import { MemberSearchSheet } from '../components/MemberSearchSheet';
+import { FamilyTransferSheet } from '../components/FamilyTransferSheet';
 import { profileIds, profileItems } from '../profile/profileModel';
-import { normalizeCommercial, planFor } from '../services/commercialModel';
+import { FAMILY_POOL_ID, isFamilyPlan, memberRemaining, normalizeCommercial, planFor } from '../services/commercialModel';
 
 export function ProfileScreen({
   profile = null,
@@ -26,6 +27,8 @@ export function ProfileScreen({
   onSignOut,
   onAddMember,
   onRemoveMember,
+  familyLedger = null,
+  onTransferScans,
   onDesignPreview,
   onVisualConcept,
   onPlans,
@@ -38,7 +41,11 @@ export function ProfileScreen({
   const watchedIds = profileIds(profile);
   const memberCount = 1 + (profile?.familyMembers?.length || 0);
   const plan = planFor(normalizeCommercial(commercial).planId);
+  const onFamilyPlan = isFamilyPlan(normalizeCommercial(commercial).planId);
   const [memberSearch, setMemberSearch] = useState(false);
+  const [transferOpen, setTransferOpen] = useState(false);
+  const ledgerSelfPlusMembers = [{ id: 'self', name: profile?.name || 'You', child: false },
+    ...((profile?.familyMembers || []).map((m) => ({ id: m.id, name: m.name, child: !!m.child })))];
 
   return (
     <ScrollView style={{ flex: 1, backgroundColor: t.bg }} contentContainerStyle={{ padding: 18, paddingBottom: 28 }}>
@@ -164,6 +171,43 @@ export function ProfileScreen({
       <MemberSearchSheet visible={memberSearch} onClose={() => setMemberSearch(false)}
         members={profile?.familyMembers || []} onAdd={(m) => onAddMember?.(m)}
         capReached={memberCount >= 5} t={t} />
+
+      {onFamilyPlan && familyLedger ? (
+        <Card t={t} style={{ marginBottom: 18 }}>
+          <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: 12 }}>
+            <Text style={{ fontFamily: t.sans, fontSize: 15, fontWeight: '800', color: t.ink }}>
+              Family scans this month
+            </Text>
+            <Pressable onPress={() => setTransferOpen(true)} accessibilityRole="button"
+              style={{ minHeight: 34, borderRadius: 999, paddingHorizontal: 13, backgroundColor: t.surfaceWarm,
+                borderWidth: 1, borderColor: t.line, alignItems: 'center', justifyContent: 'center' }}>
+              <Text style={{ fontFamily: t.sans, fontSize: 13, fontWeight: '800', color: t.accentDeep }}>Move scans</Text>
+            </Pressable>
+          </View>
+          {ledgerSelfPlusMembers.map((m) => (
+            <View key={m.id} style={{ flexDirection: 'row', justifyContent: 'space-between', paddingVertical: 5 }}>
+              <Text style={{ fontFamily: t.sans, fontSize: 13.5, color: t.ink }}>{m.name}</Text>
+              <Text style={{ fontFamily: t.mono, fontSize: 12.5, color: t.ink2 }}>
+                {memberRemaining(familyLedger.members?.[m.id])} left
+              </Text>
+            </View>
+          ))}
+          {memberRemaining(familyLedger.members?.[FAMILY_POOL_ID]) > 0 ? (
+            <View style={{ flexDirection: 'row', justifyContent: 'space-between', paddingVertical: 5, borderTopWidth: 1, borderTopColor: t.lineSoft, marginTop: 4 }}>
+              <Text style={{ fontFamily: t.sans, fontSize: 13.5, fontWeight: '700', color: t.ink2 }}>Shared pool</Text>
+              <Text style={{ fontFamily: t.mono, fontSize: 12.5, color: t.ink2 }}>
+                {memberRemaining(familyLedger.members?.[FAMILY_POOL_ID])} left
+              </Text>
+            </View>
+          ) : null}
+          <Text style={{ fontFamily: t.sans, fontSize: 12, color: t.ink3, lineHeight: 17, marginTop: 10 }}>
+            Each member gets their own monthly scans. Move unused scans to whoever needs them; if someone leaves, their scans go to the shared pool.
+          </Text>
+        </Card>
+      ) : null}
+
+      <FamilyTransferSheet visible={transferOpen} onClose={() => setTransferOpen(false)}
+        ledger={familyLedger} members={ledgerSelfPlusMembers} onTransfer={onTransferScans} t={t} />
 
       <Card t={t} style={{ marginBottom: 18 }}>
         <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: 12 }}>

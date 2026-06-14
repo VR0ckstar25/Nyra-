@@ -48,7 +48,7 @@ import {
   saveCloudScan,
 } from './src/services/syncService';
 import { cleanupExpiredLabelImages, enrichCapturedImage } from './src/services/localRetention';
-import { houseAdForContext, normalizeCommercial, recordScanUsage, scanQuota, updateCommercialPlan } from './src/services/commercialModel';
+import { houseAdForContext, isFamilyPlan, normalizeCommercial, normalizeFamilyLedger, recordScanUsage, scanQuota, transferScans, updateCommercialPlan } from './src/services/commercialModel';
 import {
   DEFAULT_SETTINGS,
   LOCAL_KEYS,
@@ -294,6 +294,14 @@ function Shell() {
   // real scans only (samples are free). At the cap, scanning blocks until the 1st.
   const quotaMemberCount = 1 + (profile?.familyMembers?.length || 0);
   const scanGate = scanQuota(commercial, settings.scanUsage, quotaMemberCount);
+  // Family token ledger: per-member credits the family can transfer. Derived from
+  // the live plan + member list each render so departures/joins reconcile; the
+  // raw ledger persists in settings.
+  const familyMembersForLedger = [{ id: 'self', name: profile?.name || 'You', child: false },
+    ...((profile?.familyMembers || []).map((m) => ({ id: m.id, name: m.name, child: !!m.child })))];
+  const familyLedger = isFamilyPlan(commercial.planId)
+    ? normalizeFamilyLedger(settings.familyLedger, commercial, familyMembersForLedger)
+    : null;
   const productReviewQueue = feedbackLog.filter((entry) => {
     const label = String(entry?.label || '').toLowerCase();
     return entry?.category === 'product_issue' || label === 'wrong' || label === 'unsure';
@@ -714,6 +722,15 @@ function Shell() {
         },
       ],
     );
+  };
+
+  // Move scans between family members (engine: transferScans). Returns {ok,reason}
+  // so the sheet can report honestly; persists the new ledger on success.
+  const transferFamilyScans = (fromId, toId, n) => {
+    if (!familyLedger) return { ok: false, reason: 'Transfers are available on family plans.' };
+    const res = transferScans(familyLedger, fromId, toId, n);
+    if (res.ok) updateSettings({ familyLedger: res.ledger });
+    return res;
   };
 
   const updateSettings = (patch) => {
@@ -1418,6 +1435,7 @@ function Shell() {
       productReviewQueue={productReviewQueue}
       settings={settings} authUser={authUser} authReady={firebaseReady} preproductionAuthReady={preproductionAuthReady}
       syncStatus={syncStatus} commercial={commercial}
+      familyLedger={familyLedger} onTransferScans={transferFamilyScans}
       onAppearance={openAppearance} onEditProfile={() => setScreen('onboarding')} onClearLocalData={clearLocalData}
       onToggleSaveLabelImages={() => updateSettings({ saveLabelImages: !settings.saveLabelImages })}
       onSignIn={() => { setReturnTo('profile'); setScreen('save-profile'); }} onSignOut={handleSignOut} onAddMember={addFamilyMember}

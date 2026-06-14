@@ -134,6 +134,11 @@ export function planFor(planId) {
   return PLAN_BY_ID[planId] || PLAN_BY_ID[PLAN_IDS.free];
 }
 
+// Family plans carry a per-member allowance; only they expose the token ledger.
+export function isFamilyPlan(planId) {
+  return !!planFor(planId).perMemberMonthlyScans;
+}
+
 export function updateCommercialPlan(current, planId) {
   const normalized = normalizeCommercial(current);
   const nextPlan = planFor(planId);

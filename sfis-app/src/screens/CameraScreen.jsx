@@ -7,6 +7,7 @@ import { matchScan } from '../match/scanMatch';
 import data from '../data/allergens.json';
 import { Card, PrimaryButton, ScreenIntro, SecondaryButton } from '../components/DesignPrimitives';
 import { ocrAvailable, recognizeIngredientText } from '../services/ocrService';
+import { nonEnglishNotice } from '../services/languageCheck';
 
 export function CameraScreen({ profile, matcherData, scanGate = null, onUpgrade, onResult, onBack, onManual, onProcessingStart, onProcessingEnd }) {
   const { theme: t } = useTheme();
@@ -60,6 +61,7 @@ export function CameraScreen({ profile, matcherData, scanGate = null, onUpgrade,
       onResult({
         findings,
         unverified,
+        languageNotice: nonEnglishNotice(pendingScan.ocr.text),
         product: pendingScan.product,
         ocr: pendingScan.ocr,
         image: pendingScan.image,

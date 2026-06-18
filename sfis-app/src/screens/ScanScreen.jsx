@@ -3,6 +3,7 @@ import { View, Text, TextInput, Pressable, ScrollView } from 'react-native';
 import { Camera, Keyboard } from 'lucide-react-native';
 import { useTheme } from '../theme/ThemeProvider';
 import { matchScan } from '../match/scanMatch';
+import { nonEnglishNotice } from '../services/languageCheck';
 import data from '../data/allergens.json';
 import { TUTORIAL } from '../data/tutorial';
 import { Card, PrimaryButton, ScreenIntro, SecondaryButton } from '../components/DesignPrimitives';
@@ -44,6 +45,7 @@ export function ScanScreen({ profile, matcherData, scanGate = null, onUpgrade, o
     onResult({
       findings,
       unverified,
+      languageNotice: nonEnglishNotice(review.text),
       product: { name: productName, brand: review.brand, date: review.date },
       ocr: { text: review.text, confidence: null, capturedAt: new Date().toISOString(), source: 'manual' },
     });

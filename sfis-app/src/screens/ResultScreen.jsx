@@ -14,7 +14,7 @@ const FOOTER =
   'we show what we could read. ' +
   "Precautionary allergen statements such as 'may contain' may not always be captured.";
 
-export function ResultScreen({ findings = [], unverified = [], product = {}, onFeedback, nextLabel, onNext }) {
+export function ResultScreen({ findings = [], unverified = [], languageNotice = null, product = {}, onFeedback, nextLabel, onNext }) {
   const { theme: t } = useTheme();
   const familyProfiles = profilesFromFindings(findings);
   // Auto kid-mode only when EVERY matched profile is a child — otherwise an adult's
@@ -84,6 +84,18 @@ export function ResultScreen({ findings = [], unverified = [], product = {}, onF
             })}
           </View>
         </View>
+
+        {languageNotice ? (
+          <View style={{ borderRadius: 14, backgroundColor: t.allergen?.tint || t.surfaceWarm, borderWidth: 1,
+            borderColor: t.allergen?.edge || t.line, padding: 13, marginBottom: 14 }}>
+            <Text style={{ fontFamily: t.sans, fontSize: 13.5, fontWeight: '900', color: t.allergen?.ink || t.ink }}>
+              We may not have read this label
+            </Text>
+            <Text style={{ fontFamily: t.sans, fontSize: 12.5, color: t.ink2, lineHeight: 18, marginTop: 3 }}>
+              {languageNotice}
+            </Text>
+          </View>
+        ) : null}
 
         <View style={{ borderRadius: 14, backgroundColor: t.surfaceWarm, borderWidth: 1,
           borderColor: t.line, padding: 13, marginBottom: 14 }}>

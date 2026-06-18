@@ -1,4 +1,4 @@
-// Wordmark.jsx — the Anvara wordmark. Works today on system fonts; when the brand
+// Wordmark.jsx — the Nyara wordmark. Works today on system fonts; when the brand
 // serif (Source Serif 4) is loaded via expo-font it inherits automatically through
 // theme.serif. The dot on the 'i'-less mark is a small fuchsia accent tittle that
 // nods to the amber "finding present" dot without implying a verdict.
@@ -10,10 +10,10 @@ export function Wordmark({ t, size = 28, color, accent, withDot = true }) {
   const ink = color || t.ink;
   const dot = accent || t.accent;
   return (
-    <View accessibilityRole="header" accessibilityLabel="Anvara"
+    <View accessibilityRole="header" accessibilityLabel="Nyara"
       style={{ flexDirection: 'row', alignItems: 'flex-end' }}>
       <Text style={{ fontFamily: t.serif, fontSize: size, fontWeight: '600', color: ink, letterSpacing: 0.2 }}>
-        Anvara
+        Nyara
       </Text>
       {withDot ? (
         <View style={{ width: Math.max(5, size * 0.16), height: Math.max(5, size * 0.16),

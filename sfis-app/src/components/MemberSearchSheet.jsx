@@ -102,7 +102,7 @@ export function MemberSearchSheet({ visible, onClose, onAdd, members = [], capRe
             )
           ) : (
             <Text style={{ fontFamily: t.sans, fontSize: 13, color: t.ink2, lineHeight: 19 }}>
-              Search for someone who already uses Anvara. Each member keeps their own watched items.
+              Search for someone who already uses Nyara. Each member keeps their own watched items.
               Scans check everyone on the family profile at once. Child profiles use simpler result wording when a match applies.
               A family supports up to 5 profiles.
             </Text>

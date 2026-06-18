@@ -90,9 +90,9 @@ function infoFor(p, hiddenNames) {
   if (p.domain === 'INTOLERANCE') {
     // Spec-mandated epistemic humility (Decision 8): intolerance data is newer;
     // state it and point to a professional — informational, never advisory.
-    return `Many people find ${p.common.toLowerCase()} hard on their body. This isn't an allergy, but the discomfort is real — so Anvara watches just as carefully. ${nameClause} Our intolerance data is newer and still growing; a healthcare professional can help confirm what's behind a reaction.`;
+    return `Many people find ${p.common.toLowerCase()} hard on their body. This isn't an allergy, but the discomfort is real — so Nyara watches just as carefully. ${nameClause} Our intolerance data is newer and still growing; a healthcare professional can help confirm what's behind a reaction.`;
   }
-  return `Anvara checks every label against this preference. ${nameClause}`;
+  return `Nyara checks every label against this preference. ${nameClause}`;
 }
 
 const parents = {};

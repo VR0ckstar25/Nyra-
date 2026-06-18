@@ -35,11 +35,11 @@ export function SaveProfileScreen({
   const accountReady = !!authUser && !recoveryMode;
   const title = recoveryMode ? 'Reset app PIN' : accountReady ? 'Account ready' : hasProfile ? 'Save your profile' : 'Sign in';
   const sub = recoveryMode
-    ? 'Sign in to the Anvara account connected to this device. Then Anvara can turn off the local app PIN so you can create a new one.'
+    ? 'Sign in to the Nyara account connected to this device. Then Nyara can turn off the local app PIN so you can create a new one.'
     : accountReady
     ? hasProfile
       ? 'Your account is connected. Continue setup when you are ready.'
-      : 'Your account is connected. Next, build the label watchlist Anvara should use.'
+      : 'Your account is connected. Next, build the label watchlist Nyara should use.'
     : hasProfile
     ? 'Create a free account to save and sync, or keep using this device locally.'
     : 'Sign in to sync your saved profile and scan diary.';
@@ -175,12 +175,12 @@ export function SaveProfileScreen({
           {recoveryMode
             ? 'Your app PIN is local to this phone. We cannot read it or email it back.'
             : accountReady
-            ? authUser.email || 'Your Anvara account is connected.'
+            ? authUser.email || 'Your Nyara account is connected.'
             : 'Sync saves your profile and scan diary across devices.'}
         </Text>
         <Text style={{ fontFamily: t.sans, fontSize: 13.5, color: t.ink2, lineHeight: 20, marginTop: 6 }}>
           {recoveryMode
-            ? 'Signing in confirms the account before the local PIN is reset. If this profile was never connected to an account, recovery may require erasing this phone\'s Anvara data.'
+            ? 'Signing in confirms the account before the local PIN is reset. If this profile was never connected to an account, recovery may require erasing this phone\'s Nyara data.'
             : accountReady
             ? 'You can continue to preferences now. Cloud backup follows your current backup setting.'
             : 'Label photos stay on this phone. Cloud sync stores profile choices, product names, results, and feedback.'}
@@ -253,11 +253,11 @@ export function SaveProfileScreen({
             No account access?
           </Text>
           <Text style={{ fontFamily: t.sans, fontSize: 12.5, color: t.ink2, lineHeight: 18, marginTop: 3 }}>
-            For a local-only profile, the app PIN is the protection. The fallback is erasing this phone's Anvara data and setting up again.
+            For a local-only profile, the app PIN is the protection. The fallback is erasing this phone's Nyara data and setting up again.
           </Text>
           {onEraseDevice ? (
             <SecondaryButton onPress={onEraseDevice} t={t} style={{ marginTop: 10 }}>
-              Erase this phone's Anvara data
+              Erase this phone's Nyara data
             </SecondaryButton>
           ) : null}
         </View>

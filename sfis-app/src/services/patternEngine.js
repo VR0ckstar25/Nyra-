@@ -222,7 +222,7 @@ export function analyzeScanPatterns(scans = [], options = {}) {
     insights.push({
       id: 'collecting',
       title: 'Still collecting scans',
-      body: `${scanCount} of ${PATTERN_MIN_SCANS} real scans saved. Anvara will avoid trend language until there is more history.`,
+      body: `${scanCount} of ${PATTERN_MIN_SCANS} real scans saved. Nyara will avoid trend language until there is more history.`,
       level: 'info',
     });
   } else if (topFindings.length) {
@@ -238,7 +238,7 @@ export function analyzeScanPatterns(scans = [], options = {}) {
     insights.push({
       id: 'unknown-heavy',
       title: 'Many labels include unknowns',
-      body: 'A high share of saved scans had ingredients Anvara could not verify. Check original labels carefully.',
+      body: 'A high share of saved scans had ingredients Nyara could not verify. Check original labels carefully.',
       level: 'attention',
     });
   }

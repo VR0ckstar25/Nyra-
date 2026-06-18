@@ -280,7 +280,7 @@ export function ProfileScreen({
       <SettingsGroup title="App" t={t}>
         <SettingRow label="Security, backup, offline" sub="App lock, cloud backup, local checkpoint, offline pack" value="Open" onPress={onSecurityBackup} t={t} />
         <SettingRow label="Plans & ads" sub="Free uses house messages; result screens stay ad-free" value={plan.label} onPress={onPlans} t={t} />
-        <SettingRow label="New UI preview" sub="A richer Anvara home concept to test in-app" value="View" onPress={onDesignPreview} t={t} />
+        <SettingRow label="New UI preview" sub="A richer Nyara home concept to test in-app" value="View" onPress={onDesignPreview} t={t} />
         <SettingRow label="Visual concept" sub="Bolder colors and scan-first outlook options" value="View" onPress={onVisualConcept} t={t} />
         <SettingRow label="Appearance" sub="Background and accent colors" value="Theme" onPress={onAppearance} t={t} />
         <SettingRow

@@ -13,7 +13,7 @@ export function HouseAdCard({ ad, onPress, t }) {
           <Megaphone size={21} color={t.accentDeep} strokeWidth={2.4} />
         </View>
         <View style={{ flex: 1, minWidth: 0 }}>
-          <Overline t={t} color={t.accentDeep}>{ad.eyebrow || 'Anvara'}</Overline>
+          <Overline t={t} color={t.accentDeep}>{ad.eyebrow || 'Nyara'}</Overline>
           <Text style={{ fontFamily: t.sans, fontSize: 16, fontWeight: '900', color: t.ink,
             lineHeight: 21, marginTop: 5 }}>
             {ad.title}

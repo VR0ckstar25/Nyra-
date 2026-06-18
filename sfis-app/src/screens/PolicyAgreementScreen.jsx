@@ -13,7 +13,7 @@ export function PolicyAgreementScreen({ onAccept, onBack }) {
   return (
     <ScrollView style={{ flex: 1, backgroundColor: t.bg }} contentContainerStyle={{ padding: 18, paddingBottom: 30 }}>
       <ScreenIntro
-        title="Before we personalize Anvara"
+        title="Before we personalize Nyara"
         sub="A few clear agreements first, so the app earns trust before asking about your food life."
         t={t}
       />
@@ -26,7 +26,7 @@ export function PolicyAgreementScreen({ onAccept, onBack }) {
         <Overline t={t}>Trust basics</Overline>
         <Text style={{ fontFamily: t.serif, fontSize: 21, lineHeight: 28, fontWeight: '600',
           color: t.ink, marginTop: 8 }}>
-          Anvara helps you review labels. It does not replace your own label check.
+          Nyara helps you review labels. It does not replace your own label check.
         </Text>
         <Text style={{ fontFamily: t.sans, fontSize: 13.5, color: t.ink2, lineHeight: 20, marginTop: 8 }}>
           The database is still draft in preproduction, scans can miss words, and packaging should remain the final source before you buy or eat.
@@ -38,7 +38,7 @@ export function PolicyAgreementScreen({ onAccept, onBack }) {
           checked={acceptedPrivacy}
           onPress={() => setAcceptedPrivacy((value) => !value)}
           icon={<FileText size={21} color={t.accentDeep} strokeWidth={2.4} />}
-          title="I agree to Anvara's Terms and Privacy Notice."
+          title="I agree to Nyara's Terms and Privacy Notice."
           sub="Preproduction privacy posture: profile, diary, feedback, and offline packs stay encrypted on this device; cloud sync is optional."
           t={t}
         />
@@ -46,8 +46,8 @@ export function PolicyAgreementScreen({ onAccept, onBack }) {
           checked={acceptedSafety}
           onPress={() => setAcceptedSafety((value) => !value)}
           icon={<ShieldCheck size={21} color={t.accentDeep} strokeWidth={2.4} />}
-          title="I understand Anvara is a support tool, not a safety guarantee."
-          sub="Anvara can reduce label-reading friction, but you still need to check the original package."
+          title="I understand Nyara is a support tool, not a safety guarantee."
+          sub="Nyara can reduce label-reading friction, but you still need to check the original package."
           t={t}
         />
       </Card>

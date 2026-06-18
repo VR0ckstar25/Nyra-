@@ -34,7 +34,7 @@ if (missingKeys.length === 0) {
         // to AsyncStorage only where SecureStore is unavailable — LOUDLY.
         const { createSecureAuthStorage } = require('./secureAuthStorage');
         const secureStorage = createSecureAuthStorage();
-        if (!secureStorage) console.warn('Anvara: SecureStore unavailable — auth tokens falling back to AsyncStorage.');
+        if (!secureStorage) console.warn('Nyara: SecureStore unavailable — auth tokens falling back to AsyncStorage.');
         auth = initializeAuth(app, {
           persistence: getReactNativePersistence(secureStorage || AsyncStorage),
         });
@@ -42,7 +42,7 @@ if (missingKeys.length === 0) {
     } catch (error) {
       // No more silent downgrade (review finding): in-memory persistence signs
       // users out on every restart — say so where developers will see it.
-      console.warn('Anvara: native auth persistence failed — sessions will NOT survive restarts:', error?.message);
+      console.warn('Nyara: native auth persistence failed — sessions will NOT survive restarts:', error?.message);
       auth = getAuth(app);
     }
     db = getFirestore(app);

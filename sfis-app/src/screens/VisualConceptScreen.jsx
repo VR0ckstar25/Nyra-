@@ -117,7 +117,7 @@ export function VisualConceptScreen() {
       <View style={{ marginBottom: 14 }}>
         <Text style={{ fontSize: 11, fontWeight: '900', color: concept.primaryDark,
           textTransform: 'uppercase', letterSpacing: 0 }}>
-          Anvara v2 preview
+          Nyara v2 preview
         </Text>
         <Text style={{ fontSize: 31, lineHeight: 36, fontWeight: '900',
           color: concept.ink, marginTop: 5 }}>
@@ -178,7 +178,7 @@ function PhonePreview({ p }) {
           <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }}>
             <Text style={{ fontSize: 12, fontWeight: '900', color: p.buttonText,
               textTransform: 'uppercase', letterSpacing: 0 }}>
-              Anvara
+              Nyara
             </Text>
             <View style={{ height: 26, paddingHorizontal: 9, borderRadius: 999,
               backgroundColor: 'rgba(255,255,255,0.18)', alignItems: 'center',

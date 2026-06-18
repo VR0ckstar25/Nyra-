@@ -13,7 +13,7 @@ const STEPS = [
   {
     icon: ListChecks,
     title: 'See your matches highlighted first.',
-    sub: 'Anvara checks the label against your watchlist and separates clear matches from things it cannot verify yet.',
+    sub: 'Nyara checks the label against your watchlist and separates clear matches from things it cannot verify yet.',
   },
   {
     icon: ClipboardCheck,
@@ -29,7 +29,7 @@ export function HowItWorksScreen({ onDone }) {
     <ScrollView style={{ flex: 1, backgroundColor: t.bg }} contentContainerStyle={{ padding: 18, paddingBottom: 30 }}>
       <ScreenIntro
         title="Your calmer label routine"
-        sub="Use Anvara as a second set of eyes: quick, specific, and honest about what it can and cannot confirm."
+        sub="Use Nyara as a second set of eyes: quick, specific, and honest about what it can and cannot confirm."
         t={t}
       />
 
@@ -40,7 +40,7 @@ export function HowItWorksScreen({ onDone }) {
           Less guessing in the aisle. More confidence before something goes in the cart.
         </Text>
         <Text style={{ fontFamily: t.sans, fontSize: 13.5, color: t.ink2, lineHeight: 20, marginTop: 8 }}>
-          Your sample result used the watchlist you just built. Next, Anvara prepares the matching data it should keep ready on this phone.
+          Your sample result used the watchlist you just built. Next, Nyara prepares the matching data it should keep ready on this phone.
         </Text>
       </Card>
 

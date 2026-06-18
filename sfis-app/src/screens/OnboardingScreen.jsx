@@ -20,12 +20,12 @@ const MAX_SELECTIONS = PROFILE_ITEM_CAP;
 const GUIDE_COPY = {
   allergy: {
     title: 'Choose your allergy watchlist',
-    sub: 'Pick the exact allergens Anvara should look for first. Nothing was preselected, because this needs to be yours.',
+    sub: 'Pick the exact allergens Nyara should look for first. Nothing was preselected, because this needs to be yours.',
     note: 'Start with allergies, then add an intolerance, diet choice, or goal only if it matters now.',
   },
   family: {
     title: 'Start the family watchlist',
-    sub: 'Build your own list first. After setup, you can add family members and Anvara will show who each finding applies to.',
+    sub: 'Build your own list first. After setup, you can add family members and Nyara will show who each finding applies to.',
     note: 'A family supports up to 5 profiles including you, and children count as one profile.',
   },
   intolerance: {
@@ -36,7 +36,7 @@ const GUIDE_COPY = {
   diet: {
     title: 'Choose your food boundaries',
     sub: 'Add diet choices or ingredient goals, then include allergies or intolerances if they matter.',
-    note: 'Anvara will show matches as label evidence, not as a moral verdict on the food.',
+    note: 'Nyara will show matches as label evidence, not as a moral verdict on the food.',
   },
   mixed: {
     title: 'Build one focused watchlist',
@@ -250,7 +250,7 @@ export function OnboardingScreen({ onDone, initialProfile = null, initialSelecti
             That's your focused eight.
           </Text>
           <Text style={{ fontFamily: t.sans, fontSize: 12.5, color: t.ink2, lineHeight: 18, marginTop: 3 }}>
-            Each choice keeps matching data ready on your phone. To keep Anvara quick and lightweight,
+            Each choice keeps matching data ready on your phone. To keep Nyara quick and lightweight,
             remove one above before adding another.
           </Text>
         </View>

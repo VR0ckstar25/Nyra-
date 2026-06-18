@@ -43,7 +43,7 @@ export function OnboardingIntentScreen({ onContinue, onSkip }) {
   return (
     <ScrollView style={{ flex: 1, backgroundColor: t.bg }} contentContainerStyle={{ padding: 18, paddingBottom: 30 }}>
       <ScreenIntro
-        title="What brings you to Anvara?"
+        title="What brings you to Nyara?"
         sub="One quick question helps shape the watchlist step. Nothing is selected for you."
         t={t}
       />
@@ -55,7 +55,7 @@ export function OnboardingIntentScreen({ onContinue, onSkip }) {
           Build the scan around your real shopping life.
         </Text>
         <Text style={{ fontFamily: t.sans, fontSize: 13.5, color: t.ink2, lineHeight: 20, marginTop: 8 }}>
-          Anvara will still ask you to choose the exact items next, so there are no hidden defaults.
+          Nyara will still ask you to choose the exact items next, so there are no hidden defaults.
         </Text>
       </Card>
 

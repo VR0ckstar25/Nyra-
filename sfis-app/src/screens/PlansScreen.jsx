@@ -120,7 +120,7 @@ export function PlansScreen({ commercial, onSelectPlan, onRestore, onBack }) {
         </SecondaryButton>
       ) : null}
       <Text style={{ fontFamily: t.sans, fontSize: 11.5, color: t.ink3, lineHeight: 16, textAlign: 'center', marginTop: 10 }}>
-        Payment is handled by the App Store / Google Play with the card already on your phone — Anvara never sees or stores card details.
+        Payment is handled by the App Store / Google Play with the card already on your phone — Nyara never sees or stores card details.
       </Text>
       <SecondaryButton onPress={onBack} t={t} style={{ marginTop: 10 }}>
         Back

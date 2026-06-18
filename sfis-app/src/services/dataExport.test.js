@@ -23,7 +23,7 @@ const feedback = [{ id: 'f1', label: 'Clear' }];
 const payload = buildExportPayload({ profile, scans, feedback, settings: { commercial: { planId: 'family' } }, exportedAt: AT });
 
 // 1. Shape + provenance
-check('app + schema stamped', payload.app === 'Anvara' && payload.schema === EXPORT_SCHEMA_VERSION);
+check('app + schema stamped', payload.app === 'Nyara' && payload.schema === EXPORT_SCHEMA_VERSION);
 check('exportedAt preserved (injected, deterministic)', payload.exportedAt === AT);
 check('plan captured', payload.plan === 'family');
 check('counts correct', payload.counts.scans === 2 && payload.counts.feedback === 1 && payload.counts.familyMembers === 1);

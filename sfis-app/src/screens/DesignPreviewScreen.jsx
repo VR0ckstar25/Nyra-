@@ -37,7 +37,7 @@ export function DesignPreviewScreen({ scans = [], offlinePack, ad = null, onScan
         <View style={{ position: 'absolute', top: 0, left: 0, right: 0, height: 7, backgroundColor: t.accent }} />
         <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', gap: 14 }}>
           <View style={{ flex: 1, minWidth: 0 }}>
-            <Overline t={t} color={t.accentDeep}>Anvara daily</Overline>
+            <Overline t={t} color={t.accentDeep}>Nyara daily</Overline>
             <Text style={{ fontFamily: t.serif, fontSize: 28, lineHeight: 33, fontWeight: '600',
               color: t.ink, marginTop: 7 }}>
               Scan calmly, save what matters.

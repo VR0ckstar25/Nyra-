@@ -6,8 +6,8 @@
   "scripts": {
     "start": "expo start",
     "web": "expo start --web",
-    "android": "expo start --android",
-    "ios": "expo start --ios",
+    "android": "expo run:android",
+    "ios": "expo run:ios",
     "test": "node src/match/scanMatch.test.js && node src/profile/profileModel.test.js && node src/services/localRetention.test.js && node src/services/commercialModel.test.js && node src/services/offlinePacksCore.test.js && node src/services/patternEngine.test.js && node src/services/appClearance.test.js && node src/services/familyLedger.test.js && node src/services/billingService.test.js && node src/services/outboxQueue.test.js && node src/services/flowRouting.test.js && node src/services/dataExport.test.js && node src/services/secureAuthStorage.test.js && node src/services/languageCheck.test.js && node src/services/appCore.test.js && node src/services/prelaunch.security.test.js",
     "test:match": "node src/match/scanMatch.test.js"
   },
@@ -17,8 +17,10 @@
     "expo": "~51.0.28",
     "expo-apple-authentication": "~6.4.2",
     "expo-auth-session": "~5.5.2",
+    "expo-build-properties": "~0.12.5",
     "expo-camera": "~15.0.16",
     "expo-crypto": "~13.0.2",
+    "expo-dev-client": "~4.0.29",
     "expo-file-system": "~17.0.1",
     "expo-secure-store": "~13.0.2",
     "expo-status-bar": "~1.12.1",

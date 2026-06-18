@@ -25,7 +25,7 @@ export function ScanScreen({ profile, matcherData, scanGate = null, onUpgrade, o
   const watchedIds = profileIds(profile);
   const activeData = matcherData || data;
   // Real scans are gated by the monthly quota; samples stay free so people can
-  // always see how Anvara works even at the cap.
+  // always see how Nyara works even at the cap.
   const blocked = !!scanGate && scanGate.allowed === false;
 
   const prepareReview = () => {
@@ -80,7 +80,7 @@ export function ScanScreen({ profile, matcherData, scanGate = null, onUpgrade, o
           Draft data check
         </Text>
         <Text style={{ fontFamily: t.sans, fontSize: 12.5, color: t.ink2, lineHeight: 18, marginTop: 3 }}>
-          Anvara is still in preproduction. Use results as a second pass, then verify the original package.
+          Nyara is still in preproduction. Use results as a second pass, then verify the original package.
         </Text>
       </View>
 
@@ -124,7 +124,7 @@ export function ScanScreen({ profile, matcherData, scanGate = null, onUpgrade, o
             Scan ingredient label
           </Text>
           <Text style={{ fontFamily: t.sans, fontSize: 13.5, lineHeight: 19, color: t.onAccent, opacity: 0.86, marginTop: 5 }}>
-            Camera reads the label, then you review before Anvara checks it.
+            Camera reads the label, then you review before Nyara checks it.
           </Text>
         </View>
         <Text style={{ fontFamily: t.sans, fontSize: 30, fontWeight: '800', color: t.onAccent }}>›</Text>
@@ -160,7 +160,7 @@ export function ScanScreen({ profile, matcherData, scanGate = null, onUpgrade, o
           <View style={{ borderRadius: 14, backgroundColor: t.accentTint, borderWidth: 1,
             borderColor: t.accentSoft, padding: 13, marginTop: 14 }}>
             <Text style={{ fontFamily: t.sans, fontSize: 13.5, fontWeight: '900', color: t.ink }}>
-              Review before Anvara saves this scan
+              Review before Nyara saves this scan
             </Text>
             <Text style={{ fontFamily: t.sans, fontSize: 12.5, color: t.ink2, lineHeight: 18, marginTop: 4 }}>
               Product: {review.name}{review.brand ? ` · ${review.brand}` : ''}. Edit the fields above if anything looks off.

@@ -1,5 +1,5 @@
 // dataExport.js — user-facing "download my data" backup (the last local backup
-// path). Builds a portable JSON of everything Anvara holds for the user, writes
+// path). Builds a portable JSON of everything Nyara holds for the user, writes
 // it to a file, and hands it to the OS share sheet.
 //
 // PRIVACY: label PHOTOS never leave the device, so the export carries only photo
@@ -37,10 +37,10 @@ export function buildExportPayload({ profile = null, scans = [], feedback = [], 
   const feedbackList = Array.isArray(feedback) ? feedback : [];
   const safeSettings = settings && typeof settings === 'object' ? settings : {};
   return {
-    app: 'Anvara',
+    app: 'Nyara',
     schema: EXPORT_SCHEMA_VERSION,
     exportedAt: stamp,
-    note: 'Your Anvara data. Label photos stay on your device and are not included — only their dates.',
+    note: 'Your Nyara data. Label photos stay on your device and are not included — only their dates.',
     profile,
     plan: safeSettings.commercial?.planId || 'free',
     counts: { scans: scanList.length, feedback: feedbackList.length, familyMembers: (Array.isArray(profile?.familyMembers) ? profile.familyMembers : []).length },

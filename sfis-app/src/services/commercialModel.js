@@ -26,7 +26,7 @@ export const PLAN_LEVELS = [
     badge: 'House ads',
     monthlyScans: 10,
     perMemberMonthlyScans: null,
-    summary: 'Try Anvara with local scanning, diary, and focused offline packs.',
+    summary: 'Try Nyara with local scanning, diary, and focused offline packs.',
     features: [
       '10 scans a month',
       'Manual and camera-assisted scanning',
@@ -159,21 +159,21 @@ export function shouldShowHouseAds(commercial, context = 'home') {
 const HOUSE_ADS = {
   home: {
     id: 'house-home',
-    eyebrow: 'Anvara Free',
+    eyebrow: 'Nyara Free',
     title: 'Keep the result screen quiet.',
     body: 'Free may show occasional house messages on Home, Diary, and Patterns. Allergy results stay ad-free by design.',
     action: 'View plans',
   },
   diary: {
     id: 'house-diary',
-    eyebrow: 'Anvara Free',
+    eyebrow: 'Nyara Free',
     title: 'More room to look back.',
     body: 'Plus and Family keep a longer scan history and add family profiles. Result screens stay ad-free on every plan.',
     action: 'View plans',
   },
   patterns: {
     id: 'house-patterns',
-    eyebrow: 'Anvara Free',
+    eyebrow: 'Nyara Free',
     title: 'Richer patterns on Family.',
     body: 'Family plans enrich what Patterns can show across everyone you watch for. These house messages never touch a result.',
     action: 'View plans',

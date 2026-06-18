@@ -8,7 +8,7 @@ const PROOF_POINTS = [
   {
     icon: Eye,
     title: 'Personal, not generic',
-    sub: 'Anvara checks each label against the watchlist you just built, so the result starts with what matters to you.',
+    sub: 'Nyara checks each label against the watchlist you just built, so the result starts with what matters to you.',
   },
   {
     icon: LockKeyhole,
@@ -28,7 +28,7 @@ export function CredibilityScreen({ onContinue, onSkip }) {
   return (
     <ScrollView style={{ flex: 1, backgroundColor: t.bg }} contentContainerStyle={{ padding: 18, paddingBottom: 30 }}>
       <ScreenIntro
-        title="Why Anvara feels different"
+        title="Why Nyara feels different"
         sub="A quick trust check before the preview. No scare language, no fake certainty - just a calmer way to read labels."
         t={t}
       />
@@ -44,7 +44,7 @@ export function CredibilityScreen({ onContinue, onSkip }) {
           A second set of eyes for the aisle.
         </Text>
         <Text style={{ fontFamily: t.sans, fontSize: 13.8, color: t.ink2, lineHeight: 20, marginTop: 8 }}>
-          Anvara does not replace the package. It makes the first pass faster, clearer, and easier to act on.
+          Nyara does not replace the package. It makes the first pass faster, clearer, and easier to act on.
         </Text>
       </Card>
 
@@ -80,7 +80,7 @@ export function CredibilityScreen({ onContinue, onSkip }) {
               Honest preproduction note
             </Text>
             <Text style={{ fontFamily: t.sans, fontSize: 12.6, color: t.ink2, lineHeight: 18, marginTop: 3 }}>
-              The database is still marked draft until independent validation is complete. Anvara will keep showing that limit clearly.
+              The database is still marked draft until independent validation is complete. Nyara will keep showing that limit clearly.
             </Text>
           </View>
         </View>

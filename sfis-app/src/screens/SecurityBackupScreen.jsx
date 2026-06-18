@@ -113,7 +113,7 @@ export function SecurityBackupScreen({
   };
 
   const confirmDisablePin = () => {
-    Alert.alert('Turn off app lock?', 'The app will still use encrypted storage, but opening Anvara will not require the app PIN.', [
+    Alert.alert('Turn off app lock?', 'The app will still use encrypted storage, but opening Nyara will not require the app PIN.', [
       { text: 'Cancel', style: 'cancel' },
       { text: 'Turn off', style: 'destructive', onPress: onDisableAppPin },
     ]);

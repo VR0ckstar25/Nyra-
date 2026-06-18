@@ -1,5 +1,5 @@
 // languageCheck.js — honest capability boundary (founder decision 2026-06-18):
-// Anvara's matcher only understands English ingredient terms. When a label looks
+// Nyara's matcher only understands English ingredient terms. When a label looks
 // like it's in another language/script we must SAY SO rather than silently return
 // "nothing found" (which a user could mistake for "safe"). Pure + testable.
 
@@ -20,7 +20,7 @@ export function nonEnglishNotice(text) {
   // letters but almost no Latin letters at all.
   const nonLatinShare = nonLatin / letters;
   if (nonLatinShare >= 0.2 || (letters >= 6 && latin / letters < 0.4)) {
-    return 'This label doesn’t look like English. Anvara can only read English ingredient labels right now, so it may have missed things — please check the original packaging.';
+    return 'This label doesn’t look like English. Nyara can only read English ingredient labels right now, so it may have missed things — please check the original packaging.';
   }
   return null;
 }

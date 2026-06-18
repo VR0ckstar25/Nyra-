@@ -79,7 +79,7 @@ export function GettingReadyScreen({ profile, offlinePack, onDownload, onDone })
     <ScrollView style={{ flex: 1, backgroundColor: t.bg }} contentContainerStyle={{ padding: 18, paddingBottom: 30 }}>
       <ScreenIntro
         title="Getting ready"
-        sub="Choose what Anvara keeps available for scanning without network access."
+        sub="Choose what Nyara keeps available for scanning without network access."
         t={t}
       />
 

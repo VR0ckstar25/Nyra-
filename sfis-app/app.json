@@ -1,6 +1,6 @@
 {
   "expo": {
-    "name": "Anvara",
+    "name": "Nyara",
     "slug": "anvara",
     "scheme": "anvara",
     "version": "1.0.0",
@@ -32,11 +32,12 @@
       [
         "expo-camera",
         {
-          "cameraPermission": "Allow Anvara to use the camera to read ingredient labels."
+          "cameraPermission": "Allow Nyara to use the camera to read ingredient labels."
         }
       ],
       "expo-secure-store",
-      "expo-apple-authentication"
+      "expo-apple-authentication",
+      "expo-build-properties"
     ]
   }
 }

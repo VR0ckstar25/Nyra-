@@ -37,7 +37,7 @@ export function UnlockScreen({ onUnlock, onForgotPin, lockoutText = '' }) {
         </View>
       </View>
 
-      <ScreenIntro title="Unlock Anvara" sub="Your profile, scans, feedback, and backups are protected on this device." t={t} />
+      <ScreenIntro title="Unlock Nyara" sub="Your profile, scans, feedback, and backups are protected on this device." t={t} />
 
       <Card t={t} style={{ marginBottom: 14 }}>
         <TextInput
@@ -68,7 +68,7 @@ export function UnlockScreen({ onUnlock, onForgotPin, lockoutText = '' }) {
       </SecondaryButton>
       <Text style={{ fontFamily: t.sans, fontSize: 12.5, color: t.ink3, lineHeight: 18,
         textAlign: 'center', marginTop: 10 }}>
-        Resetting the app PIN requires signing in to the Anvara account connected to this device.
+        Resetting the app PIN requires signing in to the Nyara account connected to this device.
       </Text>
     </View>
   );

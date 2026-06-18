@@ -36,11 +36,14 @@ service cloud.firestore {
         allow create, update: if owns(uid) && payloadOwnerOk();
       }
 
-      // Audit trail: append-only. No client edits or deletes after the fact.
+      // Audit trail: append-only (no edits), but the OWNER may DELETE — the right to
+      // erasure (GDPR/CCPA) overrides append-only; retaining data after a delete
+      // request is itself a violation. Updates stay forbidden so history isn't rewritten.
       match /events/{eventId} {
         allow read: if owns(uid);
         allow create: if owns(uid) && payloadOwnerOk();
-        allow update, delete: if false;
+        allow update: if false;
+        allow delete: if owns(uid);
       }
 
       match /meta/{docId} {

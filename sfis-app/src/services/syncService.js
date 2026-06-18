@@ -302,11 +302,22 @@ export async function deleteCloudSnapshot(uid) {
     await deletePreproductionCloud(uid);
     return;
   }
-  const scans = await getDocs(collection(userRoot(uid), 'scans'));
-  const feedback = await getDocs(collection(userRoot(uid), 'feedback'));
-  const events = await getDocs(collection(userRoot(uid), 'events'));
-  await Promise.all(scans.docs.map((item) => deleteDoc(item.ref)));
-  await Promise.all(feedback.docs.map((item) => deleteDoc(item.ref)));
-  await Promise.all(events.docs.map((item) => deleteDoc(item.ref)));
-  await deleteDoc(doc(userRoot(uid), 'profile', 'self'));
+  // Erasure must be COMPLETE and resilient: delete every collection independently so
+  // one rejection doesn't leave the rest half-deleted, then report what (if anything)
+  // could not be removed so the caller can surface it rather than claim a clean wipe.
+  const failed = [];
+  const purge = async (name) => {
+    try {
+      const snap = await getDocs(collection(userRoot(uid), name));
+      const results = await Promise.allSettled(snap.docs.map((item) => deleteDoc(item.ref)));
+      if (results.some((r) => r.status === 'rejected')) failed.push(name);
+    } catch (e) { failed.push(name); }
+  };
+  await purge('scans');
+  await purge('feedback');
+  await purge('events');
+  await deleteDoc(doc(userRoot(uid), 'profile', 'self')).catch(() => failed.push('profile'));
+  if (failed.length) {
+    throw new Error(`Some cloud data could not be deleted: ${failed.join(', ')}. Please try again.`);
+  }
 }

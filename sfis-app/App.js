@@ -48,7 +48,8 @@ import {
   saveCloudScan,
 } from './src/services/syncService';
 import { cleanupExpiredLabelImages, deleteScanImages, enrichCapturedImage } from './src/services/localRetention';
-import { familyScanGate, houseAdForContext, isFamilyPlan, normalizeCommercial, normalizeFamilyLedger, recordFamilyScan, recordScanUsage, scanQuota, transferScans, updateCommercialPlan } from './src/services/commercialModel';
+import { familyScanGate, houseAdForContext, isFamilyPlan, normalizeCommercial, normalizeFamilyLedger, planFor, recordFamilyScan, recordScanUsage, scanQuota, transferScans, updateCommercialPlan } from './src/services/commercialModel';
+import { purchasePlan, restorePurchases } from './src/services/billingService';
 import {
   DEFAULT_SETTINGS,
   LOCAL_KEYS,
@@ -1299,14 +1300,36 @@ function Shell() {
     setScreen('save-profile');
   };
 
-  const selectPlanPreview = (planId) => {
-    const nextCommercial = updateCommercialPlan(settings.commercial, planId);
+  // Plan change routes through the billing seam: store mode runs the real purchase
+  // (entitlement decides the plan); preview mode applies locally with an honest note.
+  // Card data never touches us — store billing keeps Anvara out of PCI scope.
+  const selectPlanPreview = async (planId) => {
+    const res = await purchasePlan(planId);
+    if (!res.ok) {
+      setStorageNotice(res.reason || 'That plan could not be selected.');
+      return;
+    }
+    const grantedPlan = res.planId || planId;
+    const nextCommercial = updateCommercialPlan(settings.commercial, grantedPlan);
     updateSettings({ commercial: nextCommercial });
-    setStorageNotice(`${nextCommercial.planId === 'free' ? 'Free' : nextCommercial.planId === 'plus' ? 'Plus' : 'Family'} preview selected. Store billing is not connected yet.`);
-    recordProcessEvent('commercial.plan_preview_selected', {
-      planId: nextCommercial.planId,
-      billingMode: nextCommercial.billingMode,
-    });
+    setStorageNotice(res.mode === 'store'
+      ? `${planFor(grantedPlan).label} active.`
+      : res.note || `${planFor(grantedPlan).label} preview selected. No charge — store billing isn't connected yet.`);
+    recordProcessEvent('commercial.plan_selected', { planId: grantedPlan, billingMode: res.mode, charged: !!res.charged });
+  };
+
+  // Restore purchases — the entitlement backup after reinstall / new phone.
+  const restorePlan = async () => {
+    const res = await restorePurchases();
+    if (!res.ok) { setStorageNotice(res.reason || 'Restore failed.'); return; }
+    if (res.planId) {
+      const nextCommercial = updateCommercialPlan(settings.commercial, res.planId);
+      updateSettings({ commercial: nextCommercial });
+      setStorageNotice(`Restored: ${planFor(res.planId).label}.`);
+    } else {
+      setStorageNotice(res.note || 'No purchases to restore.');
+    }
+    recordProcessEvent('commercial.restore', { planId: res.planId || null, billingMode: res.mode });
   };
 
   const continueFromResult = () => {
@@ -1463,7 +1486,7 @@ function Shell() {
   } else if (screen === 'plans') {
     title = 'Plans';
     left = { label: '‹ Profile', onPress: () => setScreen('profile') };
-    body = <PlansScreen commercial={commercial} onSelectPlan={selectPlanPreview} onBack={() => setScreen('profile')} />;
+    body = <PlansScreen commercial={commercial} onSelectPlan={selectPlanPreview} onRestore={restorePlan} onBack={() => setScreen('profile')} />;
   } else if (screen === 'design-preview') {
     title = 'Preview';
     left = { label: '‹ Profile', onPress: () => setScreen('profile') };

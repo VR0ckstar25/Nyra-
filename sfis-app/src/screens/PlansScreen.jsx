@@ -5,7 +5,7 @@ import { useTheme } from '../theme/ThemeProvider';
 import { Card, Overline, PrimaryButton, ScreenIntro, SecondaryButton } from '../components/DesignPrimitives';
 import { billingStatus, normalizeCommercial, planFor, PLAN_LEVELS } from '../services/commercialModel';
 
-export function PlansScreen({ commercial, onSelectPlan, onBack }) {
+export function PlansScreen({ commercial, onSelectPlan, onRestore, onBack }) {
   const { theme: t } = useTheme();
   const normalized = useMemo(() => normalizeCommercial(commercial), [commercial]);
   const [selected, setSelected] = useState(normalized.planId);
@@ -112,8 +112,16 @@ export function PlansScreen({ commercial, onSelectPlan, onBack }) {
       </Card>
 
       <PrimaryButton onPress={save} disabled={!changed} t={t}>
-        {changed ? `Preview ${selectedPlan.label}` : `${current.label} selected`}
+        {changed ? `Choose ${selectedPlan.label}` : `${current.label} selected`}
       </PrimaryButton>
+      {onRestore ? (
+        <SecondaryButton onPress={onRestore} t={t} style={{ marginTop: 10 }}>
+          Restore purchases
+        </SecondaryButton>
+      ) : null}
+      <Text style={{ fontFamily: t.sans, fontSize: 11.5, color: t.ink3, lineHeight: 16, textAlign: 'center', marginTop: 10 }}>
+        Payment is handled by the App Store / Google Play with the card already on your phone — Anvara never sees or stores card details.
+      </Text>
       <SecondaryButton onPress={onBack} t={t} style={{ marginTop: 10 }}>
         Back
       </SecondaryButton>

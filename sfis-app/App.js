@@ -69,60 +69,17 @@ import {
   verifyPin,
 } from './src/services/securityService';
 import { buildOutboxItem, mergeOutboxItems, outboxDedupeKey, retryTime, RETRY_DELAYS_MS } from './src/services/outboxQueue';
+import { makeId, mergeById, messageFrom, restoreScreenFromSession, sameJson, serializeUser } from './src/services/appCore';
 import { backFromSaveProfile, onboardingNextScreen, ownershipConflict, postAuthScreen, shouldStampOwner } from './src/services/flowRouting';
 import { buildExportPayload, writeExportFile } from './src/services/dataExport';
 
 const HEADER_ROW_HEIGHT = 48;
-const RESTORABLE_SCREENS = new Set([
-  'diary', 'scan', 'patterns', 'profile', 'history',
-  'policy', 'save-profile', 'getting-ready', 'onboarding-intent', 'onboarding', 'credibility', 'how-it-works', 'appearance', 'plans',
-  'design-preview', 'visual-concept', 'security-backup',
-]);
-const SCREEN_RESTORE_FALLBACKS = {
-  camera: 'scan',
-  result: 'diary',
-};
 
+// Not pure (reads module-level Firebase readiness) — stays here.
 function authStatusMessage() {
   if (firebaseReady) return 'Firebase ready';
   if (preproductionAuthReady) return 'Preproduction demo auth active';
   return firebaseUnavailableMessage();
-}
-
-function makeId(prefix) {
-  return `${prefix}-${Date.now()}-${Math.random().toString(36).slice(2, 8)}`;
-}
-
-function serializeUser(user) {
-  return user ? { uid: user.uid, email: user.email || '', displayName: user.displayName || '' } : null;
-}
-
-function mergeById(local = [], cloud = [], dateKey = 'savedAt') {
-  const merged = new Map();
-  [...cloud, ...local].forEach((item) => {
-    if (!item?.id) return;
-    const existing = merged.get(item.id);
-    if (!existing) {
-      merged.set(item.id, item);
-      return;
-    }
-    const existingDate = new Date(existing?.[dateKey] || existing?.updatedAt || existing?.cloudUpdatedAt || existing?.createdAt || 0).getTime();
-    const itemDate = new Date(item?.[dateKey] || item?.updatedAt || item?.cloudUpdatedAt || item?.createdAt || 0).getTime();
-    if (itemDate >= existingDate) merged.set(item.id, item);
-  });
-  return Array.from(merged.values()).sort((a, b) => {
-    const left = b?.[dateKey] || b?.createdAt || '';
-    const right = a?.[dateKey] || a?.createdAt || '';
-    return String(left).localeCompare(String(right));
-  });
-}
-
-function messageFrom(error, fallback = 'Unknown error') {
-  return error?.message || String(error || fallback);
-}
-
-function sameJson(left, right) {
-  return JSON.stringify(left) === JSON.stringify(right);
 }
 
 // Queue semantics (dedupe/merge/expiry/backoff) live in src/services/outboxQueue.js
@@ -137,13 +94,6 @@ async function saveOutboxCloudItem(uid, item) {
   if (item.kind === 'feedback') return saveCloudFeedback(uid, item.payload);
   if (item.kind === 'event') return saveCloudEvent(uid, item.payload);
   return null;
-}
-
-function restoreScreenFromSession(session, hasProfile) {
-  if (!hasProfile) return 'welcome';
-  const last = session?.lastScreen;
-  const mapped = SCREEN_RESTORE_FALLBACKS[last] || last;
-  return RESTORABLE_SCREENS.has(mapped) ? mapped : 'diary';
 }
 
 function HeaderButton({ label, onPress, align, t }) {

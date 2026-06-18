@@ -42,8 +42,9 @@ export function billingMode() {
 
 export function planForEntitlements(activeEntitlements = []) {
   // highest plan wins if several are active
+  const active = Array.isArray(activeEntitlements) ? activeEntitlements : [];
   const order = ['family_pro', 'family', 'plus'];
-  const hit = order.find((e) => activeEntitlements.includes(e));
+  const hit = order.find((e) => active.includes(e));
   return hit ? ENTITLEMENT_TO_PLAN[hit] : PLAN_IDS.free;
 }
 

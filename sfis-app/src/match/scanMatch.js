@@ -213,7 +213,8 @@ function profileWatchEntries(profile) {
     child: profile.type === 'child' || !!profile.child,
     ids: selectedIdsFrom(profile.items || profile.watched),
   }];
-  (profile.familyMembers || []).forEach((member, index) => {
+  (Array.isArray(profile.familyMembers) ? profile.familyMembers : []).forEach((member, index) => {
+    if (!member || typeof member !== 'object') return;
     entries.push({
       id: uniqueId(member.id || `member-${index}`),
       name: member.name || 'Family member',

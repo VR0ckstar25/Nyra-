@@ -36,7 +36,8 @@ export function buildOutboxItem({ kind, payload, id, message = 'Cloud sync faile
 // expired items, order oldest-first, cap length. Malformed items are ignored.
 export function mergeOutboxItems(existing = [], additions = [], now = Date.now()) {
   const byKey = new Map();
-  [...existing, ...additions].forEach((item) => {
+  const safe = (a) => (Array.isArray(a) ? a : []);
+  [...safe(existing), ...safe(additions)].forEach((item) => {
     if (!item?.kind || !item?.payload) return;
     byKey.set(outboxDedupeKey(item), item);
   });

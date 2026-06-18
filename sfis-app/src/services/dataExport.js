@@ -31,18 +31,21 @@ function safeOcrMeta(ocr) {
   return { confidence: ocr.confidence ?? null, capturedAt: ocr.capturedAt || null };
 }
 
-export function buildExportPayload({ profile = null, scans = [], feedback = [], settings = {}, exportedAt }) {
+export function buildExportPayload({ profile = null, scans = [], feedback = [], settings = {}, exportedAt } = {}) {
   const stamp = exportedAt || new Date().toISOString();
+  const scanList = Array.isArray(scans) ? scans.filter((s) => s && typeof s === 'object') : [];
+  const feedbackList = Array.isArray(feedback) ? feedback : [];
+  const safeSettings = settings && typeof settings === 'object' ? settings : {};
   return {
     app: 'Anvara',
     schema: EXPORT_SCHEMA_VERSION,
     exportedAt: stamp,
     note: 'Your Anvara data. Label photos stay on your device and are not included — only their dates.',
     profile,
-    plan: settings.commercial?.planId || 'free',
-    counts: { scans: scans.length, feedback: feedback.length, familyMembers: (profile?.familyMembers || []).length },
-    scans: scans.map((s) => ({ ...s, image: safeImageMeta(s.image), ocr: safeOcrMeta(s.ocr) })),
-    feedback,
+    plan: safeSettings.commercial?.planId || 'free',
+    counts: { scans: scanList.length, feedback: feedbackList.length, familyMembers: (Array.isArray(profile?.familyMembers) ? profile.familyMembers : []).length },
+    scans: scanList.map((s) => ({ ...s, image: safeImageMeta(s.image), ocr: safeOcrMeta(s.ocr) })),
+    feedback: feedbackList,
   };
 }
 

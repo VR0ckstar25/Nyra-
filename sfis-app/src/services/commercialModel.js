@@ -216,11 +216,12 @@ export function normalizeFamilyLedger(ledger, commercial, members = [], now = ne
   const per = plan.perMemberMonthlyScans || 0;
   const key = cycleKey(now);
   const fresh = !ledger || ledger.cycle !== key;
-  const prev = (!fresh && ledger.members) || {};
+  const prev = (!fresh && ledger.members && typeof ledger.members === 'object') ? ledger.members : {};
   const next = { cycle: key, members: {} };
-  const liveIds = new Set(members.map((m) => m.id));
+  const memberList = (Array.isArray(members) ? members : []).filter((m) => m && typeof m === 'object' && m.id);
+  const liveIds = new Set(memberList.map((m) => m.id));
 
-  members.forEach((m) => {
+  memberList.forEach((m) => {
     const entry = prev[m.id];
     next.members[m.id] = entry && !fresh
       ? { allowance: per, used: entry.used, received: entry.received, given: entry.given }

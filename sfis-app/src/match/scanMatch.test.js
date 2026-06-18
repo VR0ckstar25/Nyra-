@@ -234,6 +234,13 @@ function expectedCommons(parent) {
   const c = data.parents[parent]?.common;
   return new Set([c, PRETTY_TEST[c], GROUPED[parent]].filter(Boolean));
 }
+// Wave 8 — diet/goal findings must carry a "what it is" info card (no pending-review)
+[["diet.vegan","Animal-derived","Ingredients: honey."],["goal.less_sugar","Added sugars","Ingredients: cane sugar."],["diet.no_pork","Pork","Ingredients: bacon."]].forEach(([id,common,label])=>{
+  const rr=matchScan(label,[id],data);
+  const it=items(rr).find((x)=>x.common===common);
+  check("diet/goal findings carry info: "+common, !!it && typeof it.info==="string" && it.info.length>20, JSON.stringify(it));
+});
+
 console.log('=== DB challenge_corpus.sql ===');
 let corpusTotal = 0;
 try {

@@ -68,19 +68,22 @@ const INLINE_FREE_RE = /\b([a-z][a-z]+)[- ]free\b/ig;
 const ZERO_RE = /\b0\s*(?:g|mg)\s+([a-z][a-z]+)\b/ig;
 const CONTAINS_RE = /\b(?:contains?|ingredients?|allergens?)\b/i;
 
+// info: the "What it is" card text for diet/goal findings (these live here, not in
+// the allergen DB, so without it the detail sheet showed "pending review"). Purely
+// descriptive, no advice, matches the DB info-card tone.
 const GOAL_KW = [
-  { id: 'goal.less_sugar', cat: 'goal', common: 'Added sugars', kws: ['sugar', 'cane sugar', 'glucose', 'glucose syrup', 'corn syrup', 'fructose', 'sucrose', 'dextrose', 'honey', 'molasses', 'syrup'] },
-  { id: 'goal.less_sodium', cat: 'goal', common: 'Sodium', kws: ['salt', 'sodium', 'monosodium glutamate', 'msg'] },
-  { id: 'goal.less_sat_fat', cat: 'goal', common: 'Saturated fat', kws: ['palm oil', 'butter', 'coconut oil', 'lard', 'palm kernel oil'] },
-  { id: 'goal.avoid_dates', cat: 'goal', common: 'Dates', kws: ['date', 'dates', 'date paste', 'date syrup', 'date sugar', 'medjool', 'deglet noor'] },
+  { id: 'goal.less_sugar', cat: 'goal', common: 'Added sugars', info: 'You asked Nyara to flag added sugars. On labels these appear under many names. On labels it can also show up as cane sugar, glucose syrup, corn syrup, dextrose or molasses.', kws: ['sugar', 'cane sugar', 'glucose', 'glucose syrup', 'corn syrup', 'fructose', 'sucrose', 'dextrose', 'honey', 'molasses', 'syrup'] },
+  { id: 'goal.less_sodium', cat: 'goal', common: 'Sodium', info: 'You asked Nyara to flag sodium. On labels it can also show up as salt, monosodium glutamate or MSG.', kws: ['salt', 'sodium', 'monosodium glutamate', 'msg'] },
+  { id: 'goal.less_sat_fat', cat: 'goal', common: 'Saturated fat', info: 'You asked Nyara to flag sources of saturated fat. On labels it can also show up as palm oil, palm kernel oil, coconut oil, butter or lard.', kws: ['palm oil', 'butter', 'coconut oil', 'lard', 'palm kernel oil'] },
+  { id: 'goal.avoid_dates', cat: 'goal', common: 'Dates', info: 'You asked Nyara to flag dates. On labels it can also show up as date paste, date syrup, date sugar, medjool or deglet noor.', kws: ['date', 'dates', 'date paste', 'date syrup', 'date sugar', 'medjool', 'deglet noor'] },
 ];
 const DIET_KW = [
-  { id: 'diet.vegan', cat: 'dietary', common: 'Animal-derived', kws: ['milk', 'butter', 'whey', 'casein', 'egg', 'eggs', 'honey', 'gelatin', 'gelatine', 'lard', 'fish', 'anchovy', 'anchovies', 'meat', 'beef', 'chicken', 'pork'] },
-  { id: 'diet.vegetarian', cat: 'dietary', common: 'Meat or fish', kws: ['gelatin', 'gelatine', 'lard', 'fish', 'anchovy', 'meat', 'beef', 'chicken', 'pork', 'rennet'] },
-  { id: 'diet.pescatarian', cat: 'dietary', common: 'Meat or poultry', kws: ['gelatin', 'gelatine', 'lard', 'meat', 'beef', 'chicken', 'pork', 'ham', 'bacon', 'lamb', 'mutton', 'veal', 'turkey', 'duck', 'goose'] },
-  { id: 'diet.no_red_meat', cat: 'dietary', common: 'Red meat', kws: ['beef', 'lamb', 'mutton', 'veal', 'bison', 'venison'] },
-  { id: 'diet.no_pork', cat: 'dietary', common: 'Pork', kws: ['pork', 'ham', 'bacon', 'lard', 'prosciutto', 'pepperoni', 'salami'] },
-  { id: 'diet.no_poultry', cat: 'dietary', common: 'Poultry', kws: ['chicken', 'turkey', 'duck', 'goose'] },
+  { id: 'diet.vegan', cat: 'dietary', common: 'Animal-derived', info: 'This ingredient comes from an animal source, which doesn’t fit a vegan diet. On labels it can also show up as milk, whey, casein, egg, honey, gelatin or lard.', kws: ['milk', 'butter', 'whey', 'casein', 'egg', 'eggs', 'honey', 'gelatin', 'gelatine', 'lard', 'fish', 'anchovy', 'anchovies', 'meat', 'beef', 'chicken', 'pork'] },
+  { id: 'diet.vegetarian', cat: 'dietary', common: 'Meat or fish', info: 'This is meat or fish (or made from it), which doesn’t fit a vegetarian diet. On labels it can also show up as gelatin, lard, rennet, anchovy or meat broth.', kws: ['gelatin', 'gelatine', 'lard', 'fish', 'anchovy', 'meat', 'beef', 'chicken', 'pork', 'rennet'] },
+  { id: 'diet.pescatarian', cat: 'dietary', common: 'Meat or poultry', info: 'This is meat or poultry, which a pescatarian diet leaves out (fish is fine). On labels it can also show up as beef, chicken, pork, ham, bacon or gelatin.', kws: ['gelatin', 'gelatine', 'lard', 'meat', 'beef', 'chicken', 'pork', 'ham', 'bacon', 'lamb', 'mutton', 'veal', 'turkey', 'duck', 'goose'] },
+  { id: 'diet.no_red_meat', cat: 'dietary', common: 'Red meat', info: 'You asked Nyara to flag red meat. On labels it can also show up as beef, lamb, mutton, veal, bison or venison.', kws: ['beef', 'lamb', 'mutton', 'veal', 'bison', 'venison'] },
+  { id: 'diet.no_pork', cat: 'dietary', common: 'Pork', info: 'You asked Nyara to flag pork. On labels it can also show up as ham, bacon, lard, prosciutto, pepperoni or salami.', kws: ['pork', 'ham', 'bacon', 'lard', 'prosciutto', 'pepperoni', 'salami'] },
+  { id: 'diet.no_poultry', cat: 'dietary', common: 'Poultry', info: 'You asked Nyara to flag poultry. On labels it can also show up as chicken, turkey, duck or goose.', kws: ['chicken', 'turkey', 'duck', 'goose'] },
 ];
 
 function norm(s) {
@@ -436,8 +439,9 @@ function buildItem(entry, index, isFamilySession = false) {
       : `Found on this label${first.token ? ` as "${first.token}"` : ''}.`,
     correlation: `Matches ${entry.groupLabel} on your profile.`,
     aka,
-    // template-generated "what it is" text from the DB export (pending content library)
-    info: index.parentInfo[first.parent] || undefined,
+    // "what it is" text: allergen/intolerance cards come from the DB export; diet/goal
+    // findings carry their own info on the match record (they aren't in the allergen DB).
+    info: index.parentInfo[first.parent] || first.info || undefined,
     // Per-match provenance (review finding: the DRAFT banner was global only) —
     // names HOW this specific match was determined, plus the draft caveat. No
     // confidence meter (that distinction is banned and carried by the verb).
@@ -526,7 +530,7 @@ function matchScan(rawText, profile, data) {
       const hitKw = g.kws.find((k) => containsWords(tw, norm(k).split(' ')));
       if (hitKw && !negatedClaim(tw, norm(hitKw).split(' '))) {
         identified = true;
-        recs.push({ groupId: g.id, groupLabel: g.common, parent: g.id, cat: 'goal', common: g.common, token: tok, matchClass: 'DERIVED', confidence: 'MEDIUM', may: false, pal: false });
+        recs.push({ groupId: g.id, groupLabel: g.common, parent: g.id, cat: 'goal', common: g.common, token: tok, matchClass: 'DERIVED', confidence: 'MEDIUM', may: false, pal: false , info: g.info });
       }
     });
     DIET_KW.forEach((g) => {
@@ -534,7 +538,7 @@ function matchScan(rawText, profile, data) {
       const hitKw = g.kws.find((k) => containsWords(tw, norm(k).split(' ')) && !plantDairyFalsePositive(tok, norm(k), 'milk'));
       if (hitKw && !negatedClaim(tw, norm(hitKw).split(' '))) {
         identified = true;
-        recs.push({ groupId: g.id, groupLabel: g.common, parent: g.id, cat: 'dietary', common: g.common, token: tok, matchClass: 'DERIVED', confidence: 'MEDIUM', may: false, pal: false });
+        recs.push({ groupId: g.id, groupLabel: g.common, parent: g.id, cat: 'dietary', common: g.common, token: tok, matchClass: 'DERIVED', confidence: 'MEDIUM', may: false, pal: false , info: g.info });
       }
     });
 

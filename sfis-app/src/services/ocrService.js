@@ -1,4 +1,8 @@
-import { Platform } from 'react-native';
+// Guarded so this module loads in plain node for unit tests (react-native isn't
+// node-resolvable). On device the real Platform is used; in node it degrades to a
+// neutral default — device behavior is unchanged.
+let Platform;
+try { Platform = require('react-native').Platform; } catch (e) { Platform = { OS: 'node' }; }
 
 let nativeOcrModule;
 let nativeOcrLoadError;

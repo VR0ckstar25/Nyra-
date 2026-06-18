@@ -261,6 +261,19 @@ export function canScanForMember(ledger, memberId) {
   return { allowed: remaining > 0, remaining };
 }
 
+// Scan gate for a family plan, shaped like scanQuota() so the UI is uniform. Founder
+// decision (2026-06-18): a family scan consumes the SCANNING member's own credit
+// (self on this device); transfers rebalance. Includes credits received via transfer.
+export function familyScanGate(ledger, commercial, memberId = 'self', now = new Date()) {
+  const plan = planFor(normalizeCommercial(commercial).planId);
+  const base = plan.perMemberMonthlyScans || 0;
+  const entry = ledger?.members?.[memberId] || { allowance: base, used: 0, received: 0, given: 0 };
+  const allowance = entry.allowance + entry.received - entry.given; // this member's effective pool
+  const remaining = memberRemaining(entry);
+  const nextResetAt = new Date(now.getFullYear(), now.getMonth() + 1, 1).toISOString();
+  return { allowance, used: entry.used, remaining, allowed: remaining > 0, nextResetAt, family: true };
+}
+
 export function recordFamilyScan(ledger, memberId) {
   const entry = ledger?.members?.[memberId];
   if (!entry || memberRemaining(entry) <= 0) return ledger;

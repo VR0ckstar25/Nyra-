@@ -5,7 +5,7 @@
 
 const {
   normalizeFamilyLedger, transferScans, canScanForMember, recordFamilyScan,
-  memberRemaining, familyTotals, FAMILY_POOL_ID,
+  memberRemaining, familyTotals, familyScanGate, FAMILY_POOL_ID,
 } = require('./commercialModel.js');
 
 let pass = 0, fail = 0;
@@ -62,6 +62,17 @@ check('cycle key advanced', led.cycle === '2026-07', led.cycle);
 // 6. Family Pro gets 60/member
 const pro = normalizeFamilyLedger(null, { planId: 'familyPro' }, MEMBERS, JUNE);
 check('familyPro = 60/member', memberRemaining(pro.members.self) === 60);
+
+// 7. familyScanGate: scanning member spends own credit; transfers restore capacity
+let gl = normalizeFamilyLedger(null, fam, MEMBERS, JUNE);
+let gate = familyScanGate(gl, fam, 'self', JUNE);
+check('fresh self gate allows, 50 remaining', gate.allowed && gate.remaining === 50);
+for (let i = 0; i < 50; i++) gl = recordFamilyScan(gl, 'self');
+gate = familyScanGate(gl, fam, 'self', JUNE);
+check('self blocked after spending all 50', !gate.allowed && gate.remaining === 0, JSON.stringify(gate));
+check('other member unaffected by self spend', familyScanGate(gl, fam, 'test-theo', JUNE).remaining === 50);
+const restored = transferScans(gl, 'test-theo', 'self', 12);
+check('transfer restores self capacity', restored.ok && familyScanGate(restored.ledger, fam, 'self', JUNE).remaining === 12 && familyScanGate(restored.ledger, fam, 'self', JUNE).allowed);
 
 console.log(`\n${pass} passed, ${fail} failed`);
 failures.forEach((f) => console.log(f));

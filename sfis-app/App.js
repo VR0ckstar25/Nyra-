@@ -48,7 +48,7 @@ import {
   saveCloudScan,
 } from './src/services/syncService';
 import { cleanupExpiredLabelImages, deleteScanImages, enrichCapturedImage } from './src/services/localRetention';
-import { houseAdForContext, isFamilyPlan, normalizeCommercial, normalizeFamilyLedger, recordScanUsage, scanQuota, transferScans, updateCommercialPlan } from './src/services/commercialModel';
+import { familyScanGate, houseAdForContext, isFamilyPlan, normalizeCommercial, normalizeFamilyLedger, recordFamilyScan, recordScanUsage, scanQuota, transferScans, updateCommercialPlan } from './src/services/commercialModel';
 import {
   DEFAULT_SETTINGS,
   LOCAL_KEYS,
@@ -262,16 +262,20 @@ function Shell() {
   const homeAd = houseAdForContext(commercial, 'home');
   // Scan quota: family plans scale the monthly pool by member count. Gate counts
   // real scans only (samples are free). At the cap, scanning blocks until the 1st.
-  const quotaMemberCount = 1 + (profile?.familyMembers?.length || 0);
-  const scanGate = scanQuota(commercial, settings.scanUsage, quotaMemberCount);
   // Family token ledger: per-member credits the family can transfer. Derived from
   // the live plan + member list each render so departures/joins reconcile; the
   // raw ledger persists in settings.
+  const onFamilyPlan = isFamilyPlan(commercial.planId);
   const familyMembersForLedger = [{ id: 'self', name: profile?.name || 'You', child: false },
     ...((profile?.familyMembers || []).map((m) => ({ id: m.id, name: m.name, child: !!m.child })))];
-  const familyLedger = isFamilyPlan(commercial.planId)
+  const familyLedger = onFamilyPlan
     ? normalizeFamilyLedger(settings.familyLedger, commercial, familyMembersForLedger)
     : null;
+  // Scan gate: on a family plan the SCANNING member spends their OWN credit (founder
+  // decision); otherwise the plan's monthly quota. Both shapes match scanQuota().
+  const scanGate = onFamilyPlan
+    ? familyScanGate(familyLedger, commercial, 'self')
+    : scanQuota(commercial, settings.scanUsage, 1);
   const productReviewQueue = feedbackLog.filter((entry) => {
     const label = String(entry?.label || '').toLowerCase();
     return entry?.category === 'product_issue' || label === 'wrong' || label === 'unsure';
@@ -789,9 +793,14 @@ function Shell() {
         persistLocalValue(LOCAL_KEYS.scans, saved, 'Scan diary');
         return saved;
       });
-      // Count toward the monthly quota — real scans only, never samples.
+      // Count toward the monthly quota — real scans only, never samples. On a family
+      // plan the scanning member (self on this device) spends their own credit.
       if (source !== 'sample') {
-        updateSettings({ scanUsage: recordScanUsage(settings.scanUsage) });
+        if (onFamilyPlan && familyLedger) {
+          updateSettings({ familyLedger: recordFamilyScan(familyLedger, 'self') });
+        } else {
+          updateSettings({ scanUsage: recordScanUsage(settings.scanUsage) });
+        }
       }
       recordProcessEvent('scan.result_saved', {
         scanId: entry.id,

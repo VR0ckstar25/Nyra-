@@ -3,6 +3,7 @@ import { ActivityIndicator, Alert, AppState, SafeAreaView, Share, View, Text, Pr
 import { StatusBar } from 'expo-status-bar';
 import { ThemeProvider, useTheme } from './src/theme/ThemeProvider';
 import { WelcomeScreen } from './src/screens/WelcomeScreen';
+import { IntroScreen } from './src/screens/IntroScreen';
 import { OnboardingScreen } from './src/screens/OnboardingScreen';
 import { OnboardingIntentScreen } from './src/screens/OnboardingIntentScreen';
 import { DiaryScreen } from './src/screens/DiaryScreen';
@@ -1332,9 +1333,15 @@ function Shell() {
   if (screen === 'welcome') {
     title = 'Welcome';
     body = <WelcomeScreen
-      onStart={() => { setReturnTo('getting-ready'); setScreen(settings.policyAcceptedAt ? 'save-profile' : 'policy'); }}
+      // New users see the Mirror-Principle intro first; returning sign-ins skip it.
+      onStart={() => { setReturnTo('getting-ready'); setScreen(settings.introSeenAt ? (settings.policyAcceptedAt ? 'save-profile' : 'policy') : 'intro'); }}
       onSignIn={() => { setReturnTo('getting-ready'); setScreen(settings.policyAcceptedAt ? 'save-profile' : 'policy'); }}
     />;
+  } else if (screen === 'intro') {
+    title = 'Welcome';
+    left = { label: '‹ Welcome', onPress: () => setScreen('welcome') };
+    const leaveIntro = () => { updateSettings({ introSeenAt: new Date().toISOString() }); setScreen(settings.policyAcceptedAt ? 'save-profile' : 'policy'); };
+    body = <IntroScreen onDone={leaveIntro} onSkip={leaveIntro} />;
   } else if (screen === 'policy') {
     title = 'Agreement';
     left = { label: '‹ Welcome', onPress: () => setScreen('welcome') };

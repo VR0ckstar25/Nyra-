@@ -248,7 +248,7 @@ function DetailSheet({ detail, onClose, t }) {
               ) : null}
 
               <DetailLine label="Read as" value={item.technical || item.common} t={t} />
-              <DetailLine label="What it is" value={item.info || 'Detailed explanation pending review.'} t={t} />
+              <DetailLine label="What it is" value={item.info || 'We don’t have a description for this one yet — check the original packaging to be sure.'} t={t} />
               {item.info ? (
                 <Text style={{ fontFamily: t.sans, fontSize: 11.5, color: t.ink3, marginTop: 4, lineHeight: 16 }}>
                   Auto-generated from our ingredient database — full descriptions are being reviewed.

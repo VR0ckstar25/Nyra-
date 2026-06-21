@@ -109,26 +109,21 @@ for (let i = 0; i < 150; i++) {
   check(anyFinding(r), `"${label}" → derived ${common} ingredient must still surface, got (none)`);
 }
 
-// ── 6. Family ledger conservation under random transfers (250) ─────────────────
-group('6. ledger-conservation');
+// ── 6. Paid tiers are UNLIMITED — never block at any usage / member count (250) ─
+group('6. paid-unlimited');
 for (let i = 0; i < 250; i++) {
-  const n = int(2, 5);
-  const members = Array.from({ length: n }, (_, k) => ({ id: k === 0 ? 'self' : `m${k}`, name: `P${k}` }));
-  let led = C.normalizeFamilyLedger(null, { planId: 'family' }, members, new Date(2026, 5, 1));
-  const total0 = C.familyTotals(led).remaining;
-  for (let s = 0; s < int(1, 8); s++) {
-    const from = pick(members).id, to = pick(members).id;
-    const res = C.transferScans(led, from, to, int(1, 70));
-    if (res.ok) led = res.ledger; // only valid transfers apply
-  }
-  check(C.familyTotals(led).remaining === total0, `transfers changed total: ${total0} → ${C.familyTotals(led).remaining}`);
+  const plan = pick(['individual', 'family']);
+  const usage = { cycle: C.cycleKey(), used: int(0, 100000) };
+  const memberCount = plan === 'family' ? int(1, 5) : 1;
+  const q = C.scanQuota({ planId: plan }, usage, memberCount);
+  check(q.allowed === true && q.unlimited === true, `${plan} blocked at used=${usage.used}, members=${memberCount}`);
 }
 
-// ── 7. Quota never negative, blocks exactly at allowance (200) ─────────────────
+// ── 7. Free quota never negative, blocks exactly at allowance (200) ────────────
 group('7. quota-bounds');
 for (let i = 0; i < 200; i++) {
-  const plan = pick(['free', 'plus']);
-  const allowance = plan === 'free' ? 10 : 40;
+  const plan = 'free'; // only Free is capped now; paid unlimited covered in group 6
+  const allowance = 10;
   let u = null; const scans = int(0, allowance + 15); let granted = 0;
   for (let s = 0; s < scans; s++) { const q = C.scanQuota({ planId: plan }, u, 1); if (q.allowed) { u = C.recordScanUsage(u); granted++; } }
   const q = C.scanQuota({ planId: plan }, u, 1);

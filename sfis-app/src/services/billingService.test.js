@@ -15,7 +15,7 @@ const check = (name, cond, detail = '') => {
 (async () => {
   // 1. Preview mode (no SDK): purchases succeed locally, explicitly uncharged
   check('starts in preview mode', billing.billingMode() === 'preview');
-  let r = await billing.purchasePlan('familyPro');
+  let r = await billing.purchasePlan('family');
   check('preview purchase ok + never charged', r.ok && r.mode === 'preview' && r.charged === false);
   check('preview purchase carries honest note', /no charge/i.test(r.note || ''));
   r = await billing.purchasePlan('nope');
@@ -25,8 +25,8 @@ const check = (name, cond, detail = '') => {
 
   // 2. Entitlement mapping: highest active plan wins; none → free
   check('no entitlements → free', billing.planForEntitlements([]) === 'free');
-  check('plus → plus', billing.planForEntitlements(['plus']) === 'plus');
-  check('family_pro beats plus', billing.planForEntitlements(['plus', 'family_pro']) === 'familyPro');
+  check('individual → individual', billing.planForEntitlements(['individual']) === 'individual');
+  check('family beats individual', billing.planForEntitlements(['individual', 'family']) === 'family');
 
   // 3. Store mode with mocked SDK
   const mockInfo = (ents) => ({ entitlements: { active: Object.fromEntries(ents.map((e) => [e, {}])) } });
@@ -35,12 +35,12 @@ const check = (name, cond, detail = '') => {
     configure(opts) { this.configured = opts; },
     async getOfferings() {
       return { current: { availablePackages: [
-        { product: { identifier: 'anvara.plus.monthly' } },
+        { product: { identifier: 'nyara.individual.monthly' } },
         { product: { identifier: 'anvara.family.monthly' } },
       ] } };
     },
     async purchasePackage(pkg) {
-      if (pkg.product.identifier === 'anvara.plus.monthly') return { customerInfo: mockInfo(['plus']) };
+      if (pkg.product.identifier === 'nyara.individual.monthly') return { customerInfo: mockInfo(['individual']) };
       throw Object.assign(new Error('declined'), {});
     },
     async restorePurchases() { return mockInfo(['family']); },
@@ -48,9 +48,9 @@ const check = (name, cond, detail = '') => {
   check('configure requires sdk+key', billing.configureBilling(null, 'k') === false && billing.configureBilling(sdk, '') === false);
   check('configure wires the sdk', billing.configureBilling(sdk, 'rc_test_key') === true && billing.billingMode() === 'store');
 
-  r = await billing.purchasePlan('plus');
-  check('store purchase returns store-derived plan', r.ok && r.mode === 'store' && r.planId === 'plus' && r.charged === true);
-  r = await billing.purchasePlan('familyPro'); // not in mocked offerings
+  r = await billing.purchasePlan('individual');
+  check('store purchase returns store-derived plan', r.ok && r.mode === 'store' && r.planId === 'individual' && r.charged === true);
+  r = await billing.purchasePlan('family'); // not in mocked offerings
   check('missing store product fails honestly', !r.ok && /not available/i.test(r.reason));
   r = await billing.restorePurchases();
   check('restore maps entitlement → family', r.ok && r.planId === 'family');

@@ -23,8 +23,8 @@ check('Free can show house ads on Home', shouldShowHouseAds(commercial, 'home'))
 check('Free never shows ads on Result', !shouldShowHouseAds(commercial, 'result'));
 check('Free result ad payload is null', houseAdForContext(commercial, 'result') === null);
 
-commercial = updateCommercialPlan(commercial, PLAN_IDS.plus);
-check('Plus plan selected', commercial.planId === PLAN_IDS.plus, JSON.stringify(commercial));
+commercial = updateCommercialPlan(commercial, PLAN_IDS.individual);
+check('Individual plan selected', commercial.planId === PLAN_IDS.individual, JSON.stringify(commercial));
 check('Plus hides house ads on Home', !shouldShowHouseAds(commercial, 'home'));
 check('paid preview is not store billing', commercial.billingMode === 'preview');
 

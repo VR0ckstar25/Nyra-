@@ -13,18 +13,16 @@
 
 import { PLAN_IDS } from './commercialModel.js';
 
-// RevenueCat entitlement identifiers → Anvara plan ids
+// RevenueCat entitlement identifiers → Nyara plan ids
 export const ENTITLEMENT_TO_PLAN = {
-  plus: PLAN_IDS.plus,
+  individual: PLAN_IDS.individual,
   family: PLAN_IDS.family,
-  family_pro: PLAN_IDS.familyPro,
 };
 
 // Store product ids (must match App Store Connect / Play Console when created)
 export const PRODUCTS = [
-  { productId: 'anvara.plus.monthly', planId: PLAN_IDS.plus, entitlement: 'plus' },
-  { productId: 'anvara.family.monthly', planId: PLAN_IDS.family, entitlement: 'family' },
-  { productId: 'anvara.familypro.monthly', planId: PLAN_IDS.familyPro, entitlement: 'family_pro' },
+  { productId: 'nyara.individual.monthly', planId: PLAN_IDS.individual, entitlement: 'individual' },
+  { productId: 'nyara.family.monthly', planId: PLAN_IDS.family, entitlement: 'family' },
 ];
 
 let purchasesSdk = null; // react-native-purchases, injected when store accounts exist
@@ -43,7 +41,7 @@ export function billingMode() {
 export function planForEntitlements(activeEntitlements = []) {
   // highest plan wins if several are active
   const active = Array.isArray(activeEntitlements) ? activeEntitlements : [];
-  const order = ['family_pro', 'family', 'plus'];
+  const order = ['family', 'individual']; // family is the richer entitlement
   const hit = order.find((e) => active.includes(e));
   return hit ? ENTITLEMENT_TO_PLAN[hit] : PLAN_IDS.free;
 }

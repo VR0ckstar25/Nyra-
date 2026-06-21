@@ -84,25 +84,25 @@ export function ScanScreen({ profile, matcherData, scanGate = null, onUpgrade, o
         </Text>
       </View>
 
-      {scanGate ? (
+      {scanGate && !scanGate.unlimited ? (
         blocked ? (
           <View style={{ borderRadius: 14, backgroundColor: t.accentTint, borderWidth: 1,
             borderColor: t.accentSoft, padding: 14, marginBottom: 14 }}>
             <Text style={{ fontFamily: t.sans, fontSize: 14, fontWeight: '900', color: t.ink }}>
-              You've used all {scanGate.allowance} scans this month
+              You've used all {scanGate.allowance} free scans this month
             </Text>
             <Text style={{ fontFamily: t.sans, fontSize: 12.5, color: t.ink2, lineHeight: 18, marginTop: 3 }}>
-              Your free scans refresh on {resetLabel(scanGate.nextResetAt)}. You can still run the sample anytime, or move to a plan with more scans.
+              Go unlimited to keep scanning, or your free scans refresh on {resetLabel(scanGate.nextResetAt)}. You can still run the sample anytime.
             </Text>
             {onUpgrade ? (
               <PrimaryButton onPress={onUpgrade} t={t} style={{ marginTop: 12 }}>
-                See plans
+                Go unlimited
               </PrimaryButton>
             ) : null}
           </View>
         ) : (
           <Text style={{ fontFamily: t.mono, fontSize: 11.5, color: t.ink3, marginBottom: 14 }}>
-            {scanGate.remaining} of {scanGate.allowance} scans left this month · resets {resetLabel(scanGate.nextResetAt)}
+            {scanGate.remaining} of {scanGate.allowance} free scans left this month · resets {resetLabel(scanGate.nextResetAt)}
           </Text>
         )
       ) : null}

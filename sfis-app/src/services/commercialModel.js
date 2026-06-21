@@ -1,8 +1,7 @@
 export const PLAN_IDS = {
   free: 'free',
-  plus: 'plus',
+  individual: 'individual',
   family: 'family',
-  familyPro: 'familyPro',
 };
 
 export const DEFAULT_COMMERCIAL = {
@@ -13,70 +12,66 @@ export const DEFAULT_COMMERCIAL = {
   updatedAt: null,
 };
 
-// Quotas (founder decisions 2026-06-12): Free 10 scans/month; V1 (Plus) 40/month;
-// Family Basic 50 scans/month PER MEMBER; Family Pro 60/member + enriched
-// patterns/feedback. Cycles are calendar months — at the cap, scanning blocks
-// until the 1st unless the user upgrades. Quotas count REAL scans only (never
-// samples), and a blocked scan is a calm notice, never a dark pattern.
+// Tiers (founder decision 2026-06-20, Duolingo-style): ONE paid level in two
+// flavours — Individual and Family — plus Free. Free is limited (10 scans/month,
+// house messages); paid is UNLIMITED scans and ad-free. At the free cap, scanning
+// blocks until the 1st OR the user upgrades. Quotas count REAL scans only.
+// `unlimited: true` means no monthly cap (scanQuota always allows).
 export const PLAN_LEVELS = [
   {
     id: PLAN_IDS.free,
     label: 'Free',
     price: '$0',
-    badge: 'House ads',
+    period: 'forever',
+    badge: null,
+    tagline: 'Get started, no account needed.',
     monthlyScans: 10,
     perMemberMonthlyScans: null,
-    summary: 'Try Nyara with local scanning, diary, and focused offline packs.',
+    unlimited: false,
+    summary: 'Everything you need to try Nyara, with a monthly scan limit.',
     features: [
-      '10 scans a month',
-      'Manual and camera-assisted scanning',
-      'Local diary and basic patterns',
-      'House messages on Home only',
+      '10 label scans a month',
+      'Camera + paste scanning',
+      'Local diary and patterns',
+      'Occasional house messages (never on results)',
     ],
   },
   {
-    id: PLAN_IDS.plus,
-    label: 'Plus',
-    price: 'Preview',
-    badge: 'No ads',
-    monthlyScans: 40,
+    id: PLAN_IDS.individual,
+    label: 'Individual',
+    price: '$2.99',
+    period: 'per month',
+    badge: 'Most popular',
+    popular: true,
+    tagline: 'Scan as much as you shop.',
+    monthlyScans: null,
     perMemberMonthlyScans: null,
-    summary: 'A quieter single-person setup for frequent label checks.',
+    unlimited: true,
+    summary: 'Unlimited scanning and an ad-free, quieter app for one person.',
     features: [
-      '40 scans a month',
-      'No house messages',
-      'Cloud backup when signed in',
-      'Security, offline, and local checkpoint tools',
+      'Unlimited scans',
+      'No house messages, anywhere',
+      'Cloud backup + restore across devices',
+      'App lock, offline packs, data export',
     ],
   },
   {
     id: PLAN_IDS.family,
     label: 'Family',
-    price: 'Preview',
-    badge: 'Up to 5 profiles',
-    monthlyScans: 50,
-    perMemberMonthlyScans: 50,
-    summary: 'Built for households managing more than one watchlist.',
+    price: '$4.99',
+    period: 'per month',
+    badge: 'Best for households',
+    tagline: 'One scan checks everyone.',
+    monthlyScans: null,
+    perMemberMonthlyScans: null,
+    unlimited: true,
+    members: 5,
+    summary: 'Unlimited scanning for up to 5 profiles — one scan checks every member’s allergies at once.',
     features: [
-      '50 scans a month for every family member',
-      'One camera scan checks every member’s allergies at once',
-      'No house messages',
-      'Family profiles up to the 5-profile cap',
-    ],
-  },
-  {
-    id: PLAN_IDS.familyPro,
-    label: 'Family Pro',
-    price: 'Preview',
-    badge: 'Richest tracking',
-    monthlyScans: 60,
-    perMemberMonthlyScans: 60,
-    summary: 'Everything in Family, with deeper questions and richer pattern tracking.',
-    features: [
-      '60 scans a month for every family member',
-      'One camera scan checks every member’s allergies at once',
-      'Extra follow-up questions and feedback that enrich Patterns',
-      'No house messages',
+      'Everything in Individual',
+      'Up to 5 family profiles',
+      'One camera scan checks every member at once',
+      'Per-member results with names',
     ],
   },
 ];
@@ -93,20 +88,25 @@ export function normalizeUsage(usage, now = new Date()) {
   return { cycle: key, used: Math.max(0, Number(usage.used) || 0) };
 }
 
-// Family plans: the pool scales per member (self counts as one member).
+// Paid tiers are unlimited; only Free carries a monthly cap.
 export function monthlyScanAllowance(commercial, memberCount = 1) {
   const plan = planFor(normalizeCommercial(commercial).planId);
+  if (plan.unlimited) return Infinity;
   if (plan.perMemberMonthlyScans) return plan.perMemberMonthlyScans * Math.max(1, memberCount);
   return plan.monthlyScans;
 }
 
 export function scanQuota(commercial, usage, memberCount = 1, now = new Date()) {
-  const allowance = monthlyScanAllowance(commercial, memberCount);
+  const plan = planFor(normalizeCommercial(commercial).planId);
   const current = normalizeUsage(usage, now);
-  const remaining = Math.max(0, allowance - current.used);
-  // nextResetAt = first instant of the next calendar month (the "calendar block")
   const nextResetAt = new Date(now.getFullYear(), now.getMonth() + 1, 1).toISOString();
-  return { allowance, used: current.used, remaining, allowed: remaining > 0, cycle: current.cycle, nextResetAt };
+  if (plan.unlimited) {
+    // No cap: never blocks, no reset to surface.
+    return { allowance: Infinity, used: current.used, remaining: Infinity, allowed: true, unlimited: true, cycle: current.cycle, nextResetAt };
+  }
+  const allowance = monthlyScanAllowance(commercial, memberCount);
+  const remaining = Math.max(0, allowance - current.used);
+  return { allowance, used: current.used, remaining, allowed: remaining > 0, unlimited: false, cycle: current.cycle, nextResetAt };
 }
 
 export function recordScanUsage(usage, now = new Date()) {
@@ -134,9 +134,14 @@ export function planFor(planId) {
   return PLAN_BY_ID[planId] || PLAN_BY_ID[PLAN_IDS.free];
 }
 
-// Family plans carry a per-member allowance; only they expose the token ledger.
+// The Family flavour: multi-profile features (up to N members, one-scan-checks-all).
 export function isFamilyPlan(planId) {
-  return !!planFor(planId).perMemberMonthlyScans;
+  return planFor(planId).id === PLAN_IDS.family || !!planFor(planId).members;
+}
+
+// Paid tiers are unlimited (no monthly scan cap).
+export function isUnlimited(planId) {
+  return !!planFor(planId).unlimited;
 }
 
 export function updateCommercialPlan(current, planId) {

@@ -203,7 +203,7 @@ async function runNormal(index) {
   state.offlinePack = buildOfflinePackFromData(data, state.profile, recommended);
   const estimate = estimateOfflinePackFromData(data, state.profile, recommended);
   check(`normal ${index}: estimate matches pack ids`, estimate.selectedPackIds.join('|') === state.offlinePack.selectedPackIds.join('|'));
-  state.commercial = updateCommercialPlan(state.commercial, random() > 0.75 ? PLAN_IDS.plus : PLAN_IDS.free);
+  state.commercial = updateCommercialPlan(state.commercial, random() > 0.75 ? PLAN_IDS.individual : PLAN_IDS.free);
 
   const scansToRun = Math.floor(random() * 48);
   for (let i = 0; i < scansToRun; i += 1) {

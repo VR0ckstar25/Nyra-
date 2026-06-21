@@ -4,6 +4,7 @@ import { StatusBar } from 'expo-status-bar';
 import { ThemeProvider, useTheme } from './src/theme/ThemeProvider';
 import { WelcomeScreen } from './src/screens/WelcomeScreen';
 import { IntroScreen } from './src/screens/IntroScreen';
+import { UpgradeScreen } from './src/screens/UpgradeScreen';
 import { OnboardingScreen } from './src/screens/OnboardingScreen';
 import { OnboardingIntentScreen } from './src/screens/OnboardingIntentScreen';
 import { DiaryScreen } from './src/screens/DiaryScreen';
@@ -49,7 +50,7 @@ import {
   saveCloudScan,
 } from './src/services/syncService';
 import { cleanupExpiredLabelImages, deleteScanImages, enrichCapturedImage } from './src/services/localRetention';
-import { familyScanGate, houseAdForContext, isFamilyPlan, normalizeCommercial, normalizeFamilyLedger, planFor, recordFamilyScan, recordScanUsage, scanQuota, transferScans, updateCommercialPlan } from './src/services/commercialModel';
+import { familyScanGate, houseAdForContext, isFamilyPlan, isUnlimited, normalizeCommercial, normalizeFamilyLedger, planFor, recordFamilyScan, recordScanUsage, scanQuota, transferScans, updateCommercialPlan } from './src/services/commercialModel';
 import { purchasePlan, restorePurchases } from './src/services/billingService';
 import {
   DEFAULT_SETTINGS,
@@ -218,14 +219,15 @@ function Shell() {
   // the live plan + member list each render so departures/joins reconcile; the
   // raw ledger persists in settings.
   const onFamilyPlan = isFamilyPlan(commercial.planId);
+  // Tiers (2026-06-20): paid (Individual/Family) is UNLIMITED, only Free is capped,
+  // so scanQuota gates everyone (it returns unlimited for paid). The per-member
+  // family ledger is dormant under unlimited but kept for a possible finite future.
   const familyMembersForLedger = [{ id: 'self', name: profile?.name || 'You', child: false },
     ...((profile?.familyMembers || []).map((m) => ({ id: m.id, name: m.name, child: !!m.child })))];
-  const familyLedger = onFamilyPlan
+  const familyLedger = (onFamilyPlan && !isUnlimited(commercial.planId))
     ? normalizeFamilyLedger(settings.familyLedger, commercial, familyMembersForLedger)
     : null;
-  // Scan gate: on a family plan the SCANNING member spends their OWN credit (founder
-  // decision); otherwise the plan's monthly quota. Both shapes match scanQuota().
-  const scanGate = onFamilyPlan
+  const scanGate = familyLedger
     ? familyScanGate(familyLedger, commercial, 'self')
     : scanQuota(commercial, settings.scanUsage, 1);
   const productReviewQueue = feedbackLog.filter((entry) => {
@@ -1397,7 +1399,7 @@ function Shell() {
     title = 'Scan';
     right = { label: 'Theme', onPress: openAppearance };
     body = <ScanScreen profile={profile} matcherData={matcherData}
-              scanGate={scanGate} onUpgrade={() => setScreen('plans')}
+              scanGate={scanGate} onUpgrade={() => setScreen('upgrade')}
               onResult={(r, options = {}) => showResult(r, { source: 'manual', persist: true, ...options })}
               onCamera={() => setScreen('camera')} />;
   } else if (screen === 'patterns') {
@@ -1426,7 +1428,7 @@ function Shell() {
     title = 'Camera';
     left = { label: '‹ Scan', onPress: () => setScreen('scan') };
     body = <CameraScreen profile={profile} matcherData={matcherData} onBack={() => setScreen('scan')}
-              scanGate={scanGate} onUpgrade={() => setScreen('plans')}
+              scanGate={scanGate} onUpgrade={() => setScreen('upgrade')}
               onManual={() => setScreen('scan')}
               onResult={(r) => showResult(r, { source: 'camera', persist: true })}
               onProcessingStart={beginProcessingTask}
@@ -1440,6 +1442,13 @@ function Shell() {
     title = 'Appearance';
     left = { label: '‹ Back', onPress: () => setScreen(returnTo) };
     body = <AppearanceScreen />;
+  } else if (screen === 'upgrade') {
+    title = 'Go unlimited';
+    left = { label: '‹ Scan', onPress: () => setScreen('scan') };
+    body = <UpgradeScreen
+      scanGate={scanGate}
+      onChoosePlan={(planId) => { selectPlanPreview(planId); setScreen('scan'); }}
+      onMaybeLater={() => setScreen('scan')} />;
   } else if (screen === 'plans') {
     title = 'Plans';
     left = { label: '‹ Profile', onPress: () => setScreen('profile') };

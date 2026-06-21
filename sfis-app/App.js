@@ -155,12 +155,12 @@ function ProcessingBanner({ task, t }) {
   if (!task) return null;
   const label = task.label || 'This step';
   const detail = task.type === 'camera-ocr'
-    ? 'Keep Anvara open while it reads the label. Closing now can stop the scan, and you may need to take it again.'
+    ? 'Keep Nyara open while it reads the label. Closing now can stop the scan, and you may need to take it again.'
     : task.type === 'offline-pack'
-      ? 'Keep Anvara open while it prepares offline scanning. This helps make future scans faster and more reliable.'
+      ? 'Keep Nyara open while it prepares offline scanning. This helps make future scans faster and more reliable.'
       : task.type === 'cloud-backup'
-        ? 'Keep Anvara open while it finishes the backup. Your local data stays saved even if the network is slow.'
-        : 'Keep Anvara open for a moment so this can finish cleanly.';
+        ? 'Keep Nyara open while it finishes the backup. Your local data stays saved even if the network is slow.'
+        : 'Keep Nyara open for a moment so this can finish cleanly.';
 
   return (
     <View style={{ paddingHorizontal: 14, paddingTop: 10, backgroundColor: t.bg }}>
@@ -510,7 +510,7 @@ function Shell() {
     if (!hydrated || !interruptedTask) return;
     Alert.alert(
       'Processing stopped',
-      `${interruptedTask.label || 'The last task'} did not keep running after Anvara closed, so nothing was half-saved. Start it again when you're ready.`,
+      `${interruptedTask.label || 'The last task'} did not keep running after Nyara closed, so nothing was half-saved. Start it again when you're ready.`,
       [{ text: 'OK', onPress: () => setInterruptedTask(null) }],
     );
   }, [hydrated, interruptedTask]);
@@ -639,7 +639,7 @@ function Shell() {
     if (!profile || !member?.id) return;
     Alert.alert(
       'Remove family profile?',
-      `Remove ${member.name || 'this family member'} from this device's Anvara profile? Saved scans stay in Diary.`,
+      `Remove ${member.name || 'this family member'} from this device's Nyara profile? Saved scans stay in Diary.`,
       [
         { text: 'Cancel', style: 'cancel' },
         {
@@ -953,7 +953,7 @@ function Shell() {
     const owner = ownerResult?.value || null;
     const hasLocalData = !!profile || savedScans.length > 0 || feedbackLog.length > 0;
     if (ownershipConflict({ owner, uid: signedInUser.uid, hasLocalData })) {
-      throw new Error("This account does not match the Anvara data protected on this phone.");
+      throw new Error("This account does not match the Nyara data protected on this phone.");
     }
 
     setAuthUser(signedInUser);
@@ -1110,10 +1110,10 @@ function Shell() {
       const payload = buildExportPayload({ profile, scans: savedScans, feedback: feedbackLog, settings });
       const uri = await writeExportFile(payload);
       if (uri) {
-        await Share.share({ url: uri, title: 'Anvara data export', message: 'My Anvara data export.' });
+        await Share.share({ url: uri, title: 'Nyara data export', message: 'My Nyara data export.' });
       } else {
         // No file system (shouldn't happen on device) — share the JSON inline.
-        await Share.share({ title: 'Anvara data export', message: JSON.stringify(payload) });
+        await Share.share({ title: 'Nyara data export', message: JSON.stringify(payload) });
       }
     } catch (error) {
       setStorageNotice(messageFrom(error, 'Could not export your data.'));
@@ -1206,7 +1206,7 @@ function Shell() {
       findings,
       unverified,
       product: { name: TUTORIAL.name, brand: TUTORIAL.brand, date: TUTORIAL.date },
-    }, { source: 'sample', persist: false, next: { label: 'Show me how Anvara works', screen: 'how-it-works' } });
+    }, { source: 'sample', persist: false, next: { label: 'Show me how Nyara works', screen: 'how-it-works' } });
   };
 
   const previewFirstResult = () => {
@@ -1257,7 +1257,7 @@ function Shell() {
 
   // Plan change routes through the billing seam: store mode runs the real purchase
   // (entitlement decides the plan); preview mode applies locally with an honest note.
-  // Card data never touches us — store billing keeps Anvara out of PCI scope.
+  // Card data never touches us — store billing keeps Nyara out of PCI scope.
   const selectPlanPreview = async (planId) => {
     const res = await purchasePlan(planId);
     if (!res.ok) {
@@ -1381,7 +1381,7 @@ function Shell() {
     body = <GettingReadyScreen profile={profile} offlinePack={offlinePack}
       onDownload={downloadOfflinePack} onDone={() => setScreen('diary')} />;
   } else if (screen === 'credibility') {
-    title = 'Why Anvara';
+    title = 'Why Nyara';
     body = <CredibilityScreen onContinue={previewFirstResult} onSkip={previewFirstResult} />;
   } else if (screen === 'how-it-works') {
     title = 'How It Works';

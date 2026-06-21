@@ -1,0 +1,59 @@
+name: CI
+
+# Every push/PR runs the safety + security gates. Keeps the ~7,900-assertion suite,
+# the data-export reproducibility check, secret scanning, and dependency audit
+# honest on every change. (Firestore-rules emulator tests + ESLint land next.)
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  test:
+    name: Unit + safety suites
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: sfis-app
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+          cache-dependency-path: sfis-app/package-lock.json
+      - name: Install
+        run: npm ci
+      - name: Test (matcher + services + fuzz + security batteries)
+        run: npm test
+      - name: DB export is reproducible (no drift vs committed JSON)
+        working-directory: .
+        run: |
+          node database/export-data.js
+          git diff --exit-code -- sfis-app/src/data/allergens.json \
+            || (echo "::error::allergens.json is out of sync with the DB — re-run database/export-data.js" && exit 1)
+
+  audit:
+    name: Dependency audit
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: sfis-app
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with: { node-version: 20 }
+      - name: npm audit (high+ are reported; do not fail the build yet)
+        run: npm audit --audit-level=high || true
+
+  secrets:
+    name: Secret scan
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with: { fetch-depth: 0 }
+      - name: gitleaks
+        uses: gitleaks/gitleaks-action@v2
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

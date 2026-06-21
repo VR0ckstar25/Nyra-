@@ -1296,7 +1296,7 @@ function Shell() {
   if (!hydrated) {
     return (
       <SafeAreaView style={{ flex: 1, backgroundColor: t.bg, alignItems: 'center', justifyContent: 'center' }}>
-        <Text style={{ fontFamily: t.sans, fontSize: 15, fontWeight: '800', color: t.ink }}>Anvara</Text>
+        <Text style={{ fontFamily: t.sans, fontSize: 15, fontWeight: '800', color: t.ink }}>Nyara</Text>
       </SafeAreaView>
     );
   }

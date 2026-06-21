@@ -5,9 +5,9 @@ import { Card, Overline, PrimaryButton, ProgressBar, ScreenIntro, SecondaryButto
 import { OFFLINE_PACKS, estimateOfflinePack, formatBytes, recommendedOfflinePackIds } from '../services/offlinePacks';
 
 function formatTime(value) {
-  if (!value) return 'Not downloaded';
+  if (!value) return 'Not ready';
   const date = new Date(value);
-  if (Number.isNaN(date.getTime())) return 'Downloaded';
+  if (Number.isNaN(date.getTime())) return 'Ready';
   return date.toLocaleString([], { month: 'short', day: 'numeric', hour: 'numeric', minute: '2-digit' });
 }
 
@@ -64,12 +64,12 @@ export function GettingReadyScreen({ profile, offlinePack, onDownload, onDone })
 
   const download = async () => {
     setBusy(true);
-    setStatus('Building offline matcher pack...');
+    setStatus('Preparing your ingredient data…');
     try {
       const saved = await onDownload(selected);
-      setStatus(`Saved ${saved.termCount} matcher terms (${formatBytes(saved.bytes)}) on this device.`);
+      setStatus(`Ready — ${saved.termCount} ingredient names for your watchlist are saved on this phone (${formatBytes(saved.bytes)}). Scanning works with no network.`);
     } catch (error) {
-      setStatus(error?.message || 'Offline pack could not be saved on this device.');
+      setStatus(error?.message || 'Your data could not be saved on this device. Free up some storage and try again.');
     } finally {
       setBusy(false);
     }
@@ -79,7 +79,7 @@ export function GettingReadyScreen({ profile, offlinePack, onDownload, onDone })
     <ScrollView style={{ flex: 1, backgroundColor: t.bg }} contentContainerStyle={{ padding: 18, paddingBottom: 30 }}>
       <ScreenIntro
         title="Getting ready"
-        sub="Choose what Nyara keeps available for scanning without network access."
+        sub="Nyara keeps the ingredient data for the items you chose on this phone, so scanning works instantly and offline. Pick what to keep ready."
         t={t}
       />
 
@@ -120,7 +120,7 @@ export function GettingReadyScreen({ profile, offlinePack, onDownload, onDone })
       ) : null}
 
       <PrimaryButton onPress={download} disabled={busy} t={t}>
-        {busy ? 'Saving offline pack...' : downloaded ? 'Update offline pack' : 'Download selected packs'}
+        {busy ? 'Preparing…' : downloaded ? 'Update my data' : 'Prepare my ingredient data'}
       </PrimaryButton>
       <SecondaryButton onPress={onDone} t={t} style={{ marginTop: 10 }}>
         Go to Diary

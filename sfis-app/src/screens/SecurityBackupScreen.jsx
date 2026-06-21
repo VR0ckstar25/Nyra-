@@ -14,7 +14,7 @@ function formatDate(value) {
 }
 
 function offlineFreshness(pack) {
-  if (!pack?.downloadedAt) return { label: 'Not ready', detail: 'Download a recommended pack before relying on offline scanning.' };
+  if (!pack?.downloadedAt) return { label: 'Not ready', detail: 'Prepare your ingredient data so scanning works offline.' };
   const downloaded = new Date(pack.downloadedAt).getTime();
   if (Number.isNaN(downloaded)) return { label: 'Saved', detail: 'Offline pack is saved, but the build date is unknown.' };
   const ageDays = Math.floor((Date.now() - downloaded) / (24 * 60 * 60 * 1000));
@@ -254,15 +254,15 @@ export function SecurityBackupScreen({
         <View style={{ flexDirection: 'row', alignItems: 'center', gap: 12, marginBottom: 12 }}>
           <View style={{ flex: 1 }}>
             <Text style={{ fontFamily: t.sans, fontSize: 14.5, fontWeight: '800', color: t.ink }}>
-              Auto-build offline pack
+              Keep my data up to date
             </Text>
             <Text style={{ fontFamily: t.sans, fontSize: 12.5, color: t.ink2, lineHeight: 18, marginTop: 2 }}>
-              Rebuilds the matcher pack when the profile changes.
+              Refreshes the on-device ingredient data whenever your watchlist changes.
             </Text>
           </View>
           <SwitchPill on={autoOffline} onPress={onToggleAutoOfflinePack} t={t} />
         </View>
-        <PrimaryButton onPress={onManageOfflinePack} t={t}>Manage offline pack</PrimaryButton>
+        <PrimaryButton onPress={onManageOfflinePack} t={t}>Prepare my ingredient data</PrimaryButton>
       </Card>
 
       <Card t={t} style={{ marginBottom: 16 }}>

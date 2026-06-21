@@ -65,17 +65,17 @@ export function ScanScreen({ profile, matcherData, scanGate = null, onUpgrade, o
     <ScrollView style={{ flex: 1, backgroundColor: t.bg }} contentContainerStyle={{ padding: 18, paddingBottom: 28 }}>
       <ScreenIntro
         title="Check a label"
-        sub="Start with the camera, or paste ingredients when a label is hard to scan."
+        sub="Point your camera at the ingredients list — Nyara reads it and reflects it against your watchlist."
         t={t}
       />
 
       <View style={{ borderRadius: 14, backgroundColor: t.surfaceWarm, borderWidth: 1,
         borderColor: t.line, padding: 13, marginBottom: 14 }}>
         <Text style={{ fontFamily: t.sans, fontSize: 13.5, fontWeight: '900', color: t.ink }}>
-          Draft data check
+          A helpful second pair of eyes
         </Text>
         <Text style={{ fontFamily: t.sans, fontSize: 12.5, color: t.ink2, lineHeight: 18, marginTop: 3 }}>
-          Nyara is still in preproduction. Use results as a second pass, then verify the original package.
+          Our ingredient data is still growing, so treat Nyara as a second check — then confirm against the package itself.
         </Text>
       </View>
 

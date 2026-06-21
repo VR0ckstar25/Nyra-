@@ -1222,9 +1222,12 @@ function Shell() {
   const downloadOfflinePack = async (selectedPackIds) => {
     const taskId = beginProcessingTask('offline-pack', 'Offline matcher pack');
     try {
+      // BACKEND SEAM: today this builds the profile-specific subset from the bundled
+      // DB on-device (no network — the bundled data is small). When a backend exists,
+      // swap buildOfflinePack for a remote fetch of just the chosen allergens' data.
       const pack = buildOfflinePack(profile, selectedPackIds);
       const saved = await persistLocalValue(LOCAL_KEYS.offlinePack, pack, 'Offline matcher pack');
-      if (!saved) throw new Error('Offline pack could not be saved on this device.');
+      if (!saved) throw new Error('Your data could not be saved on this device. Free up some storage and try again.');
       setOfflinePack(saved);
       recordProcessEvent('offline_pack.saved', {
         termCount: saved.termCount,

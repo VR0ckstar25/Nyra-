@@ -1,4 +1,4 @@
-# Anvara Documentation Map
+# Nyara Documentation Map
 
 Use this folder as the implementation map. The root app and database folders contain
 working code/data; this folder contains the product, security, legal, and design

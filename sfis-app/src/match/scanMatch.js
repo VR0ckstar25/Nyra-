@@ -395,7 +395,7 @@ const PROVENANCE_BASIS = {
 };
 function provenanceFor(basisKey) {
   const basis = PROVENANCE_BASIS[basisKey] || PROVENANCE_BASIS.DIRECT;
-  return `${basis} Anvara draft database — not independently validated yet.`;
+  return `${basis} Nyara draft database — not independently validated yet.`;
 }
 
 // A diet/goal keyword is a marketing SLOGAN (not a present ingredient) only when a

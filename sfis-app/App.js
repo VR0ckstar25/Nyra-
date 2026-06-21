@@ -72,6 +72,7 @@ import {
 } from './src/services/securityService';
 import { buildOutboxItem, mergeOutboxItems, outboxDedupeKey, retryTime, RETRY_DELAYS_MS } from './src/services/outboxQueue';
 import { makeId, mergeById, messageFrom, restoreScreenFromSession, sameJson, serializeUser } from './src/services/appCore';
+import { validateCloudSnapshot } from './src/services/dataSchema';
 import { backFromSaveProfile, onboardingNextScreen, ownershipConflict, postAuthScreen, shouldStampOwner } from './src/services/flowRouting';
 import { buildExportPayload, writeExportFile } from './src/services/dataExport';
 
@@ -532,7 +533,8 @@ function Shell() {
       try {
         setSyncStatus('Syncing…');
         if (!(await verifyDataOwnership(authUser.uid))) return;
-        const cloud = await pullCloudSnapshot(authUser.uid);
+        // Sanitize untrusted cloud data before it touches state/storage (dataSchema).
+        const cloud = validateCloudSnapshot(await pullCloudSnapshot(authUser.uid)).value;
         if (!live) return;
 
         const nextProfile = cloud.profile || profile;
@@ -871,7 +873,7 @@ function Shell() {
           setScreen(profile ? (returnTo && returnTo !== 'scan' ? returnTo : 'profile') : 'onboarding-intent');
           return credential;
         }
-        const cloud = await pullCloudSnapshot(signedInUser.uid);
+        const cloud = validateCloudSnapshot(await pullCloudSnapshot(signedInUser.uid)).value;
         nextProfile = cloud.profile || profile;
         nextScans = mergeById(savedScans, cloud.scans, 'savedAt');
         nextFeedback = mergeById(feedbackLog, cloud.feedback, 'createdAt');

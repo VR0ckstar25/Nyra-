@@ -71,7 +71,7 @@ import {
   verifyPin,
 } from './src/services/securityService';
 import { buildOutboxItem, mergeOutboxItems, outboxDedupeKey, retryTime, RETRY_DELAYS_MS } from './src/services/outboxQueue';
-import { makeId, mergeById, messageFrom, restoreScreenFromSession, sameJson, serializeUser } from './src/services/appCore';
+import { makeId, mergeById, messageFrom, restoreScreenFromSession, RESTORABLE_SCREENS, sameJson, serializeUser } from './src/services/appCore';
 import { validateCloudSnapshot } from './src/services/dataSchema';
 import { backFromSaveProfile, onboardingNextScreen, ownershipConflict, postAuthScreen, shouldStampOwner } from './src/services/flowRouting';
 import { buildExportPayload, writeExportFile } from './src/services/dataExport';

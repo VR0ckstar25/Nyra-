@@ -5,10 +5,11 @@
     "sourceType": "module",
     "ecmaFeatures": { "jsx": true }
   },
-  "env": { "es2022": true, "node": true },
+  "env": { "es2022": true, "node": true, "browser": true },
   "globals": { "__DEV__": "readonly" },
   "plugins": ["security"],
   "rules": {
+    "no-undef": "error",
     "no-eval": "error",
     "no-implied-eval": "error",
     "no-new-func": "error",

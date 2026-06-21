@@ -91,9 +91,19 @@ export function SaveProfileScreen({
     setBusy(label);
     setStatus('');
     try {
-      await action();
+      // Never hang silently: if the account service can't be reached / isn't set up,
+      // surface a clear, actionable message instead of an endless spinner.
+      await Promise.race([
+        action(),
+        new Promise((_, reject) => setTimeout(
+          () => reject(new Error('Could not reach the account service. Check your connection — or use "Skip for now" to use Nyara on this phone.')),
+          15000)),
+      ]);
     } catch (error) {
-      setStatus(error.message || 'Sign-in failed.');
+      const msg = error?.code === 'auth/operation-not-allowed'
+        ? 'Email sign-in is not turned on for this project yet (enable Email/Password in Firebase Authentication).'
+        : (error?.message || 'Sign-in failed.');
+      setStatus(msg);
       setBusy('');
     }
   };
@@ -209,11 +219,17 @@ export function SaveProfileScreen({
           <Card t={t} style={{ marginBottom: 14 }}>
             <Overline t={t}>{recoveryMode ? 'Account sign-in' : 'Email'}</Overline>
             {!recoveryMode ? (
-              <TextInput value={username} onChangeText={setUsername} autoCapitalize="words" maxLength={24}
-                placeholder="Username (shown in the app)" placeholderTextColor={t.ink3}
-                accessibilityLabel="Username"
-                style={{ backgroundColor: t.surfaceWarm, borderRadius: 12, borderWidth: 1, borderColor: t.line,
-                  paddingHorizontal: 13, height: 46, fontFamily: t.sans, fontSize: 15, color: t.ink, marginTop: 12 }} />
+              <>
+                <TextInput value={username} onChangeText={setUsername} autoCapitalize="words" maxLength={24}
+                  placeholder="Username (a nickname is best)" placeholderTextColor={t.ink3}
+                  accessibilityLabel="Username"
+                  style={{ backgroundColor: t.surfaceWarm, borderRadius: 12, borderWidth: 1, borderColor: t.line,
+                    paddingHorizontal: 13, height: 46, fontFamily: t.sans, fontSize: 15, color: t.ink, marginTop: 12 }} />
+                <Text style={{ fontFamily: t.sans, fontSize: 12, color: t.ink3, lineHeight: 17, marginTop: 6 }}>
+                  Use a nickname, not your real name. It's all Nyara shows, and it keeps your health
+                  choices private — Nyara is about what you avoid, not who you are.
+                </Text>
+              </>
             ) : null}
             <TextInput value={email} onChangeText={setEmail} autoCapitalize="none" keyboardType="email-address"
               placeholder="Email" placeholderTextColor={t.ink3}

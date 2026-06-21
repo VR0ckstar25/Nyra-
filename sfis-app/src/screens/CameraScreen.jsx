@@ -53,6 +53,31 @@ export function CameraScreen({ profile, matcherData, scanGate = null, onUpgrade,
     }
   };
 
+  // DEV-ONLY: prove the OCR→match pipeline against a real label image pushed to the
+  // device (adb push label.jpg /sdcard/Download/test-label.jpg), bypassing the live
+  // camera so it works on the emulator. Never ships — gated by __DEV__ below.
+  const devTestOcr = async () => {
+    if (busy) return;
+    // App-scoped external dir is readable without storage permissions (push there with:
+    // adb push test-label.jpg /sdcard/Android/data/com.nyara.app/files/test-label.jpg)
+    const devUri = 'file:///sdcard/Android/data/com.nyara.app/files/test-label.jpg';
+    setBusy(true); setPendingScan(null);
+    setStatus('DEV: running OCR on the pushed test label…');
+    try {
+      const ocr = await recognizeIngredientText(devUri);
+      setPendingScan({
+        ocr,
+        image: { uri: devUri, capturedAt: new Date().toISOString() },
+        product: { name: 'DEV test label', brand: '', date: new Date().toISOString().slice(0, 10) },
+      });
+      setStatus(`DEV: OCR read ${ocr.text.length} chars. Review + check.`);
+    } catch (error) {
+      setStatus(`DEV OCR failed: ${error.message}`);
+    } finally {
+      setBusy(false);
+    }
+  };
+
   const checkIngredients = () => {
     if (!pendingScan) return;
     try {
@@ -231,6 +256,11 @@ export function CameraScreen({ profile, matcherData, scanGate = null, onUpgrade,
         <SecondaryButton onPress={onManual || onBack} t={t} style={{ marginTop: 10 }}>
           Type ingredients instead
         </SecondaryButton>
+        {__DEV__ ? (
+          <SecondaryButton onPress={devTestOcr} disabled={busy} t={t} style={{ marginTop: 10 }}>
+            DEV: OCR a pushed test image
+          </SecondaryButton>
+        ) : null}
         <Pressable onPress={onBack} accessibilityRole="button"
           style={{ minHeight: 38, alignItems: 'center', justifyContent: 'center', marginTop: 4 }}>
           <Text style={{ fontFamily: t.sans, fontSize: 13, fontWeight: '700', color: t.ink3 }}>

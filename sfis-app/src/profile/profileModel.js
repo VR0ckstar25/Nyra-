@@ -162,6 +162,12 @@ export const PROFILE_LABELS = Object.fromEntries(PROFILE_ITEMS.map((item) => [it
 
 export const BIG_NINE_SELECTIONS = ['milk', 'egg', 'wheat', 'soy', 'peanut', 'allergen.treenut', 'fish', 'allergen.shellfish', 'sesame'];
 
+// Onboarding shows a curated set of default tiles; the full 107-item catalog stays
+// reachable via the search box. Featured = the 9 major allergens + the most common
+// intolerances. Everything else (rarer allergens, additives, polyols, dyes…) is
+// search-only so the picker stays calm.
+export const FEATURED_INTOLERANCES = ['lactose', 'gluten', 'fructose', 'histamine'];
+
 export function defaultSeverityFor(id) {
   const item = PROFILE_LABELS[id];
   const scale = SEVERITY[item?.palette || 'goal'];

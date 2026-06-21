@@ -10,7 +10,17 @@ import {
   PROFILE_ITEMS as ALL_ITEMS,
   PROFILE_SECTIONS as SECTIONS,
   SEVERITY,
+  BIG_NINE_SELECTIONS,
+  FEATURED_INTOLERANCES,
 } from '../profile/profileModel';
+
+// Default tiles shown without searching: Big-9 allergens + top intolerances; the
+// short diet/goal lists show in full. Everything else is found via the search box.
+const FEATURED_IDS = new Set([...BIG_NINE_SELECTIONS, ...FEATURED_INTOLERANCES]);
+const isFeatured = (section, id) =>
+  (section.palette === 'allergen' || section.palette === 'intolerance')
+    ? FEATURED_IDS.has(id)
+    : true; // diet + goals are short — show them all
 
 // Founder decision (2026-06-11, revised same day): bounded watched list,
 // all chosen on one screen. Each watched item can add offline matcher data,
@@ -188,19 +198,31 @@ export function OnboardingScreen({ onDone, initialProfile = null, initialSelecti
               </Pressable>
             ) : null}
           </View>
-          {collapsed ? null : (
-            <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: 9 }}>
-              {section.items.map((item) => {
-                const isOn = selected.has(item.id);
-                return (
-                  <View key={item.id} style={{ opacity: atCap && !isOn ? 0.4 : 1 }}>
-                    <Chip label={item.label} selected={isOn}
-                      onPress={() => toggle({ ...item, palette: section.palette })} t={t} palette={section.palette} />
-                  </View>
-                );
-              })}
-            </View>
-          )}
+          {collapsed ? null : (() => {
+            // Show only featured tiles (+ anything already chosen via search, so it stays toggleable).
+            const shown = section.items.filter((item) => isFeatured(section, item.id) || selected.has(item.id));
+            const hidden = section.items.length - shown.length;
+            return (
+              <>
+                <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: 9 }}>
+                  {shown.map((item) => {
+                    const isOn = selected.has(item.id);
+                    return (
+                      <View key={item.id} style={{ opacity: atCap && !isOn ? 0.4 : 1 }}>
+                        <Chip label={item.label} selected={isOn}
+                          onPress={() => toggle({ ...item, palette: section.palette })} t={t} palette={section.palette} />
+                      </View>
+                    );
+                  })}
+                </View>
+                {hidden > 0 ? (
+                  <Text style={{ fontFamily: t.sans, fontSize: 12, color: t.ink3, lineHeight: 17, marginTop: 8 }}>
+                    +{hidden} more {section.title.toLowerCase()} — use the search box above to find them.
+                  </Text>
+                ) : null}
+              </>
+            );
+          })()}
         </View>
       );})}
 

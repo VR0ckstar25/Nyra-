@@ -1,4 +1,4 @@
-package com.anvara.app
+package com.nyara.app
 
 import android.app.Application
 import android.content.res.Configuration

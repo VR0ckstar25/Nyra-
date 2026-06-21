@@ -1,4 +1,4 @@
-package com.anvara.app
+package com.nyara.app
 
 import android.os.Build
 import android.os.Bundle

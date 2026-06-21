@@ -26,9 +26,9 @@
         <action android:name="android.intent.action.VIEW"/>
         <category android:name="android.intent.category.DEFAULT"/>
         <category android:name="android.intent.category.BROWSABLE"/>
-        <data android:scheme="anvara"/>
-        <data android:scheme="com.anvara.app"/>
-        <data android:scheme="exp+anvara"/>
+        <data android:scheme="nyara"/>
+        <data android:scheme="com.nyara.app"/>
+        <data android:scheme="exp+nyara"/>
       </intent-filter>
     </activity>
     <activity android:name="com.facebook.react.devsupport.DevSettingsActivity" android:exported="false"/>

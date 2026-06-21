@@ -31,7 +31,11 @@ export function SaveProfileScreen({
   const [status, setStatus] = useState('');
   const [email, setEmail] = useState(authUser?.email || '');
   const [password, setPassword] = useState('');
+  const [username, setUsername] = useState('');
   const [busy, setBusy] = useState('');
+  // With no Firebase keys, email/password creates a LOCAL account (works offline,
+  // no sync) — so the email path is always available; only Google/Apple need config.
+  const localMode = !authReady && !preproductionAuthReady;
   const accountReady = !!authUser && !recoveryMode;
   const title = recoveryMode ? 'Reset app PIN' : accountReady ? 'Account ready' : hasProfile ? 'Save your profile' : 'Sign in';
   const sub = recoveryMode
@@ -40,9 +44,7 @@ export function SaveProfileScreen({
     ? hasProfile
       ? 'Your account is connected. Continue setup when you are ready.'
       : 'Your account is connected. Next, build the label watchlist Nyara should use.'
-    : hasProfile
-    ? 'Create a free account to save and sync, or keep using this device locally.'
-    : 'Sign in to sync your saved profile and scan diary.';
+    : 'Create a local account with a username and password — it keeps your profile and diary on this phone. (Cloud sync comes later.)';
 
   const googleClientId = GOOGLE_WEB_CLIENT_ID || GOOGLE_IOS_CLIENT_ID || GOOGLE_ANDROID_CLIENT_ID || 'missing-google-client-id';
   const googleReady = !!(GOOGLE_WEB_CLIENT_ID || GOOGLE_IOS_CLIENT_ID || GOOGLE_ANDROID_CLIENT_ID);
@@ -86,10 +88,6 @@ export function SaveProfileScreen({
   }, [googleResponse?.type, googleIdToken]);
 
   const callAuth = async (label, action) => {
-    if (!authReady && !preproductionAuthReady) {
-      setStatus('Firebase is not configured yet. Local use is available now.');
-      return;
-    }
     setBusy(label);
     setStatus('');
     try {
@@ -101,7 +99,7 @@ export function SaveProfileScreen({
   };
 
   const pressEmail = (mode) => {
-    callAuth(mode, () => onEmailAuth({ email, password, mode }));
+    callAuth(mode, () => onEmailAuth({ email, password, username, mode }));
   };
 
   const pressGoogle = () => {
@@ -170,12 +168,14 @@ export function SaveProfileScreen({
       <ScreenIntro title={title} sub={sub} t={t} />
 
       <Card t={t} style={{ marginBottom: 16 }}>
-        <Overline t={t}>{recoveryMode ? 'App PIN recovery' : accountReady ? 'Signed in' : 'Free account'}</Overline>
+        <Overline t={t}>{recoveryMode ? 'App PIN recovery' : accountReady ? 'Signed in' : localMode ? 'Local account' : 'Free account'}</Overline>
         <Text style={{ fontFamily: t.serif, fontSize: 20, color: t.ink, lineHeight: 28, marginTop: 8 }}>
           {recoveryMode
             ? 'Your app PIN is local to this phone. We cannot read it or email it back.'
             : accountReady
             ? authUser.email || 'Your Nyara account is connected.'
+            : localMode
+            ? 'A username and password that lock your data on this phone.'
             : 'Sync saves your profile and scan diary across devices.'}
         </Text>
         <Text style={{ fontFamily: t.sans, fontSize: 13.5, color: t.ink2, lineHeight: 20, marginTop: 6 }}>
@@ -183,6 +183,8 @@ export function SaveProfileScreen({
             ? 'Signing in confirms the account before the local PIN is reset. If this profile was never connected to an account, recovery may require erasing this phone\'s Nyara data.'
             : accountReady
             ? 'You can continue to preferences now. Cloud backup follows your current backup setting.'
+            : localMode
+            ? 'Everything stays on this device — there is no cloud copy yet, so it cannot sync to another phone or be recovered if this phone is lost. Account sync arrives in a later update.'
             : 'Label photos stay on this phone. Cloud sync stores profile choices, product names, results, and feedback.'}
         </Text>
         {demoAuth ? (
@@ -191,7 +193,7 @@ export function SaveProfileScreen({
           </Text>
         ) : null}
         <Text style={{ fontFamily: t.mono, fontSize: 11.5, color: t.ink3, lineHeight: 17, marginTop: 8 }}>
-          {authReady ? (syncStatus || 'Firebase ready') : preproductionAuthReady ? (syncStatus || 'Preproduction demo auth active') : 'Firebase keys not set'}
+          {authReady ? (syncStatus || 'Firebase ready') : preproductionAuthReady ? (syncStatus || 'Preproduction demo auth active') : 'Local account · on-device only'}
         </Text>
       </Card>
 
@@ -206,10 +208,17 @@ export function SaveProfileScreen({
 
           <Card t={t} style={{ marginBottom: 14 }}>
             <Overline t={t}>{recoveryMode ? 'Account sign-in' : 'Email'}</Overline>
+            {!recoveryMode ? (
+              <TextInput value={username} onChangeText={setUsername} autoCapitalize="words" maxLength={24}
+                placeholder="Username (shown in the app)" placeholderTextColor={t.ink3}
+                accessibilityLabel="Username"
+                style={{ backgroundColor: t.surfaceWarm, borderRadius: 12, borderWidth: 1, borderColor: t.line,
+                  paddingHorizontal: 13, height: 46, fontFamily: t.sans, fontSize: 15, color: t.ink, marginTop: 12 }} />
+            ) : null}
             <TextInput value={email} onChangeText={setEmail} autoCapitalize="none" keyboardType="email-address"
               placeholder="Email" placeholderTextColor={t.ink3}
               style={{ backgroundColor: t.surfaceWarm, borderRadius: 12, borderWidth: 1, borderColor: t.line,
-                paddingHorizontal: 13, height: 46, fontFamily: t.sans, fontSize: 15, color: t.ink, marginTop: 12 }} />
+                paddingHorizontal: 13, height: 46, fontFamily: t.sans, fontSize: 15, color: t.ink, marginTop: 10 }} />
             <TextInput value={password} onChangeText={setPassword} secureTextEntry placeholder="Password"
               placeholderTextColor={t.ink3}
               style={{ backgroundColor: t.surfaceWarm, borderRadius: 12, borderWidth: 1, borderColor: t.line,

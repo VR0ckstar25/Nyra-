@@ -863,6 +863,12 @@ function Shell() {
       throw new Error('Sign-in did not complete. No account was returned.');
     }
     if (signedInUser) setAuthUser(signedInUser);
+    // Seed the chosen username as the profile display name when it isn't set yet.
+    if (signedInUser?.displayName && profile && (!profile.name || profile.name === 'You')) {
+      const named = { ...profile, name: signedInUser.displayName };
+      setProfile(named);
+      persistLocalValue(LOCAL_KEYS.profile, named, 'Profile');
+    }
     let nextProfile = profile;
     let nextScans = savedScans;
     let nextFeedback = feedbackLog;
@@ -924,8 +930,8 @@ function Shell() {
     return credential;
   };
 
-  const handleEmailAuth = async ({ email, password, mode }) => {
-    const credential = await signInWithEmail({ email, password, mode });
+  const handleEmailAuth = async ({ email, password, username, mode }) => {
+    const credential = await signInWithEmail({ email, password, username, mode });
     return finishAuth(credential);
   };
 

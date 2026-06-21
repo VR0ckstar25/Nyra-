@@ -12,6 +12,11 @@ import {
   signOut,
 } from 'firebase/auth';
 import { firebaseAuth, firebaseReady, firebaseUnavailableMessage } from './firebaseClient';
+import { localEmailAuth, getActiveLocalUser, signOutLocalAccount } from './localAccountService';
+
+// With no Firebase keys we fall back to backend-free LOCAL accounts (email/password
+// gating this device's data — no sync/recovery). This is the live mode today.
+export const localAccountsActive = !firebaseReady;
 
 const LAST_AUTH_USER_KEY = 'anvara.auth.lastUser.v1';
 const DEMO_AUTH_USER_KEY = 'anvara.auth.preproductionUser.v1';
@@ -77,11 +82,11 @@ async function readDemoUser() {
 
 export function subscribeAuthState(callback) {
   if (!firebaseReady || !firebaseAuth) {
-    if (preproductionAuthReady) {
-      readDemoUser().then(callback).catch(() => callback(null));
-    } else {
-      callback(null);
-    }
+    // Local-account mode: restore the signed-in local user (if any). Fall back to
+    // the legacy demo user only if preproduction demo auth is explicitly enabled.
+    getActiveLocalUser()
+      .then((user) => (user ? callback(user) : (preproductionAuthReady ? readDemoUser().then(callback) : callback(null))))
+      .catch(() => callback(null));
     return () => {};
   }
 
@@ -112,7 +117,7 @@ export async function signInWithDemoGoogle() {
   return credential;
 }
 
-export async function signInWithEmail({ email, password, mode = 'sign-in' }) {
+export async function signInWithEmail({ email, password, username, mode = 'sign-in' }) {
   const cleanEmail = normalizeEmail(email);
   if (!cleanEmail || !password) {
     throw new Error('Enter an email and password.');
@@ -121,14 +126,9 @@ export async function signInWithEmail({ email, password, mode = 'sign-in' }) {
     throw new Error('Password must be at least 6 characters.');
   }
 
-  if (!firebaseReady && preproductionAuthReady) {
-    const credential = makeDemoCredential({
-      email: cleanEmail,
-      provider: 'email',
-      displayName: mode === 'create' ? 'Preproduction account' : 'Preproduction user',
-    });
-    await saveDemoUser(credential.user);
-    return credential;
+  // No Firebase keys → backend-free local account (validates + hashes on device).
+  if (!firebaseReady) {
+    return localEmailAuth({ email: cleanEmail, password, username, mode });
   }
 
   const auth = requireFirebaseAuth();
@@ -139,10 +139,11 @@ export async function signInWithEmail({ email, password, mode = 'sign-in' }) {
 }
 
 export async function resetPassword(email) {
-  if (!firebaseReady && preproductionAuthReady) {
+  if (!firebaseReady) {
+    // Local accounts have no server to email a reset link. Be honest about it.
     const cleanEmail = normalizeEmail(email);
     if (!cleanEmail) throw new Error('Enter your email first.');
-    return { preproduction: true };
+    throw new Error('This is a local account, so there is no reset email. If you forgot the password, you can clear local data in Profile and set up again (your saved scans on this device stay).');
   }
   const auth = requireFirebaseAuth();
   const cleanEmail = normalizeEmail(email);
@@ -188,7 +189,8 @@ export async function signInWithApple() {
 }
 
 export async function signOutCurrentUser() {
-  if (!firebaseReady && preproductionAuthReady) {
+  if (!firebaseReady) {
+    await signOutLocalAccount().catch(() => {});
     await SecureStore.deleteItemAsync(DEMO_AUTH_USER_KEY).catch(() => {});
     return;
   }

@@ -6,7 +6,7 @@ import { matchScan } from '../match/scanMatch';
 import { nonEnglishNotice } from '../services/languageCheck';
 import data from '../data/allergens.json';
 import { TUTORIAL } from '../data/tutorial';
-import { Card, PrimaryButton, ScreenIntro, SecondaryButton } from '../components/DesignPrimitives';
+import { Card, PrimaryButton, ScreenIntro } from '../components/DesignPrimitives';
 import { profileIds } from '../profile/profileModel';
 
 function resetLabel(iso) {
@@ -22,6 +22,7 @@ export function ScanScreen({ profile, matcherData, scanGate = null, onUpgrade, o
   const [name, setName] = useState('');
   const [brand, setBrand] = useState('');
   const [review, setReview] = useState(null);
+  const [manual, setManual] = useState(false); // manual entry is a fallback, not the primary path
   const watchedIds = profileIds(profile);
   const activeData = matcherData || data;
   // Real scans are gated by the monthly quota; samples stay free so people can
@@ -51,12 +52,6 @@ export function ScanScreen({ profile, matcherData, scanGate = null, onUpgrade, o
     });
   };
 
-  const loadSample = () => {
-    setText(TUTORIAL.text);
-    setName(TUTORIAL.name);
-    setBrand(TUTORIAL.brand);
-    setReview(null);
-  };
   const runSample = () => {
     const { findings, unverified } = matchScan(TUTORIAL.text, profile, activeData);
     onResult({
@@ -130,15 +125,31 @@ export function ScanScreen({ profile, matcherData, scanGate = null, onUpgrade, o
         <Text style={{ fontFamily: t.sans, fontSize: 30, fontWeight: '800', color: t.onAccent }}>›</Text>
       </Pressable>
 
-      <Card t={t} style={{ marginBottom: 14 }}>
-        <View style={{ flexDirection: 'row', alignItems: 'center', gap: 9, marginBottom: 12 }}>
-          <View style={{ width: 32, height: 32, borderRadius: 11, backgroundColor: t.surfaceWarm,
-            borderWidth: 1, borderColor: t.line, alignItems: 'center', justifyContent: 'center' }}>
-            <Keyboard size={17} color={t.accentDeep} strokeWidth={2.4} />
-          </View>
-          <Text style={{ fontFamily: t.sans, fontSize: 16, fontWeight: '900', color: t.ink }}>
-            Paste ingredients instead
+      {/* Manual entry is a FALLBACK behind a quiet link — the camera is the product.
+          Kept available because on-device OCR isn't proven on real labels yet; if the
+          camera can't read a pack, the user still needs a way in. */}
+      {!manual ? (
+        <Pressable onPress={() => setManual(true)} accessibilityRole="button"
+          style={{ alignSelf: 'center', minHeight: 44, justifyContent: 'center', marginTop: 2 }}>
+          <Text style={{ fontFamily: t.sans, fontSize: 13.5, fontWeight: '700', color: t.ink3 }}>
+            Camera can't read it? Enter the label by hand
           </Text>
+        </Pressable>
+      ) : (
+      <Card t={t} style={{ marginBottom: 14 }}>
+        <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', marginBottom: 12 }}>
+          <View style={{ flexDirection: 'row', alignItems: 'center', gap: 9 }}>
+            <View style={{ width: 32, height: 32, borderRadius: 11, backgroundColor: t.surfaceWarm,
+              borderWidth: 1, borderColor: t.line, alignItems: 'center', justifyContent: 'center' }}>
+              <Keyboard size={17} color={t.accentDeep} strokeWidth={2.4} />
+            </View>
+            <Text style={{ fontFamily: t.sans, fontSize: 16, fontWeight: '900', color: t.ink }}>
+              Enter the label by hand
+            </Text>
+          </View>
+          <Pressable onPress={() => { setManual(false); setReview(null); }} hitSlop={10} accessibilityRole="button" accessibilityLabel="Close manual entry">
+            <Text style={{ fontFamily: t.sans, fontSize: 13, fontWeight: '900', color: t.ink3 }}>Close</Text>
+          </Pressable>
         </View>
 
         <TextInput value={name} onChangeText={(value) => { setName(value); setReview(null); }} placeholder="Product name (optional)"
@@ -172,15 +183,14 @@ export function ScanScreen({ profile, matcherData, scanGate = null, onUpgrade, o
           {review ? 'Save and check ingredients' : 'Review typed ingredients'}
         </PrimaryButton>
       </Card>
+      )}
 
-      <View style={{ flexDirection: 'row', gap: 10 }}>
-        <SecondaryButton onPress={loadSample} t={t} style={{ flex: 1 }}>
-          Load sample
-        </SecondaryButton>
-        <SecondaryButton onPress={runSample} t={t} style={{ flex: 1 }}>
-          Run sample
-        </SecondaryButton>
-      </View>
+      <Pressable onPress={runSample} accessibilityRole="button"
+        style={{ alignSelf: 'center', minHeight: 44, justifyContent: 'center', marginTop: 6 }}>
+        <Text style={{ fontFamily: t.sans, fontSize: 13, fontWeight: '700', color: t.accentDeep }}>
+          See how a result looks — try a sample
+        </Text>
+      </Pressable>
 
       <Text style={{ fontFamily: t.mono, fontSize: 11, color: t.ink3, marginTop: 18, lineHeight: 17 }}>
         Profile: {watchedIds.length} watched item{watchedIds.length === 1 ? '' : 's'} active. Deterministic matching · no ML · runs offline.

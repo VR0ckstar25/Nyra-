@@ -241,6 +241,15 @@ function expectedCommons(parent) {
   check("diet/goal findings carry info: "+common, !!it && typeof it.info==="string" && it.info.length>20, JSON.stringify(it));
 });
 
+// Wave 9 — expanded catalog: pantry words never fuzzy-coerce; new parents flag
+r = matchScan("Ingredients: water, salt, sugar.", ALL, data);
+check("pantry salt does not fuzzy-match malt/gluten", r.findings.length === 0, JSON.stringify(r.findings));
+r = matchScan("Ingredients: mustard seed, celery.", ["mustard","celery"], data);
+check("new allergen mustard flags", hasKind(r, "Mustard", "contains"));
+check("new allergen celery flags", hasKind(r, "Celery", "contains"));
+r = matchScan("Ingredients: sorbitol.", ["sorbitol"], data);
+check("new intolerance sorbitol flags as intolerance", item(r,"Sorbitol")?.kind === "contains" && bar(r,"intolerance"));
+
 console.log('=== DB challenge_corpus.sql ===');
 let corpusTotal = 0;
 try {

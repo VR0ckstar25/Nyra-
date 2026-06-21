@@ -337,6 +337,10 @@ function tokenMatchesTerm(token, term) {
   const words = n.split(' ');
   if (containsWords(words, term.w)) return true;
   if (compactMatch(n, term.n)) return true;
+  // Pantry staples (salt, sugar, water…) must never FUZZY-coerce into an allergen
+  // term — "salt" is edit-distance 1 from "malt" (a gluten alias). Exact/contains
+  // above still match a real "malt"; only the loose fuzzy fallback is suppressed.
+  if (PANTRY.has(n)) return false;
   return fuzzyMatch(n, term.n);
 }
 

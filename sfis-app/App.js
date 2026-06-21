@@ -120,7 +120,7 @@ function HeaderTitle({ title, t }) {
     <View style={{ alignItems: 'center', justifyContent: 'center', minWidth: 0 }}>
       <Text style={{ fontFamily: t.sans, fontSize: 9.5, fontWeight: '900', color: t.accentDeep,
         textTransform: 'uppercase', letterSpacing: 0 }}>
-        Anvara
+        Nyara
       </Text>
       <Text numberOfLines={1} style={{ fontFamily: t.sans, fontSize: 14.5, lineHeight: 18, fontWeight: '800', color: t.ink }}>
         {title}

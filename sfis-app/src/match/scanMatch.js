@@ -325,7 +325,9 @@ function plantDairyFalsePositive(token, term, parent) {
   const plantPrefix = /\b(?:coconut|almond|cashew|oat|soy|soya|rice|hemp|pea|macadamia|hazelnut|walnut|pistachio|peanut|cocoa|cacao|shea|sunflower|sesame)\s+(?:milk|butter|cream|cheese)\b/.test(n);
   const nonDairy = /\b(?:vegan|plant based|non dairy|dairy free)\b.*\b(?:milk|butter|cream|cheese)\b/.test(n);
   if ((plantPrefix || nonDairy) && ['milk', 'butter', 'cream', 'cheese', 'dairy'].includes(t)) return true;
-  if (/\bcream\s+(?:of\s+)?tartar\b/.test(n) && t === 'cream') return true;
+  // n is norm()-ed to single spaces, so a literal space suffices — and avoids the
+  // nested-quantifier ReDoS that \s+(?:of\s+)? trips (eslint security/detect-unsafe-regex).
+  if (/\bcream (?:of )?tartar\b/.test(n) && t === 'cream') return true;
   return false;
 }
 

@@ -10,7 +10,8 @@
     "ios": "expo run:ios",
     "test": "node src/match/scanMatch.test.js && node src/profile/profileModel.test.js && node src/services/localRetention.test.js && node src/services/commercialModel.test.js && node src/services/offlinePacksCore.test.js && node src/services/patternEngine.test.js && node src/services/appClearance.test.js && node src/services/billingService.test.js && node src/services/outboxQueue.test.js && node src/services/flowRouting.test.js && node src/services/dataExport.test.js && node src/services/secureAuthStorage.test.js && node src/services/languageCheck.test.js && node src/services/appCore.test.js && node src/services/prelaunch.security.test.js && node src/services/prelaunch.fuzz.test.js && node src/services/ocrService.test.js && node src/services/introContent.test.js",
     "test:match": "node src/match/scanMatch.test.js",
-    "test:rules": "npx --yes firebase-tools@13 emulators:exec --only firestore --project nyara-rules-test \"node src/services/firestoreRules.test.js\""
+    "test:rules": "npx --yes firebase-tools@13 emulators:exec --only firestore --project nyara-rules-test \"node src/services/firestoreRules.test.js\"",
+    "lint": "eslint \"src/**/*.{js,jsx}\" App.js"
   },
   "dependencies": {
     "@react-native-async-storage/async-storage": "1.23.1",
@@ -34,7 +35,9 @@
   },
   "devDependencies": {
     "@babel/core": "^7.24.0",
-    "@firebase/rules-unit-testing": "^5.0.1"
+    "@firebase/rules-unit-testing": "^5.0.1",
+    "eslint": "^8.57.1",
+    "eslint-plugin-security": "^4.0.1"
   },
   "private": true
 }

@@ -25,6 +25,8 @@ jobs:
           cache-dependency-path: sfis-app/package-lock.json
       - name: Install
         run: npm ci
+      - name: Lint (security rules)
+        run: npm run lint
       - name: Test (matcher + services + fuzz + security batteries)
         run: npm test
       - name: DB export is reproducible (no drift vs committed JSON)

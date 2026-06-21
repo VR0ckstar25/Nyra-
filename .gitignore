@@ -37,3 +37,9 @@ sfis-app/.env.*
 # Native OCR module build artifacts
 sfis-app/modules/anvara-ocr/android/.gradle/
 sfis-app/modules/**/build/
+
+# Firebase emulator artifacts
+sfis-app/firestore-debug.log
+sfis-app/firebase-debug.log
+sfis-app/ui-debug.log
+sfis-app/*-debug.log

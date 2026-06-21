@@ -1,6 +1,6 @@
 apply plugin: 'com.android.library'
 
-group = 'expo.modules.anvaraocr'
+group = 'expo.modules.nyaraocr'
 version = '0.1.0'
 
 def expoModulesCorePlugin = new File(project(":expo-modules-core").projectDir.absolutePath, "ExpoModulesCorePlugin.gradle")
@@ -10,7 +10,7 @@ useCoreDependencies()
 useDefaultAndroidSdkVersions()
 
 android {
-  namespace "expo.modules.anvaraocr"
+  namespace "expo.modules.nyaraocr"
 }
 
 dependencies {

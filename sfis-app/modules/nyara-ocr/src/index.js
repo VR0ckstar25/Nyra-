@@ -1,6 +1,6 @@
 import { requireOptionalNativeModule } from 'expo-modules-core';
 
-const nativeModule = requireOptionalNativeModule('AnvaraOcr');
+const nativeModule = requireOptionalNativeModule('NyaraOcr');
 
 export function isAvailable() {
   return !!nativeModule?.recognizeText;
@@ -8,7 +8,7 @@ export function isAvailable() {
 
 export async function recognizeText(uri) {
   if (!nativeModule?.recognizeText) {
-    throw new Error('Anvara OCR is not available in this build.');
+    throw new Error('Nyara OCR is not available in this build.');
   }
   return nativeModule.recognizeText(uri);
 }

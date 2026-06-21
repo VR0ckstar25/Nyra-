@@ -36,8 +36,7 @@ const check = (name, cond, detail = '') => {
     async getOfferings() {
       return { current: { availablePackages: [
         { product: { identifier: 'nyara.individual.monthly' } },
-        { product: { identifier: 'anvara.family.monthly' } },
-      ] } };
+      ] } };  // family intentionally absent → 'family' is the missing-product case below
     },
     async purchasePackage(pkg) {
       if (pkg.product.identifier === 'nyara.individual.monthly') return { customerInfo: mockInfo(['individual']) };

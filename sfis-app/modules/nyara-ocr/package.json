@@ -1,7 +1,7 @@
 {
-  "name": "anvara-ocr",
+  "name": "nyara-ocr",
   "version": "0.1.0",
-  "description": "On-device OCR bridge for Anvara ingredient labels",
+  "description": "On-device OCR bridge for Nyara ingredient labels",
   "main": "src/index.js",
   "private": true,
   "license": "UNLICENSED",

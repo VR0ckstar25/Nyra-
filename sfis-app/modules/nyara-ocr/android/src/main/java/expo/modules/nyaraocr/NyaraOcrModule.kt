@@ -1,4 +1,4 @@
-package expo.modules.anvaraocr
+package expo.modules.nyaraocr
 
 import android.net.Uri
 import com.google.mlkit.vision.common.InputImage
@@ -10,12 +10,12 @@ import expo.modules.kotlin.exception.Exceptions
 import expo.modules.kotlin.modules.Module
 import expo.modules.kotlin.modules.ModuleDefinition
 
-class AnvaraOcrModule : Module() {
+class NyaraOcrModule : Module() {
   private val context
     get() = appContext.reactContext ?: throw Exceptions.ReactContextLost()
 
   override fun definition() = ModuleDefinition {
-    Name("AnvaraOcr")
+    Name("NyaraOcr")
 
     AsyncFunction("recognizeText") { uri: String, promise: Promise ->
       try {
@@ -27,10 +27,10 @@ class AnvaraOcrModule : Module() {
             promise.resolve(serialize(result))
           }
           .addOnFailureListener { error ->
-            promise.reject("ERR_ANVARA_OCR_FAILED", error.message ?: "Text recognition failed.", error)
+            promise.reject("ERR_NYARA_OCR_FAILED", error.message ?: "Text recognition failed.", error)
           }
       } catch (error: Exception) {
-        promise.reject("ERR_ANVARA_OCR_INPUT", error.message ?: "Could not read this image.", error)
+        promise.reject("ERR_NYARA_OCR_INPUT", error.message ?: "Could not read this image.", error)
       }
     }
   }

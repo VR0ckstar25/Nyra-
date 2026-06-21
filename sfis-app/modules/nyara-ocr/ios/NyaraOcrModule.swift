@@ -2,13 +2,13 @@ import ExpoModulesCore
 import UIKit
 import Vision
 
-public class AnvaraOcrModule: Module {
+public class NyaraOcrModule: Module {
   public func definition() -> ModuleDefinition {
-    Name("AnvaraOcr")
+    Name("NyaraOcr")
 
     AsyncFunction("recognizeText") { (url: URL) async throws -> [String: Any?] in
       guard let image = UIImage(contentsOfFile: url.path)?.cgImage else {
-        throw NSError(domain: "AnvaraOcr", code: 1, userInfo: [
+        throw NSError(domain: "NyaraOcr", code: 1, userInfo: [
           NSLocalizedDescriptionKey: "Could not read this image."
         ])
       }

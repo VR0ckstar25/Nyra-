@@ -61,7 +61,7 @@ export function SaveProfileScreen({
     androidClientId: GOOGLE_ANDROID_CLIENT_ID || undefined,
     scopes: ['openid', 'profile', 'email'],
     selectAccount: true,
-  }, { scheme: 'anvara', path: 'oauthredirect' });
+  }, { scheme: 'nyara', path: 'oauthredirect' });
 
   const googleIdToken = googleResponse?.params?.id_token;
   useEffect(() => {

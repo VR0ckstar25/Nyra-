@@ -8,7 +8,7 @@ export const TEST_ACCOUNTS = [
   {
     id: 'test-maya',
     name: 'Maya Lindqvist',
-    email: 'maya.test@anvara.dev',
+    email: 'maya.test@nyara.dev',
     child: false,
     watched: [
       { id: 'peanut', severity: 'Strict avoid' },
@@ -18,7 +18,7 @@ export const TEST_ACCOUNTS = [
   {
     id: 'test-theo',
     name: 'Theo Lindqvist',
-    email: 'theo.test@anvara.dev',
+    email: 'theo.test@nyara.dev',
     child: true,
     watched: [
       { id: 'milk', severity: 'Important' },
@@ -28,7 +28,7 @@ export const TEST_ACCOUNTS = [
   {
     id: 'test-ava',
     name: 'Ava Chen',
-    email: 'ava.test@anvara.dev',
+    email: 'ava.test@nyara.dev',
     child: true,
     watched: [
       { id: 'egg', severity: 'Flag it' },
@@ -37,7 +37,7 @@ export const TEST_ACCOUNTS = [
   {
     id: 'test-rohan',
     name: 'Rohan Patel',
-    email: 'rohan.test@anvara.dev',
+    email: 'rohan.test@nyara.dev',
     child: false,
     watched: [
       { id: 'gluten', severity: 'Strict' },

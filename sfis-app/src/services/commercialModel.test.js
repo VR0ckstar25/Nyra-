@@ -1,4 +1,4 @@
-// Node verification for Anvara commercial/ad guardrails.
+// Node verification for Nyara commercial/ad guardrails.
 
 const {
   normalizeCommercial,

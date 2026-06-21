@@ -1,6 +1,6 @@
 // App-wide clearance stress suite.
 // Runs 100 normal app-state scenarios and 50 adversarial pressure scenarios.
-// Each run starts from cleared state, then drives the real Anvara service layer:
+// Each run starts from cleared state, then drives the real Nyara service layer:
 // profile -> matcher -> scan diary -> retention -> offline packs -> commercial
 // guardrails -> pattern engine.
 
@@ -212,7 +212,7 @@ async function runNormal(index) {
     const result = matchScan(text, state.profile, state.offlinePack.data || data);
     const capturedAt = new Date(Date.now() - Math.floor(random() * 3) * 24 * 60 * 60 * 1000).toISOString();
     const image = source === 'camera'
-      ? enrichCapturedImage({ uri: `file:///tmp/anvara-${index}-${i}.jpg`, capturedAt }, state.settings.saveLabelImages)
+      ? enrichCapturedImage({ uri: `file:///tmp/nyara-${index}-${i}.jpg`, capturedAt }, state.settings.saveLabelImages)
       : null;
     saveScan(state, {
       ...result,
@@ -253,7 +253,7 @@ async function runAdversarial(index) {
       : matchScan(text, state.profile, state.offlinePack.data || data);
     const capturedAt = new Date(Date.now() - (i % 10) * 24 * 60 * 60 * 1000).toISOString();
     const image = source === 'camera'
-      ? enrichCapturedImage({ uri: `file:///tmp/anvara-pressure-${index}-${i}.jpg`, capturedAt }, i % 13 === 0)
+      ? enrichCapturedImage({ uri: `file:///tmp/nyara-pressure-${index}-${i}.jpg`, capturedAt }, i % 13 === 0)
       : null;
     saveScan(state, {
       ...result,

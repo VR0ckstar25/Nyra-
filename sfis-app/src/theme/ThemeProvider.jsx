@@ -6,7 +6,7 @@ import React, { createContext, useContext, useState, useEffect, useMemo, useCall
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { buildTheme, DEFAULT_THEME } from './tokens';
 
-const STORAGE_KEY = 'anvara.theme.v1';
+const STORAGE_KEY = 'nyara.theme.v1';
 const LEGACY_STORAGE_KEY = 'sfis.theme.v1';
 const LEGACY_DEFAULT_THEME = { background: 'sky', accent: 'cobalt' };
 const ThemeContext = createContext(null);

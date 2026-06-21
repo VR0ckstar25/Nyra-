@@ -22,7 +22,7 @@ function defaultSecureStore() {
   }
 }
 
-const sanitizeKey = (key) => `anvara.auth.${String(key).replace(/[^A-Za-z0-9._-]/g, '_')}`;
+const sanitizeKey = (key) => `nyara.auth.${String(key).replace(/[^A-Za-z0-9._-]/g, '_')}`;
 const metaKey = (key) => `${sanitizeKey(key)}.n`;
 const chunkKey = (key, i) => `${sanitizeKey(key)}.${i}`;
 

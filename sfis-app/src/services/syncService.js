@@ -13,7 +13,7 @@ import {
 import * as SecureStore from 'expo-secure-store';
 import { firestoreDb, firebaseReady } from './firebaseClient';
 
-const PREPROD_CLOUD_PREFIX = 'anvara.preproductionCloud.v1';
+const PREPROD_CLOUD_PREFIX = 'nyara.preproductionCloud.v1';
 const PREPROD_CHUNK_SIZE = 1800;
 
 function requireDb() {

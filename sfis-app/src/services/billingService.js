@@ -1,6 +1,6 @@
 // billingService.js — the payments seam (founder decision 2026-06-12: RevenueCat).
 //
-// HOW ANVARA GETS PAID (and why no card UI exists anywhere in this app):
+// HOW NYARA GETS PAID (and why no card UI exists anywhere in this app):
 //   customer pays Apple/Google with the payment method already on their store
 //   account → the store takes its cut (15% small-business tier) → the store pays
 //   out to the founder's bank (configured once in App Store Connect / Play

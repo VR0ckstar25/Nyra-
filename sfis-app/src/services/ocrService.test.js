@@ -13,7 +13,7 @@ const check = (name, cond, detail = '') => {
 };
 
 (async () => {
-  // In plain node the native 'anvara-ocr' module can't resolve → unavailable path.
+  // In plain node the native 'nyara-ocr' module can't resolve → unavailable path.
   check('ocrAvailable() is false without the native module', ocr.ocrAvailable() === false);
 
   // No image → explicit error, never a silent empty result.

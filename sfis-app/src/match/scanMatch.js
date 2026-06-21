@@ -389,7 +389,7 @@ function isKnown(tok, index) {
 }
 
 // Plain-language basis for a match, by how it was determined. All entries are
-// Anvara DRAFT data (pre independent validation), stated honestly per match.
+// Nyara DRAFT data (pre independent validation), stated honestly per match.
 const PROVENANCE_BASIS = {
   DIRECT: 'Matched an exact ingredient name on the label.',
   DERIVED: 'Matched a known alternate name for this ingredient.',

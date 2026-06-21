@@ -51,7 +51,7 @@ export function buildExportPayload({ profile = null, scans = [], feedback = [], 
 
 export function exportFileName(exportedAt) {
   const day = String(exportedAt || new Date().toISOString()).slice(0, 10);
-  return `anvara-data-${day}.json`;
+  return `nyara-data-${day}.json`;
 }
 
 // Native: write the export to a file and return its uri (or null if FS missing).

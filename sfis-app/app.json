@@ -1,8 +1,8 @@
 {
   "expo": {
     "name": "Nyara",
-    "slug": "anvara",
-    "scheme": "anvara",
+    "slug": "nyara",
+    "scheme": "nyara",
     "version": "1.0.0",
     "orientation": "portrait",
     "userInterfaceStyle": "light",
@@ -16,11 +16,11 @@
     },
     "ios": {
       "supportsTablet": true,
-      "bundleIdentifier": "com.anvara.app",
+      "bundleIdentifier": "com.nyara.app",
       "usesAppleSignIn": true
     },
     "android": {
-      "package": "com.anvara.app",
+      "package": "com.nyara.app",
       "adaptiveIcon": {
         "backgroundColor": "#FCEDF3"
       },

@@ -18,8 +18,8 @@ import { localEmailAuth, getActiveLocalUser, signOutLocalAccount } from './local
 // gating this device's data — no sync/recovery). This is the live mode today.
 export const localAccountsActive = !firebaseReady;
 
-const LAST_AUTH_USER_KEY = 'anvara.auth.lastUser.v1';
-const DEMO_AUTH_USER_KEY = 'anvara.auth.preproductionUser.v1';
+const LAST_AUTH_USER_KEY = 'nyara.auth.lastUser.v1';
+const DEMO_AUTH_USER_KEY = 'nyara.auth.preproductionUser.v1';
 const NONCE_CHARS = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789-._';
 const PREPRODUCTION_AUTH_ENABLED = process.env.EXPO_PUBLIC_PREPROD_AUTH === 'true' && process.env.NODE_ENV !== 'production';
 
@@ -42,7 +42,7 @@ function makeNonce(size = 32) {
 }
 
 function demoUidFor(email, provider = 'email') {
-  const clean = normalizeEmail(email || `${provider}@anvara.preprod`);
+  const clean = normalizeEmail(email || `${provider}@nyara.preprod`);
   return `preprod-${provider}-${clean.replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '').slice(0, 54)}`;
 }
 
@@ -109,7 +109,7 @@ export async function signInWithDemoGoogle() {
     throw new Error('Preproduction demo auth is not enabled.');
   }
   const credential = makeDemoCredential({
-    email: 'google.demo@anvara.preprod',
+    email: 'google.demo@nyara.preprod',
     provider: 'google',
     displayName: 'Google demo',
   });

@@ -5,19 +5,19 @@ import { normalizeSeverityFor, PROFILE_ITEM_CAP, PROFILE_LABELS } from '../profi
 
 export const LOCAL_SCHEMA_VERSION = 3;
 export const LOCAL_KEYS = {
-  profile: 'anvara.profile.v1',
-  scans: 'anvara.savedScans.v1',
-  feedback: 'anvara.feedback.v1',
-  settings: 'anvara.settings.v1',
-  outbox: 'anvara.syncOutbox.v1',
-  offlinePack: 'anvara.offlinePack.v1',
-  security: 'anvara.security.v1',
-  localBackup: 'anvara.localBackup.v1',
-  session: 'anvara.session.v1',
+  profile: 'nyara.profile.v1',
+  scans: 'nyara.savedScans.v1',
+  feedback: 'nyara.feedback.v1',
+  settings: 'nyara.settings.v1',
+  outbox: 'nyara.syncOutbox.v1',
+  offlinePack: 'nyara.offlinePack.v1',
+  security: 'nyara.security.v1',
+  localBackup: 'nyara.localBackup.v1',
+  session: 'nyara.session.v1',
   // uid that owns the on-device health data. Survives sign-out ON PURPOSE: a
   // different account signing in must NOT auto-merge this device's data
   // (cross-account health-data bleed - adversarial review, critical).
-  dataOwner: 'anvara.dataOwner.v1',
+  dataOwner: 'nyara.dataOwner.v1',
 };
 
 export const DEFAULT_SETTINGS = {

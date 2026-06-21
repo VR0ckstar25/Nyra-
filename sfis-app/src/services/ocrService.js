@@ -10,7 +10,7 @@ let nativeOcrLoadError;
 function getNativeOcrModule() {
   if (nativeOcrModule || nativeOcrLoadError) return nativeOcrModule;
   try {
-    nativeOcrModule = require('anvara-ocr');
+    nativeOcrModule = require('nyara-ocr');
   } catch (error) {
     nativeOcrLoadError = error;
     nativeOcrModule = null;

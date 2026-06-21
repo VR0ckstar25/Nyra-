@@ -1,4 +1,4 @@
-// Stress suite for the local Anvara pattern engine.
+// Stress suite for the local Nyara pattern engine.
 // 100 normal-condition runs + 50 adversarial pressure runs. Every run clears
 // model state first, then verifies bounded, finite, privacy-safe output.
 

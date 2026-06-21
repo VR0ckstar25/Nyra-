@@ -44,7 +44,7 @@ check('profile + severity included', payload.profile.items[0].severity === 'Stri
 check('feedback included', payload.feedback.length === 1);
 
 // 4. Filename is date-stamped
-check('filename date-stamped', exportFileName(AT) === 'anvara-data-2026-06-12.json', exportFileName(AT));
+check('filename date-stamped', exportFileName(AT) === 'nyara-data-2026-06-12.json', exportFileName(AT));
 
 // 5. Empty/edge inputs don't throw
 const empty = buildExportPayload({ exportedAt: AT });
